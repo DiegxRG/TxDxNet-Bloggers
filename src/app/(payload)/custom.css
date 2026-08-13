@@ -1,0 +1,16 @@
+:root {
+  --txdx-navy: #07142d;
+  --txdx-orange: #ff5a18;
+}
+
+.template-default {
+  --theme-success-500: #1268ff;
+}
+
+.nav__brand::after {
+  color: var(--txdx-orange);
+  content: 'TxDxNet';
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}

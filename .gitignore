@@ -1,0 +1,33 @@
+# dependencies
+/node_modules
+
+# Next.js / Payload build output
+/.next
+/dist
+/build
+
+# local Payload uploads (Supabase Storage is used in production)
+/media
+
+# local environment files
+.env
+.env.*
+!.env.example
+
+# logs and tooling
+*.log
+.eslintcache
+*.tsbuildinfo
+/.codex
+/output
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# temporary upstream sources
+/.payload-source
+/.payload-template
