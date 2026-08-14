@@ -96,6 +96,15 @@ Lectores                    Equipo TxDxSecure
 6. Al publicar se invalida la caché correspondiente.
 7. Next.js entrega el artículo optimizado y listo para indexación.
 
+### Experiencia del panel editorial (implementado)
+
+- **Tema claro forzado** (`admin.theme: 'light'`): el panel usa siempre la paleta clara de Payload con refinamientos de `custom.css` (header con señal naranja, sidebar blanco, tarjetas claras).
+- **Perfil único**: la colección `admins` se lee/edita solo a sí misma; el perfil (nombre y cargo público) se administra desde `/admin/account`.
+- **Mis artículos**: vista propia en `/admin/mis-articulos` (acceso desde el sidebar) con tarjetas de cada artículo del editor (portada, estado, fecha) y atajo para crear uno nuevo. Se soporta en el campo oculto `createdBy` de `posts`, que se asigna automáticamente al crear.
+- **Previsualización**: `livePreview.openByDefault: true` abre la vista previa del artículo al entrar a editar; la edición vive en otra pestaña.
+- **Biblioteca multimedia tipo Dropbox**: la vista de lista de `media` se reemplaza por una rejilla con arrastrar y soltar, subida múltiple vía `/api/media`, búsqueda por nombre/`alt`, edición y borrado. El campo `alt` pasó a ser opcional.
+- **SEO**: los artículos exponen título y descripción SEO, `noindex`, URL canónica e imagen social; la metadata pública (Open Graph + Twitter Cards) respeta `noindex`.
+
 ## 4. Estructura modular propuesta
 
 ```text
@@ -125,27 +134,20 @@ src/
 │
 ├── collections/
 │   ├── Posts.ts
-│   ├── Domains.ts
-│   ├── Services.ts
 │   ├── Media.ts
-│   ├── Comments.ts
 │   └── Admins.ts
 │
 ├── shared/
 └── payload.config.ts
 ```
 
-Las capas se aplicarán donde aporten valor real: publicación, permisos, consultas, comentarios, reacciones y almacenamiento. No se crearán abstracciones repetitivas para cada CRUD pequeño.
+Las capas se aplicarán donde aporten valor real: publicación, permisos, consultas, comentarios, reacciones y almacenamiento. No se crearán abstracciones repetitivas para cada CRUD pequeño. `servicios` y `dominios` no son colecciones de Payload: son contenido estático en `src/data` para la web pública.
 
 ## 5. Modelo editorial
 
 ### Colección `posts`
 
-Existirá una sola colección editorial con un discriminador:
-
-```text
-contentType: "service" | "domain"
-```
+Una única colección editorial, sin discriminador de tipo:
 
 Campos principales:
 
@@ -154,57 +156,29 @@ Campos principales:
 - `excerpt`: resumen para listados y SEO.
 - `content`: contenido enriquecido estructurado.
 - `coverImage`: relación con `media`.
-- `contentType`: servicio o dominio.
-- `primaryDomain`: dominio principal cuando corresponda.
-- `primaryService`: servicio principal cuando corresponda.
-- `relatedDomains`: otros dominios relacionados.
-- `relatedServices`: servicios relacionados.
-- `author`: autor interno.
 - `featured`: contenido destacado.
-- `status`: borrador, publicado o programado.
+- `status`: borrador o publicado.
 - `publishedAt`: fecha de publicación.
 - `readingTime`: estimación calculada.
 - `seoTitle`, `seoDescription`, `socialImage` y `canonicalUrl`.
 
-No se duplicará el modelo en `service_posts` y `domain_posts`. Las relaciones y validaciones condicionales resolverán ambos recorridos.
+El flujo de publicación es el mínimo viable: escribir como en un procesador de textos
+(Lexical con barra fija), previsualizar en la URL real y publicar en un paso.
 
-### Colección `domains`
+### Taxonomía `services` y `domains` (estática)
 
-Se precargarán estos 11 dominios:
-
-1. Capital Humano.
-2. Endpoints & Workplace.
-3. Aplicaciones, APIs & Code.
-4. Infraestructura de Cómputo / Servers.
-5. Cloud & SaaS.
-6. Infraestructura de Red.
-7. Perímetro de Seguridad.
-8. Servicios Externos / IPs Públicas.
-9. OT / IoT.
-10. Physical Security.
-11. Agentic / AI Models.
-
-Cada dominio tendrá nombre, slug, descripción, icono, imagen, orden, color editorial y relaciones con artículos.
-
-### Colección `services`
-
-La lista será administrable. La oferta pública actual de TxDxSecure proporciona una primera taxonomía de trabajo:
-
-- Core Services: `@Architect`, `@Devnet`, `@CyberAuth` y `@Deployment`.
-- Entry Services: Network Radiography, Cyber Intelligence, Cyber Assessment, Firewall Check 360, TroubleShooting AppExperience, TroubleShooting NetPerformance, Cryptography Agile, Net Resilience, Net Hardening, RansomSafe Proactive Defense, Net Evolution y Net Migration.
-- AI Services: TxDxAI y capacidades relacionadas.
-- XOC: experiencia operacional, convergencia SOC/NOC/APM y capacidades transversales.
-
-La lista definitiva debe validarse con el equipo antes de cargar contenido de producción. Los seis dominios transversales de la infografía XOC no se asumirán automáticamente como servicios comerciales; podrán modelarse como capacidades o etiquetas si así lo decide TxDxSecure.
+No se administran desde Payload. Los servicios y los 11 dominios XOC viven como datos
+estáticos en `src/data/services.ts` y `src/data/domains.ts` y alimentan las páginas
+públicas `/servicios` y `/dominios`. Los artículos no se clasifican por taxonomía: se
+ordenan por fecha y destacados, lo que mantiene la publicación ágil sin CRUDs extra.
 
 ### Otras colecciones
 
-- `admins`: usuarios internos y roles.
+- `admins`: usuarios internos del equipo editorial.
 - `media`: archivos, metadatos, texto alternativo y créditos.
 - `comments`: comentarios anónimos moderados si se habilitan.
 - `reactions`: señales anónimas por artículo.
 - `redirects`: redirecciones editoriales y migraciones de URL.
-- `authors`: perfiles públicos de autores si se requiere separarlos de los usuarios administrativos.
 - `siteSettings`: configuración global, redes, contacto y valores SEO.
 
 ## 6. Editor de contenido
@@ -264,9 +238,8 @@ Los binarios no se guardarán dentro de PostgreSQL. Debe existir una política s
 ### Equipo editorial
 
 - Autenticación obligatoria en `/admin`.
-- `admin`: usuarios, configuración y contenido completo.
-- `editor`: crear, editar y publicar contenido.
-- `author` opcional: redactar y enviar borradores sin publicar.
+- Un solo rol: cada miembro del equipo puede crear, editar, previsualizar y publicar contenido.
+- La gestión de usuarios queda en manos del propio equipo (colección `admins`).
 
 ### Reacciones anónimas
 
@@ -457,8 +430,8 @@ No se encontró una skill oficial específica para Next.js o Tailwind en el cat�
 
 - Scaffolding de Next.js y Payload.
 - PostgreSQL y Storage.
-- Colecciones, permisos y roles.
-- Seed de los 11 dominios.
+- Colecciones y permisos (un solo rol editorial).
+- Dominios y servicios como datos estáticos.
 - Editor por bloques.
 - Borradores, versiones, preview y publicación.
 
@@ -517,11 +490,10 @@ No incluye inicialmente:
 ## 16. Decisiones pendientes
 
 - ¿La plataforma reemplazará `txdxsecure.com`, vivirá en `/insights` o en un subdominio?
-- ¿Cuál es la lista comercial definitiva de Servicios?
+- ¿Cuál es la lista comercial definitiva de Servicios? (hoy estática en `src/data/services.ts`)
 - ¿Los seis dominios transversales XOC serán capacidades, servicios o una taxonomía adicional?
 - ¿Qué logotipo y variantes tienen aprobación oficial?
 - ¿Qué fuentes tipográficas están licenciadas?
-- ¿Qué integrantes serán administradores, editores y autores?
 - ¿Se habilitarán reacciones en el MVP?
 - ¿Qué proveedor de email enviará notificaciones y formularios?
 - ¿Qué política de respaldo se aplicará a Supabase Storage?

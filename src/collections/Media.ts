@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { anyone, authors, editors } from '@/access'
+import { anyone, authenticated } from '@/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -11,20 +11,26 @@ export const Media: CollectionConfig = {
   admin: {
     group: 'Contenido',
     useAsTitle: 'filename',
+    components: {
+      views: {
+        list: {
+          Component: './components/payload/MediaLibrary',
+        },
+      },
+    },
   },
   access: {
     read: anyone,
-    // Los autores pueden subir imágenes (p. ej. la portada de sus artículos).
-    create: authors,
-    update: editors,
-    delete: editors,
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
   },
   fields: [
     {
       name: 'alt',
       type: 'text',
       label: 'Texto alternativo',
-      required: true,
+      admin: { description: 'Describe la imagen para accesibilidad y SEO.' },
     },
     {
       name: 'caption',

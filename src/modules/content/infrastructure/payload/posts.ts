@@ -2,18 +2,13 @@ import configPromise from '@payload-config'
 import type { Where } from 'payload'
 import { getPayload } from 'payload'
 
-import type { Domain, Media, Post, Service } from '@/payload-types'
+import type { Media, Post } from '@/payload-types'
 
-export type ArticleMode = 'domain' | 'service'
+const publishedFilter: Where = {
+  _status: { equals: 'published' },
+}
 
-const publishedFilter = (mode?: ArticleMode): Where => ({
-  and: [
-    { _status: { equals: 'published' } },
-    ...(mode ? [{ contentType: { equals: mode } }] : []),
-  ],
-})
-
-export async function getPublishedPosts(limit = 12, mode?: ArticleMode): Promise<Post[]> {
+export async function getPublishedPosts(limit = 12): Promise<Post[]> {
   try {
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({
@@ -23,7 +18,7 @@ export async function getPublishedPosts(limit = 12, mode?: ArticleMode): Promise
       limit,
       overrideAccess: false,
       sort: '-publishedAt',
-      where: publishedFilter(mode),
+      where: publishedFilter,
     })
 
     return result.docs
@@ -68,7 +63,6 @@ export async function getRelatedPosts(post: Post, limit = 3): Promise<Post[]> {
         and: [
           { _status: { equals: 'published' } },
           { id: { not_equals: post.id } },
-          { contentType: { equals: post.contentType } },
         ],
       },
     })
@@ -78,16 +72,6 @@ export async function getRelatedPosts(post: Post, limit = 3): Promise<Post[]> {
     console.error('[editorial] No se pudieron cargar los artículos relacionados.', error)
     return []
   }
-}
-
-export function getArticleLabel(post: Post): string {
-  const relation = post.contentType === 'domain' ? post.primaryDomain : post.primaryService
-
-  if (relation && typeof relation === 'object' && 'name' in relation) {
-    return (relation as Domain | Service).name
-  }
-
-  return post.contentType === 'domain' ? 'Dominio XOC' : 'Servicio TxDxSecure'
 }
 
 export function formatArticleDate(post: Post): string {
@@ -113,7 +97,10 @@ export function estimateReadingMinutes(post: Post): number {
   return Math.max(2, Math.ceil(words / 210))
 }
 
-export function getMediaURL(media: string | Media | null | undefined, size: 'card' | 'hero' = 'card') {
+export function getMediaURL(
+  media: string | Media | null | undefined,
+  size: 'card' | 'hero' | 'thumbnail' = 'card',
+) {
   if (!media || typeof media === 'string') return null
 
   const mediaURL = media.sizes?.[size]?.url || media.url

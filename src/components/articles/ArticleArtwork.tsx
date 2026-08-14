@@ -7,10 +7,9 @@ import styles from './ArticleArtwork.module.css'
 
 export function ArticleArtwork({ post, priority = false }: { post: Post; priority?: boolean }) {
   const imageURL = getMediaURL(post.coverImage, 'card')
-  const isDomain = post.contentType === 'domain'
 
   return (
-    <div className={`${styles.artwork} ${isDomain ? styles.domain : styles.service}`}>
+    <div className={styles.artwork}>
       {imageURL ? (
         <Image
           alt={getMediaAlt(post.coverImage, post.title)}
@@ -23,9 +22,9 @@ export function ArticleArtwork({ post, priority = false }: { post: Post; priorit
       ) : (
         <>
           <span aria-hidden="true" className={styles.shape} />
-          <span className={styles.issue}>{isDomain ? 'Dominio XOC' : 'Servicio TxDxSecure'}</span>
+          <span className={styles.issue}>Insight TxDxNet</span>
           <span aria-hidden="true" className={styles.wordmark}>TxDx</span>
-          <span className={styles.coverLine}>{isDomain ? 'Perspectivas de superficie' : 'Conocimiento aplicado'}</span>
+          <span className={styles.coverLine}>Conocimiento aplicado</span>
         </>
       )}
     </div>

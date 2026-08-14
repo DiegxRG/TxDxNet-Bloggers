@@ -2,7 +2,6 @@ import { plannedArticles } from '@/data/editorial'
 import {
   estimateReadingMinutes,
   formatArticleDate,
-  getArticleLabel,
   getMediaAlt,
   getMediaURL,
 } from '@/modules/content/infrastructure/payload/posts'
@@ -17,7 +16,7 @@ export function EditorialOpening({ posts }: { posts: Post[] }) {
   const publishedStories: OpeningStory[] = posts.slice(0, 3).map((post) => ({
     key: `post-${post.id}`,
     author: post.authorName,
-    category: getArticleLabel(post),
+    category: 'Insight TxDxNet',
     detail: `${formatArticleDate(post)} · ${estimateReadingMinutes(post)} min`,
     href: `/articulos/${post.slug}`,
     imageAlt: getMediaAlt(post.coverImage, post.title),

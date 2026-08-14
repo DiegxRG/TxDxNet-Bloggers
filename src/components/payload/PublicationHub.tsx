@@ -1,29 +1,6 @@
 import Link from 'next/link'
 import type { AdminViewServerProps } from 'payload'
 
-import type { Admin } from '@/payload-types'
-
-const ROLE_META: Record<Admin['role'], { label: string; sub: string }> = {
-  admin: {
-    label: 'Administrador',
-    sub: 'Gestiona personas, taxonomía y toda la publicación.',
-  },
-  editor: {
-    label: 'Editor',
-    sub: 'Revisa, edita y publica los artículos del equipo.',
-  },
-  author: {
-    label: 'Autor',
-    sub: 'Redacta y guarda tus borradores; el equipo editorial los publica.',
-  },
-}
-
-const CAN_PUBLISH: Record<Admin['role'], boolean> = {
-  admin: true,
-  editor: true,
-  author: false,
-}
-
 const STEPS = [
   {
     n: '01',
@@ -38,15 +15,11 @@ const STEPS = [
   {
     n: '03',
     title: 'Publica',
-    text: 'El botón Publicar aparece solo para el equipo editorial. Tú escribes, ellos cierran.',
+    text: 'Cuando el artículo esté listo, publícalo directo desde el panel. Guarda borradores con autoguardado si prefieres seguir después.',
   },
 ]
 
 export default async function PublicationHub({ payload, user }: AdminViewServerProps) {
-  const role = user?.role ?? 'editor'
-  const meta = ROLE_META[role]
-  const canPublish = CAN_PUBLISH[role]
-
   let counts = { total: 0, published: 0, drafts: 0 }
   let recentDrafts: Array<{ id: string; title: string; updatedAt: string }> = []
   try {
@@ -104,9 +77,11 @@ export default async function PublicationHub({ payload, user }: AdminViewServerP
             <br />
             <span>hoy?</span>
           </h1>
-          <p className="txdx-hub__sub">{meta.sub}</p>
+          <p className="txdx-hub__sub">
+            Bienvenido/a, {user?.name?.split(' ')[0] ?? 'equipo'}. Escribe, revisa y publica tus
+            artículos.
+          </p>
         </div>
-        <span className="txdx-hub__role">{meta.label}</span>
       </section>
 
       <section className="txdx-actions" aria-label="Acciones rápidas">
@@ -182,37 +157,26 @@ export default async function PublicationHub({ payload, user }: AdminViewServerP
               </li>
             ))}
           </ol>
-          {canPublish && (
-            <p className="txdx-hub__note">
-              Como {meta.label.toLowerCase()}, puedes publicar directamente desde el artículo.
-            </p>
-          )}
+          <p className="txdx-hub__note">
+            Escribe como en un procesador de textos, previsualiza el resultado y publica cuando esté
+            listo.
+          </p>
         </div>
       </section>
 
-      {role === 'admin' && (
-        <section className="txdx-panel txdx-panel--taxonomy">
-          <div className="txdx-panel__head">
-            <h2>Taxonomía de la empresa</h2>
-            <span className="txdx-pill txdx-pill--admin">Solo administradores</span>
-          </div>
-          <p className="txdx-panel__text">
-            Los dominios y servicios son datos de la empresa. Se crean aquí una vez y el equipo
-            editorial solo los elige al clasificar un artículo.
-          </p>
-          <div className="txdx-quick">
-            <Link className="txdx-quick__btn" href={`${adminRoute}/collections/domains`}>
-              Dominios
-            </Link>
-            <Link className="txdx-quick__btn" href={`${adminRoute}/collections/services`}>
-              Servicios
-            </Link>
-            <Link className="txdx-quick__btn txdx-quick__btn--ghost" href={media}>
-              Biblioteca multimedia
-            </Link>
-          </div>
-        </section>
-      )}
+      <section className="txdx-panel txdx-panel--taxonomy">
+        <div className="txdx-panel__head">
+          <h2>Recursos</h2>
+        </div>
+        <div className="txdx-quick">
+          <Link className="txdx-quick__btn txdx-quick__btn--ghost" href={media}>
+            Biblioteca multimedia
+          </Link>
+          <Link className="txdx-quick__btn txdx-quick__btn--ghost" href={`${adminRoute}/collections/admins`}>
+            Equipo editorial
+          </Link>
+        </div>
+      </section>
     </div>
   )
 }

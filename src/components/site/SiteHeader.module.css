@@ -73,16 +73,6 @@
   gap: 1.4rem;
 }
 
-.contact {
-  color: var(--color-ink-600);
-  font-size: 0.7rem;
-  font-weight: 720;
-}
-
-.contact:hover {
-  color: var(--color-ink-950);
-}
-
 .library {
   display: inline-flex;
   min-height: 2.9rem;
@@ -144,10 +134,6 @@
   .header :global(.brand-logo-wrap) {
     width: 2.75rem;
     height: 2.75rem;
-  }
-
-  .contact {
-    display: none;
   }
 
   .library {

@@ -12,11 +12,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteURL}/dominios`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteURL}/servicios`, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${siteURL}/articulos`, changeFrequency: 'weekly', priority: 0.8 },
-    ...posts.map((post) => ({
-      url: `${siteURL}/articulos/${post.slug}`,
-      lastModified: post.updatedAt,
-      changeFrequency: 'monthly' as const,
-      priority: post.featured ? 0.8 : 0.7,
-    })),
+    ...posts
+      .filter((post) => !post.noindex)
+      .map((post) => ({
+        url: `${siteURL}/articulos/${post.slug}`,
+        lastModified: post.updatedAt,
+        changeFrequency: 'monthly' as const,
+        priority: post.featured ? 0.8 : 0.7,
+      })),
   ]
 }

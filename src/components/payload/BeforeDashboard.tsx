@@ -8,25 +8,7 @@ type Props = {
   user?: Admin | null
 }
 
-const ROLE_META: Record<Admin['role'], { label: string; sub: string }> = {
-  admin: {
-    label: 'Administrador',
-    sub: 'Tienes control total: personas, publicación y configuración del sitio.',
-  },
-  editor: {
-    label: 'Editor',
-    sub: 'Revisa, publica y mantiene la taxonomía de dominios y servicios.',
-  },
-  author: {
-    label: 'Autor',
-    sub: 'Redacta tus artículos y guárdalos como borradores; el equipo editorial los publica.',
-  },
-}
-
 export default async function BeforeDashboard({ payload, user }: Props) {
-  const role = user?.role ?? 'editor'
-  const meta = ROLE_META[role]
-
   let totals = { total: 0, published: 0, drafts: 0 }
   try {
     const [all, published] = await Promise.all([
@@ -58,8 +40,9 @@ export default async function BeforeDashboard({ payload, user }: Props) {
         <h2 className="txdx-dash__title">
           Bienvenido/a, {user?.name?.split(' ')[0] ?? 'equipo'}.
         </h2>
-        <p className="txdx-dash__sub">{meta.sub}</p>
-        <span className="txdx-dash__role">{meta.label}</span>
+        <p className="txdx-dash__sub">
+          Escribe, revisa y publica tus artículos con la vista previa en vivo.
+        </p>
       </div>
 
       <div className="txdx-stats" role="list" aria-label="Resumen de artículos">
@@ -84,11 +67,9 @@ export default async function BeforeDashboard({ payload, user }: Props) {
         <Link className="txdx-quick__btn txdx-quick__btn--ghost" href={postList}>
           Ver artículos
         </Link>
-        {role !== 'author' && (
-          <Link className="txdx-quick__btn txdx-quick__btn--ghost" href={media}>
-            Biblioteca multimedia
-          </Link>
-        )}
+        <Link className="txdx-quick__btn txdx-quick__btn--ghost" href={media}>
+          Biblioteca multimedia
+        </Link>
       </div>
     </div>
   )

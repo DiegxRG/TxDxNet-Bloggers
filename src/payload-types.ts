@@ -70,8 +70,6 @@ export interface Config {
     admins: Admin;
     media: Media;
     posts: Post;
-    domains: Domain;
-    services: Service;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,8 +80,6 @@ export interface Config {
     admins: AdminsSelect<false> | AdminsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
-    domains: DomainsSelect<false> | DomainsSelect<true>;
-    services: ServicesSelect<false> | ServicesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -131,10 +127,6 @@ export interface Admin {
   id: string;
   name: string;
   /**
-   * El rol define qué puede hacer cada persona en el panel editorial. Administrador: acceso total. Editor: revisa, edita y publica. Autor: redacta borradores sin publicar.
-   */
-  role: 'admin' | 'editor' | 'author';
-  /**
    * Cargo que se muestra como firma del autor en los artículos (ej.: Ingeniero de seguridad).
    */
   publicTitle?: string | null;
@@ -163,7 +155,10 @@ export interface Admin {
  */
 export interface Media {
   id: string;
-  alt: string;
+  /**
+   * Describe la imagen para accesibilidad y SEO.
+   */
+  alt?: string | null;
   caption?: string | null;
   credit?: string | null;
   updatedAt: string;
@@ -245,26 +240,6 @@ export interface Post {
     [k: string]: unknown;
   };
   /**
-   * ¿El artículo habla principalmente de un dominio o de un servicio?
-   */
-  contentType: 'domain' | 'service';
-  /**
-   * El dominio XOC que da contexto al artículo.
-   */
-  primaryDomain?: (string | null) | Domain;
-  /**
-   * El servicio de TxDxSecure que da contexto al artículo.
-   */
-  primaryService?: (string | null) | Service;
-  /**
-   * Opcional: otros dominios mencionados.
-   */
-  relatedDomains?: (string | Domain)[] | null;
-  /**
-   * Opcional: otros servicios mencionados.
-   */
-  relatedServices?: (string | Service)[] | null;
-  /**
    * Marca el artículo para aparecer en secciones destacadas.
    */
   featured?: boolean | null;
@@ -280,8 +255,18 @@ export interface Post {
    * Se completa automáticamente con tu cargo editorial.
    */
   authorRole?: string | null;
+  /**
+   * Máximo 70 caracteres. Si se deja vacío se usa el título.
+   */
   seoTitle?: string | null;
+  /**
+   * Máximo 170 caracteres. Si se deja vacío se usa el resumen.
+   */
   seoDescription?: string | null;
+  /**
+   * Marca solo si no quieres que este artículo aparezca en Google.
+   */
+  noindex?: boolean | null;
   /**
    * Imagen para compartir en redes (1200 × 630 px recomendado).
    */
@@ -290,78 +275,10 @@ export interface Post {
    * Solo si el artículo se publica también en otro sitio.
    */
   canonicalURL?: string | null;
+  createdBy: string | Admin;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "domains".
- */
-export interface Domain {
-  id: string;
-  name: string;
-  slug: string;
-  shortDescription: string;
-  order: number;
-  accent: 'orange' | 'blue' | 'cyan' | 'graphite';
-  featured?: boolean | null;
-  iconKey?: string | null;
-  image?: (string | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "services".
- */
-export interface Service {
-  id: string;
-  name: string;
-  slug: string;
-  family: 'core' | 'entry' | 'ai' | 'xoc';
-  shortDescription: string;
-  relatedDomains?: (string | Domain)[] | null;
-  outcomes?:
-    | {
-        value: string;
-        id?: string | null;
-      }[]
-    | null;
-  featured?: boolean | null;
-  image?: (string | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -398,14 +315,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'posts';
         value: string | Post;
-      } | null)
-    | ({
-        relationTo: 'domains';
-        value: string | Domain;
-      } | null)
-    | ({
-        relationTo: 'services';
-        value: string | Service;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -455,7 +364,6 @@ export interface PayloadMigration {
  */
 export interface AdminsSelect<T extends boolean = true> {
   name?: T;
-  role?: T;
   publicTitle?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -538,61 +446,19 @@ export interface PostsSelect<T extends boolean = true> {
   excerpt?: T;
   coverImage?: T;
   content?: T;
-  contentType?: T;
-  primaryDomain?: T;
-  primaryService?: T;
-  relatedDomains?: T;
-  relatedServices?: T;
   featured?: T;
   publishedAt?: T;
   authorName?: T;
   authorRole?: T;
   seoTitle?: T;
   seoDescription?: T;
+  noindex?: T;
   socialImage?: T;
   canonicalURL?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "domains_select".
- */
-export interface DomainsSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  shortDescription?: T;
-  order?: T;
-  accent?: T;
-  featured?: T;
-  iconKey?: T;
-  image?: T;
-  content?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "services_select".
- */
-export interface ServicesSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  family?: T;
-  shortDescription?: T;
-  relatedDomains?: T;
-  outcomes?:
-    | T
-    | {
-        value?: T;
-        id?: T;
-      };
-  featured?: T;
-  image?: T;
-  content?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -6,10 +6,8 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { Admins } from './collections/Admins'
-import { Domains } from './collections/Domains'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
-import { Services } from './collections/Services'
 import { editorialEditor } from './editor'
 
 const filename = fileURLToPath(import.meta.url)
@@ -26,8 +24,11 @@ export default buildConfig({
   admin: {
     user: Admins.slug,
     dateFormat: 'd MMM yyyy, HH:mm',
+    theme: 'light',
     components: {
       beforeLogin: ['./components/payload/BeforeLogin'],
+      afterLogin: ['./components/payload/AfterLogin'],
+      afterNavLinks: ['./components/payload/NavMyArticles'],
       graphics: {
         Icon: {
           exportName: 'TxDxAdminIcon',
@@ -44,6 +45,12 @@ export default buildConfig({
             path: './components/payload/PublicationHub',
           },
         },
+        'mis-articulos': {
+          Component: {
+            path: './components/payload/MyArticles',
+            exportName: 'default',
+          },
+        },
       },
     },
     importMap: {
@@ -53,7 +60,7 @@ export default buildConfig({
       titleSuffix: '— TxDxNet',
     },
   },
-  collections: [Admins, Media, Posts, Domains, Services],
+  collections: [Admins, Media, Posts],
   cors: [siteURL, 'http://localhost:3000'],
   csrf: [siteURL, 'http://localhost:3000'],
   i18n: {

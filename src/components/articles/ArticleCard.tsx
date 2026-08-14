@@ -3,7 +3,6 @@ import Link from 'next/link'
 import {
   estimateReadingMinutes,
   formatArticleDate,
-  getArticleLabel,
 } from '@/modules/content/infrastructure/payload/posts'
 import type { Post } from '@/payload-types'
 
@@ -25,7 +24,7 @@ export function ArticleCard({
         <ArticleArtwork post={post} priority={priority} />
         <div className={styles.copy}>
           <div className={styles.meta}>
-            <span>{getArticleLabel(post)}</span>
+            <span>Insight TxDxNet</span>
             <span>{estimateReadingMinutes(post)} min de lectura</span>
           </div>
           <h3>{post.title}</h3>

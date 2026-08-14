@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { admins } from '@/access'
+import { authenticated } from '@/access'
 
 export const Admins: CollectionConfig = {
   slug: 'admins',
@@ -11,7 +11,7 @@ export const Admins: CollectionConfig = {
   admin: {
     group: 'Sistema',
     useAsTitle: 'name',
-    defaultColumns: ['name', 'email', 'role', 'updatedAt'],
+    defaultColumns: ['name', 'email', 'updatedAt'],
   },
   auth: {
     maxLoginAttempts: 5,
@@ -20,10 +20,10 @@ export const Admins: CollectionConfig = {
   },
   access: {
     admin: ({ req }) => Boolean(req.user),
-    read: admins,
-    update: ({ req, id }) =>
-      Boolean(req.user && (req.user.id === id || req.user.role === 'admin')),
-    delete: admins,
+    create: authenticated,
+    read: ({ req, id }) => Boolean(req.user && req.user.id === id),
+    update: ({ req, id }) => Boolean(req.user && req.user.id === id),
+    delete: () => false,
   },
   fields: [
     {
@@ -31,26 +31,6 @@ export const Admins: CollectionConfig = {
       type: 'text',
       label: 'Nombre',
       required: true,
-    },
-    {
-      name: 'role',
-      type: 'select',
-      label: 'Rol',
-      defaultValue: 'editor',
-      admin: {
-        description:
-          'El rol define qué puede hacer cada persona en el panel editorial. Administrador: acceso total. Editor: revisa, edita y publica. Autor: redacta borradores sin publicar.',
-        width: '50%',
-      },
-      options: [
-        { label: 'Administrador', value: 'admin' },
-        { label: 'Editor', value: 'editor' },
-        { label: 'Autor', value: 'author' },
-      ],
-      required: true,
-      access: {
-        update: ({ req }) => req.user?.role === 'admin',
-      },
     },
     {
       name: 'publicTitle',

@@ -8,7 +8,6 @@ import { ArticleRichText } from '@/components/articles/ArticleRichText'
 import {
   estimateReadingMinutes,
   formatArticleDate,
-  getArticleLabel,
   getMediaAlt,
   getMediaURL,
   getPublishedPostBySlug,
@@ -36,6 +35,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     title,
     description,
     alternates: { canonical: post.canonicalURL || `/articulos/${post.slug}` },
+    robots: post.noindex ? { index: false, follow: true } : undefined,
     openGraph: {
       type: 'article',
       title,
@@ -43,6 +43,12 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       publishedTime: post.publishedAt || post.createdAt,
       authors: [post.authorName],
       images: socialImage ? [{ url: socialImage }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: socialImage ? [socialImage] : undefined,
     },
   }
 }
@@ -67,8 +73,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </Link>
             <div className="mt-16 max-w-6xl">
               <div className="article-kicker">
-                <span>{post.contentType === 'domain' ? 'DOMINIO' : 'SERVICIO'}</span>
-                <span>{getArticleLabel(post)}</span>
+                <span>INSIGHT</span>
                 {post.featured ? <span>SELECCIÓN EDITORIAL</span> : null}
               </div>
               <h1>{post.title}</h1>

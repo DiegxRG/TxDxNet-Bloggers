@@ -33,12 +33,6 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className={styles.actions}>
-          <a
-            className={styles.contact}
-            href="mailto:info@txdxsecure.com?subject=Conversación desde TxDxNet"
-          >
-            Contacto
-          </a>
           <Link className={styles.library} href="/articulos">
             <LibraryIcon className={styles.libraryIcon} />
             <span>Biblioteca</span>
