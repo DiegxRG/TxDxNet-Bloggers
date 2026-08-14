@@ -37,6 +37,11 @@ export const Admins: CollectionConfig = {
       type: 'select',
       label: 'Rol',
       defaultValue: 'editor',
+      admin: {
+        description:
+          'El rol define qué puede hacer cada persona en el panel editorial. Administrador: acceso total. Editor: revisa, edita y publica. Autor: redacta borradores sin publicar.',
+        width: '50%',
+      },
       options: [
         { label: 'Administrador', value: 'admin' },
         { label: 'Editor', value: 'editor' },
@@ -51,6 +56,11 @@ export const Admins: CollectionConfig = {
       name: 'publicTitle',
       type: 'text',
       label: 'Cargo público',
+      admin: {
+        description:
+          'Cargo que se muestra como firma del autor en los artículos (ej.: Ingeniero de seguridad).',
+        width: '50%',
+      },
     },
   ],
 }

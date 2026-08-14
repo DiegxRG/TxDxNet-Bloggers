@@ -16,6 +16,28 @@ const nextConfig: NextConfig = {
     ],
     remotePatterns: [
       {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '3000',
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'txdxnet.com',
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.txdxnet.com',
+        pathname: '/api/media/file/**',
+      },
+      {
         protocol: 'https',
         hostname: 'qfwekssxqjweujyijyyo.storage.supabase.co',
         pathname: '/storage/v1/object/**',

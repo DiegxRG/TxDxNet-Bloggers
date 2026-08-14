@@ -1,20 +1,29 @@
 import type { plannedArticles } from '@/data/editorial'
 
+import styles from './PlannedArticleCard.module.css'
+
 type PlannedArticle = (typeof plannedArticles)[number]
 
 export function PlannedArticleCard({ article, index }: { article: PlannedArticle; index: number }) {
   return (
-    <article className="editorial-card">
-      <div className="editorial-card-top">
-        <span>{article.index}</span>
-        <span>EN PREPARACIÓN</span>
+    <article className={styles.card}>
+      <div aria-hidden="true" className={`${styles.cover} ${styles[`cover${index + 1}`]}`}>
+        <span>TxDxNet</span>
+        <strong>{String(index + 1).padStart(2, '0')}</strong>
+        <i>Perspectivas para una operación más clara.</i>
       </div>
-      <div className={`editorial-graphic editorial-graphic-${index + 1}`}>
-        <span />
+      <div className={styles.copy}>
+        <div className={styles.meta}>
+          <span>{article.category}</span>
+          <span>Próximamente</span>
+        </div>
+        <h3>{article.title}</h3>
+        <p>{article.description}</p>
+        <footer>
+          <span>Equipo TxDxSecure</span>
+          <span aria-hidden="true">En preparación</span>
+        </footer>
       </div>
-      <p className="editorial-category">{article.category}</p>
-      <h3>{article.title}</h3>
-      <p className="editorial-description">{article.description}</p>
     </article>
   )
 }

@@ -1,4 +1,6 @@
 /* THIS FILE WAS GENERATED FROM THE OFFICIAL PAYLOAD TEMPLATE. */
+import '@fontsource-variable/bricolage-grotesque'
+import '@fontsource-variable/manrope'
 import config from '@payload-config'
 import '@payloadcms/next/css'
 import type { ServerFunctionClient } from 'payload'

@@ -17,7 +17,7 @@ export function BrandMark({ priority = false }: { priority?: boolean }) {
       <span className="brand-copy">
         <span className="brand-name">TxDxNet</span>
         <span className="brand-powered">
-          Powered by TxDxSecure
+          Biblioteca de TxDxSecure
         </span>
       </span>
     </Link>

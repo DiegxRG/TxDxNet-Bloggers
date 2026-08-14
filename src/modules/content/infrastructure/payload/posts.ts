@@ -115,7 +115,25 @@ export function estimateReadingMinutes(post: Post): number {
 
 export function getMediaURL(media: string | Media | null | undefined, size: 'card' | 'hero' = 'card') {
   if (!media || typeof media === 'string') return null
-  return media.sizes?.[size]?.url || media.url || null
+
+  const mediaURL = media.sizes?.[size]?.url || media.url
+
+  if (!mediaURL) return null
+
+  // Payload may persist its own media URLs with the development origin. Keeping
+  // same-app files relative lets Next encode filenames with spaces correctly and
+  // avoids treating our own API as an external image host.
+  try {
+    const parsedURL = new URL(mediaURL)
+
+    if (parsedURL.pathname.startsWith('/api/media/file/')) {
+      return `${parsedURL.pathname}${parsedURL.search}`
+    }
+  } catch {
+    // Relative and non-standard URLs can be returned unchanged.
+  }
+
+  return mediaURL
 }
 
 export function getMediaAlt(media: string | Media | null | undefined, fallback: string) {

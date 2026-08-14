@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { anyone, editors } from '@/access'
+import { anyone, authors, editors } from '@/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -14,7 +14,8 @@ export const Media: CollectionConfig = {
   },
   access: {
     read: anyone,
-    create: editors,
+    // Los autores pueden subir imágenes (p. ej. la portada de sus artículos).
+    create: authors,
     update: editors,
     delete: editors,
   },

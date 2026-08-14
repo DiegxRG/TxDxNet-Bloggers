@@ -1,0 +1,123 @@
+.card {
+  overflow: hidden;
+  border: 1px solid rgb(7 20 45 / 0.13);
+  border-radius: 0.35rem;
+  background: white;
+  transition: box-shadow 300ms ease, transform 350ms var(--ease-signal);
+}
+
+.card:hover {
+  box-shadow: 0 24px 55px rgb(7 20 45 / 0.12);
+  transform: translateY(-0.35rem);
+}
+
+.cover {
+  position: relative;
+  display: flex;
+  min-height: 18rem;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 1.4rem;
+}
+
+.cover::after {
+  position: absolute;
+  right: -12%;
+  bottom: -38%;
+  width: 74%;
+  aspect-ratio: 1;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2.5rem rgb(255 255 255 / 0.08), 0 0 0 5rem rgb(255 255 255 / 0.04);
+  content: '';
+  opacity: 0.46;
+}
+
+.cover1 {
+  background: #0b2c5c;
+  color: white;
+}
+
+.cover2 {
+  background: #dce9f8;
+  color: #07142d;
+}
+
+.cover3 {
+  background: #f06a2b;
+  color: #07142d;
+}
+
+.cover span,
+.cover i {
+  position: relative;
+  z-index: 1;
+  font-size: 0.58rem;
+  font-weight: 800;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cover strong {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: 6.3rem;
+  font-weight: 620;
+  letter-spacing: -0.09em;
+  line-height: 0.8;
+}
+
+.cover i {
+  max-width: 14rem;
+  line-height: 1.6;
+}
+
+.copy {
+  display: flex;
+  min-height: 20rem;
+  flex-direction: column;
+  padding: 1.5rem;
+}
+
+.meta,
+.copy footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--color-ink-500);
+  font-size: 0.57rem;
+  font-weight: 780;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.meta span:first-child {
+  color: #165fb8;
+}
+
+.copy h3 {
+  margin-top: 1.3rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 2.8vw, 2.35rem);
+  font-weight: 630;
+  letter-spacing: -0.05em;
+  line-height: 1.04;
+}
+
+.copy > p {
+  margin-top: 1rem;
+  color: var(--color-ink-500);
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+.copy footer {
+  margin-top: auto;
+  border-top: 1px solid rgb(7 20 45 / 0.12);
+  padding-top: 1rem;
+  letter-spacing: 0;
+  text-transform: none;
+}

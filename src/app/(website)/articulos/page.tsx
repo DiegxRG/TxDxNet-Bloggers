@@ -10,8 +10,10 @@ import {
   getPublishedPosts,
 } from '@/modules/content/infrastructure/payload/posts'
 
+import styles from './articles.module.css'
+
 export const metadata: Metadata = {
-  title: 'Insights',
+  title: 'Artículos',
   description: 'Artículos y análisis técnicos de TxDxSecure para decisiones operacionales.',
   alternates: { canonical: '/articulos' },
 }
@@ -38,20 +40,20 @@ export default async function ArticlesPage({
   return (
     <main id="contenido">
       <InteriorHero
-        code="INT / 00"
-        description="Análisis que conectan señales técnicas con seguridad, disponibilidad, performance y experiencia del servicio."
-        eyebrow="TxDxSecure Insights"
-        title="Decisiones con más contexto."
+        code="Artículos · Análisis · Guías"
+        description="Perspectivas que conectan tecnología, seguridad y operación con preguntas reales de negocio, organizadas por dominios XOC y servicios TxDxSecure."
+        eyebrow="Biblioteca TxDxNet"
+        title="Ideas para decidir mejor."
       />
 
-      <section className="bg-paper px-5 py-20 text-ink-950 sm:px-8 lg:px-12 lg:py-28">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="article-library-bar">
+      <section className={styles.library}>
+        <div className={styles.container}>
+          <div className={styles.libraryBar}>
             <div>
-              <span className="section-code">BIBLIOTECA / {String(posts.length).padStart(2, '0')}</span>
-              <h2>Explorar señales</h2>
+              <span>{String(posts.length).padStart(2, '0')} publicaciones</span>
+              <h2>Explorar la biblioteca</h2>
             </div>
-            <nav aria-label="Filtrar artículos" className="article-filters">
+            <nav aria-label="Filtrar artículos" className={styles.filters}>
               {filters.map((filter) => {
                 const isActive = filter.value === (mode || 'all')
                 return (
@@ -70,11 +72,11 @@ export default async function ArticlesPage({
 
           {featuredPost ? (
             <>
-              <div className="mt-14">
+              <div className={styles.featured}>
                 <ArticleCard post={featuredPost} priority variant="featured" />
               </div>
               {remainingPosts.length ? (
-                <div className="article-library-grid">
+                <div className={styles.grid}>
                   {remainingPosts.map((post) => (
                     <ArticleCard key={post.id} post={post} />
                   ))}
@@ -82,20 +84,22 @@ export default async function ArticlesPage({
               ) : null}
             </>
           ) : (
-            <div className="article-empty-state">
+            <div className={styles.emptyState}>
               <div>
-                <span>00 / SIN SEÑALES PUBLICADAS</span>
-                <h2>{mode ? 'Todavía no hay publicaciones en este modo.' : 'La biblioteca está lista.'}</h2>
+                <span>{mode ? 'Colección en preparación' : 'Primera edición en preparación'}</span>
+                <h2>{mode ? 'Todavía no hay publicaciones en esta categoría.' : 'La biblioteca está abriendo sus primeras páginas.'}</h2>
                 <p>
                   {mode
-                    ? 'Prueba con todos los artículos o vuelve pronto para descubrir una nueva señal.'
-                    : 'Los primeros análisis ya están en producción editorial. Cuando se publique uno, aparecerá aquí y en la portada automáticamente.'}
+                    ? 'Prueba con todos los artículos o vuelve pronto para descubrir una nueva publicación.'
+                    : 'Nuestros primeros análisis ya están en producción editorial. Cuando se publique uno, aparecerá aquí y en la portada automáticamente.'}
                 </p>
-                {mode ? <Link href="/articulos">Ver todos los insights ↗</Link> : null}
+                {mode ? <Link href="/articulos">Ver todos los artículos →</Link> : null}
               </div>
-              <div className="article-empty-signal" aria-hidden="true">
-                <span />
-                <strong>XOC</strong>
+              <div className={styles.emptyAside}>
+                <span>Próximas lecturas</span>
+                {plannedArticles.map((article) => (
+                  <p key={article.index}>{article.title}</p>
+                ))}
               </div>
             </div>
           )}
@@ -103,15 +107,15 @@ export default async function ArticlesPage({
       </section>
 
       {!posts.length && !mode ? (
-        <section className="bg-[#f0f2f6] px-5 py-20 text-ink-950 sm:px-8 lg:px-12 lg:py-28">
-          <div className="mx-auto max-w-[1440px]">
-            <div className="mb-12 max-w-3xl">
-              <span className="section-code">PRÓXIMAS / 03</span>
-              <h2 className="mt-3 font-display text-4xl font-semibold tracking-[-0.05em] sm:text-6xl">
+        <section className={styles.upcoming}>
+          <div className={styles.container}>
+            <div className={styles.upcomingHeading}>
+              <span>Próximas publicaciones</span>
+              <h2>
                 En la mesa editorial
               </h2>
             </div>
-            <div className="grid gap-5 lg:grid-cols-3">
+            <div className={styles.grid}>
               {plannedArticles.map((article, index) => (
                 <PlannedArticleCard article={article} index={index} key={article.index} />
               ))}

@@ -130,7 +130,13 @@ export interface AdminAuthOperations {
 export interface Admin {
   id: string;
   name: string;
+  /**
+   * El rol define qué puede hacer cada persona en el panel editorial. Administrador: acceso total. Editor: revisa, edita y publica. Autor: redacta borradores sin publicar.
+   */
   role: 'admin' | 'editor' | 'author';
+  /**
+   * Cargo que se muestra como firma del autor en los artículos (ej.: Ingeniero de seguridad).
+   */
   publicTitle?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -204,10 +210,25 @@ export interface Media {
  */
 export interface Post {
   id: string;
+  /**
+   * Entre 8 y 70 caracteres suele rendir mejor.
+   */
   title: string;
+  /**
+   * URL del artículo. Se completa automáticamente desde el título.
+   */
   slug: string;
+  /**
+   * Aparece en listados, tarjetas y en la vista previa social.
+   */
   excerpt: string;
+  /**
+   * Imagen destacada del artículo (mínimo 1200 px de ancho recomendado).
+   */
   coverImage: string | Media;
+  /**
+   * Escribe y da formato como en un procesador de textos: la barra superior queda fija y el texto se ve tal como se publicará.
+   */
   content: {
     root: {
       type: string;
@@ -223,18 +244,51 @@ export interface Post {
     };
     [k: string]: unknown;
   };
+  /**
+   * ¿El artículo habla principalmente de un dominio o de un servicio?
+   */
   contentType: 'domain' | 'service';
+  /**
+   * El dominio XOC que da contexto al artículo.
+   */
   primaryDomain?: (string | null) | Domain;
+  /**
+   * El servicio de TxDxSecure que da contexto al artículo.
+   */
   primaryService?: (string | null) | Service;
+  /**
+   * Opcional: otros dominios mencionados.
+   */
   relatedDomains?: (string | Domain)[] | null;
+  /**
+   * Opcional: otros servicios mencionados.
+   */
   relatedServices?: (string | Service)[] | null;
+  /**
+   * Marca el artículo para aparecer en secciones destacadas.
+   */
   featured?: boolean | null;
+  /**
+   * Cuándo se publicó o se publicará. Ordena el listado.
+   */
   publishedAt?: string | null;
+  /**
+   * Se completa automáticamente con tu perfil editorial.
+   */
   authorName: string;
+  /**
+   * Se completa automáticamente con tu cargo editorial.
+   */
   authorRole?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  /**
+   * Imagen para compartir en redes (1200 × 630 px recomendado).
+   */
   socialImage?: (string | null) | Media;
+  /**
+   * Solo si el artículo se publica también en otro sitio.
+   */
   canonicalURL?: string | null;
   updatedAt: string;
   createdAt: string;

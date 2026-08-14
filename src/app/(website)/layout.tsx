@@ -13,7 +13,7 @@ const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com'
 export const metadata: Metadata = {
   metadataBase: new URL(siteURL),
   title: {
-    default: 'TxDxNet — Inteligencia operacional para superficies digitales',
+    default: 'TxDxNet — Ideas para operar con más claridad',
     template: '%s — TxDxNet',
   },
   description:
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_PE',
     siteName: 'TxDxNet',
-    title: 'TxDxNet — Inteligencia operacional para superficies digitales',
+    title: 'TxDxNet — Ideas para operar con más claridad',
     description:
       'Conocimiento para construir operaciones seguras, disponibles, observables y centradas en la experiencia.',
   },
@@ -36,8 +36,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'dark light',
-  themeColor: '#07142d',
+  colorScheme: 'light',
+  themeColor: '#f8f8f4',
 }
 
 export default function WebsiteLayout({ children }: { children: ReactNode }) {

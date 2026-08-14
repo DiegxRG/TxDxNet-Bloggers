@@ -25,7 +25,9 @@ const hasS3Config = Boolean(
 export default buildConfig({
   admin: {
     user: Admins.slug,
+    dateFormat: 'd MMM yyyy, HH:mm',
     components: {
+      beforeLogin: ['./components/payload/BeforeLogin'],
       graphics: {
         Icon: {
           exportName: 'TxDxAdminIcon',
@@ -34,6 +36,13 @@ export default buildConfig({
         Logo: {
           exportName: 'TxDxAdminLogo',
           path: './components/payload/TxDxGraphics',
+        },
+      },
+      views: {
+        dashboard: {
+          Component: {
+            path: './components/payload/PublicationHub',
+          },
         },
       },
     },
@@ -47,6 +56,9 @@ export default buildConfig({
   collections: [Admins, Media, Posts, Domains, Services],
   cors: [siteURL, 'http://localhost:3000'],
   csrf: [siteURL, 'http://localhost:3000'],
+  i18n: {
+    fallbackLanguage: 'es',
+  },
   db: postgresAdapter({
     idType: 'uuid',
     migrationDir: path.resolve(dirname, 'migrations'),

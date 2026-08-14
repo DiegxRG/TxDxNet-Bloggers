@@ -1,38 +1,48 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
+import { LibraryIcon } from '@/components/icons/LibraryIcon'
 
 import { BrandMark } from './BrandMark'
+import styles from './SiteHeader.module.css'
 
 const navigation = [
-  { code: '01', href: '/dominios', label: 'Dominios' },
-  { code: '02', href: '/servicios', label: 'Servicios' },
-  { code: '03', href: '/articulos', label: 'Insights' },
+  { href: '/articulos', label: 'Artículos' },
+  { href: '/dominios', label: 'Dominios XOC' },
+  { href: '/servicios', label: 'Servicios' },
 ]
 
 export function SiteHeader() {
+  const pathname = usePathname()
+
   return (
-    <header className="site-header">
-      <div aria-hidden="true" className="site-header-signal" />
-      <div className="site-header-inner">
+    <header
+      className={styles.header}
+      data-header-anim={pathname === '/' ? '' : undefined}
+      data-site-header
+    >
+      <div className={styles.inner}>
         <BrandMark priority />
-        <nav aria-label="Navegación principal" className="site-navigation">
+        <nav aria-label="Navegación principal" className={styles.navigation}>
           {navigation.map((item) => (
             <Link href={item.href} key={item.href}>
-              <span>{item.code}</span>
-              <strong>{item.label}</strong>
+              {item.label}
             </Link>
           ))}
         </nav>
-        <div className="site-header-actions">
+        <div className={styles.actions}>
           <a
-            className="site-contact-link"
+            className={styles.contact}
             href="mailto:info@txdxsecure.com?subject=Conversación desde TxDxNet"
           >
             Contacto
           </a>
-          <Link className="site-library-cta" href="/articulos">
-            <span aria-hidden="true" className="site-library-pulse" />
-            <span className="site-library-label">Abrir biblioteca</span>
-            <span aria-hidden="true" className="site-library-arrow">↗</span>
+          <Link className={styles.library} href="/articulos">
+            <LibraryIcon className={styles.libraryIcon} />
+            <span>Biblioteca</span>
+            <span aria-hidden="true" className={styles.arrow}>→</span>
           </Link>
         </div>
       </div>

@@ -8,6 +8,7 @@ import {
 import type { Post } from '@/payload-types'
 
 import { ArticleArtwork } from './ArticleArtwork'
+import styles from './ArticleCard.module.css'
 
 export function ArticleCard({
   post,
@@ -19,19 +20,21 @@ export function ArticleCard({
   variant?: 'featured' | 'standard'
 }) {
   return (
-    <article className={`article-card article-card--${variant} group`}>
-      <Link aria-label={`Leer: ${post.title}`} href={`/articulos/${post.slug}`}>
+    <article className={`${styles.card} ${variant === 'featured' ? styles.featured : ''}`}>
+      <Link aria-label={`Leer: ${post.title}`} className={styles.link} href={`/articulos/${post.slug}`}>
         <ArticleArtwork post={post} priority={priority} />
-        <div className="article-card-copy">
-          <div className="article-card-meta">
+        <div className={styles.copy}>
+          <div className={styles.meta}>
             <span>{getArticleLabel(post)}</span>
-            <span>{estimateReadingMinutes(post)} min</span>
+            <span>{estimateReadingMinutes(post)} min de lectura</span>
           </div>
           <h3>{post.title}</h3>
           <p>{post.excerpt}</p>
-          <div className="article-card-footer">
-            <span>{formatArticleDate(post)}</span>
-            <span aria-hidden="true">Leer ↗</span>
+          <div className={styles.footer}>
+            <span>
+              {post.authorName} · {formatArticleDate(post)}
+            </span>
+            <span aria-hidden="true">Leer artículo →</span>
           </div>
         </div>
       </Link>

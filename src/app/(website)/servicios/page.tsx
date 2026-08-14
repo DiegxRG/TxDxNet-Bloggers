@@ -1,7 +1,10 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 import { InteriorHero } from '@/components/site/InteriorHero'
 import { coreServices } from '@/data/services'
+
+import styles from './services.module.css'
 
 export const metadata: Metadata = {
   title: 'Servicios',
@@ -14,26 +17,31 @@ export default function ServicesPage() {
   return (
     <main id="contenido">
       <InteriorHero
-        code="CAP / 04"
-        description="Activamos capacidades que convierten la arquitectura, la automatización y la ciberseguridad en resultados medibles para la organización."
-        eyebrow="Core services"
-        title="Diseñar bien. Operar mejor."
+        code={`${coreServices.length} capacidades`}
+        description="Conoce cómo aplicamos arquitectura, automatización y ciberseguridad, y encuentra publicaciones que convierten la experiencia técnica en decisiones útiles para la organización."
+        eyebrow="Servicios TxDxSecure"
+        title="Conocimiento que se convierte en ejecución."
       />
-      <section className="bg-paper px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="grid gap-px overflow-hidden border border-ink-950/15 bg-ink-950/15 md:grid-cols-2">
+      <section className={styles.section}>
+        <div className={styles.container}>
+          <div className={styles.intro}>
+            <span>Áreas de conocimiento aplicado</span>
+            <h2>De la experiencia técnica a una solución comprensible.</h2>
+            <p>
+              Cada servicio reúne experiencia, metodología y publicaciones para ayudarte a
+              comprender el problema antes de elegir una respuesta.
+            </p>
+          </div>
+          <div className={styles.grid}>
             {coreServices.map((service, index) => (
-              <article className="group min-h-[30rem] bg-paper p-7 transition hover:bg-blue-50 sm:p-10" key={service.code}>
-                <div className="flex items-center justify-between text-[10px] font-extrabold tracking-[0.18em] uppercase">
-                  <span className="text-signal-orange">0{index + 1} / {service.code}</span>
-                  <span className="text-ink-500">{service.eyebrow}</span>
+              <article className={styles.card} key={service.code}>
+                <div className={styles.cardMeta}>
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <span>{service.eyebrow}</span>
                 </div>
-                <div className="mt-36">
-                  <h2 className="font-display text-5xl font-semibold tracking-[-0.065em] sm:text-7xl">
-                    {service.name}
-                  </h2>
-                  <p className="mt-7 max-w-lg text-sm leading-7 text-ink-500">{service.description}</p>
-                </div>
+                <h2>{service.name}</h2>
+                <p>{service.description}</p>
+                <Link href="/articulos?modo=service">Explorar artículos relacionados →</Link>
               </article>
             ))}
           </div>

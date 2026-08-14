@@ -14,19 +14,19 @@ export default function DomainsPage() {
   return (
     <main id="contenido">
       <InteriorHero
-        code="MAP / 11"
-        description="Desde las personas hasta los agentes de IA: cada dominio produce señales que solo adquieren valor cuando se observan como parte de una misma experiencia operacional."
-        eyebrow="Superficies empresariales"
-        title="Once superficies. Una sola operación."
+        code="11 categorías"
+        description="Desde las personas hasta los agentes de IA: cada dominio reúne artículos y guías para comprender una parte concreta de la operación sin perder de vista el contexto completo."
+        eyebrow="Biblioteca por dominios"
+        title="Once perspectivas. Una sola operación."
       />
       <section className="bg-paper px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-16 grid gap-8 border-t border-ink-950/15 pt-5 md:grid-cols-[1fr_2fr]">
-            <span className="section-code">ÍNDICE OPERACIONAL</span>
+            <span className="section-code">ÍNDICE EDITORIAL</span>
             <p className="max-w-2xl text-base leading-8 text-ink-600">
-              Este índice será el acceso permanente a artículos, análisis, guías y casos asociados a
-              cada superficie. Los dominios no son categorías aisladas: comparten identidades, datos,
-              riesgos, dependencias y experiencia.
+              Elige una superficie para encontrar artículos, análisis, guías y casos relacionados.
+              Los dominios organizan la lectura, pero comparten identidades, datos, riesgos,
+              dependencias y experiencia.
             </p>
           </div>
           <DomainIndex />

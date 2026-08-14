@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { anyone, editors } from '@/access'
+import { admins, anyone } from '@/access'
 import { slugify } from '@/modules/content/domain/slugify'
 
 export const Services: CollectionConfig = {
@@ -14,11 +14,12 @@ export const Services: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['family', 'name', 'slug', 'featured'],
   },
+  // Los servicios son datos de la empresa: solo el equipo admin los gestiona.
   access: {
     read: anyone,
-    create: editors,
-    update: editors,
-    delete: editors,
+    create: admins,
+    update: admins,
+    delete: admins,
   },
   fields: [
     {
