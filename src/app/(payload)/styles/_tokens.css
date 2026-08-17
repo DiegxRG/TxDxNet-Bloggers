@@ -1,0 +1,160 @@
+/* ==========================================================================
+   TxDxNet — Design Tokens
+   Single source of truth for brand colors, neutral scale, state colors,
+   typography, radii and aliases.
+   ========================================================================== */
+
+:root {
+  /* ── Brand tokens ────────────────────────────────────────────────────── */
+  --txdx-navy: #07142d;
+  --txdx-navy-2: #0b1d3d;
+  --txdx-navy-3: #12264c;
+  --txdx-paper: #f8f8f4;
+  --txdx-orange: #ff5a18;
+  --txdx-blue: #1268ff;
+  --txdx-cyan: #58d9ff;
+
+  /* ── Neutral scale (navy-tinted) ─────────────────────────────────────── */
+  --color-base-0: #ffffff;
+  --color-base-50: #f7f8fb;
+  --color-base-100: #eef0f6;
+  --color-base-150: #e4e7f0;
+  --color-base-200: #d5dae7;
+  --color-base-250: #c4cbdc;
+  --color-base-300: #b1bad0;
+  --color-base-350: #9da8c2;
+  --color-base-400: #8a97b2;
+  --color-base-450: #7785a1;
+  --color-base-500: #61718a;
+  --color-base-550: #53617a;
+  --color-base-600: #46536b;
+  --color-base-650: #39455b;
+  --color-base-700: #2d384c;
+  --color-base-750: #232c3e;
+  --color-base-800: #1a2232;
+  --color-base-850: #121927;
+  --color-base-900: #0c1220;
+  --color-base-950: #070d1a;
+  --color-base-1000: #040910;
+
+  /* ── Success = signal blue ───────────────────────────────────────────── */
+  --color-success-50: #eef4ff;
+  --color-success-100: #d8e6ff;
+  --color-success-150: #bcd3ff;
+  --color-success-200: #97bbff;
+  --color-success-250: #74a3ff;
+  --color-success-300: #4f8aff;
+  --color-success-350: #3077ff;
+  --color-success-400: #1268ff;
+  --color-success-450: #0f59dc;
+  --color-success-500: #0f4fc4;
+  --color-success-550: #0e44a9;
+  --color-success-600: #0d3a8f;
+  --color-success-650: #0c3076;
+  --color-success-700: #0c275c;
+  --color-success-750: #0b1f48;
+  --color-success-800: #0a1835;
+  --color-success-850: #081225;
+  --color-success-900: #070e1c;
+  --color-success-950: #060b16;
+
+  /* ── Warning = signal orange ─────────────────────────────────────────── */
+  --color-warning-50: #fff1e9;
+  --color-warning-100: #ffdcc9;
+  --color-warning-150: #ffc3a3;
+  --color-warning-200: #ffa97c;
+  --color-warning-250: #ff9056;
+  --color-warning-300: #ff7730;
+  --color-warning-350: #ff5a18;
+  --color-warning-400: #f04f0e;
+  --color-warning-450: #d8450c;
+  --color-warning-500: #bc3b0a;
+  --color-warning-550: #a03309;
+  --color-warning-600: #842a07;
+  --color-warning-650: #682106;
+  --color-warning-700: #4c1804;
+  --color-warning-750: #350f03;
+  --color-warning-800: #230a02;
+  --color-warning-850: #160601;
+  --color-warning-900: #100401;
+  --color-warning-950: #0c0301;
+
+  /* ── Error = brand red ───────────────────────────────────────────────── */
+  --color-error-50: #fef0ee;
+  --color-error-100: #fbd9d6;
+  --color-error-150: #f7bcb8;
+  --color-error-200: #f3a09a;
+  --color-error-250: #ed857d;
+  --color-error-300: #e76b62;
+  --color-error-350: #de5248;
+  --color-error-400: #d43c33;
+  --color-error-450: #bd332b;
+  --color-error-500: #a62c25;
+  --color-error-550: #8f261f;
+  --color-error-600: #78201a;
+  --color-error-650: #621a15;
+  --color-error-700: #4c1411;
+  --color-error-750: #360f0c;
+  --color-error-800: #250a08;
+  --color-error-850: #170605;
+  --color-error-900: #100403;
+  --color-error-950: #0c0302;
+
+  /* ── Accent blue (links & highlights) ────────────────────────────────── */
+  --color-blue-50: #eef4ff;
+  --color-blue-100: #dbe7ff;
+  --color-blue-150: #bcd3ff;
+  --color-blue-200: #97bbff;
+  --color-blue-250: #74a3ff;
+  --color-blue-300: #4f8aff;
+  --color-blue-350: #3077ff;
+  --color-blue-400: #1268ff;
+  --color-blue-450: #0f59dc;
+  --color-blue-500: #0f4fc4;
+  --color-blue-550: #0e44a9;
+  --color-blue-600: #0d3a8f;
+  --color-blue-650: #0c3076;
+  --color-blue-700: #0c275c;
+  --color-blue-750: #0b1f48;
+  --color-blue-800: #0a1835;
+  --color-blue-850: #081225;
+  --color-blue-900: #070e1c;
+  --color-blue-950: #060b16;
+
+  /* ── Typography ──────────────────────────────────────────────────────── */
+  --font-body: 'Manrope Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Manrope Variable',
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Manrope Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* ── Radii ───────────────────────────────────────────────────────────── */
+  --style-radius-s: 8px;
+  --style-radius-m: 14px;
+  --style-radius-l: 24px;
+
+  /* ── Aliases ─────────────────────────────────────────────────────────── */
+  --ease-signal: cubic-bezier(0.22, 1, 0.36, 1);
+  --color-signal-orange: var(--txdx-orange);
+  --color-signal-orange-soft: #ff8c00;
+  --color-signal-cyan: var(--txdx-cyan);
+  --color-signal-blue: var(--txdx-blue);
+
+  /* ── Theme elevation (light) ─────────────────────────────────────────── */
+  --theme-bg: #f4f6fb;
+  --theme-elevation-0: #ffffff;
+  --theme-elevation-50: #f8f9fd;
+  --theme-elevation-100: #eef0f7;
+  --theme-elevation-150: #e3e6f0;
+  --theme-elevation-200: #d5dae8;
+  --theme-elevation-250: #c5cbdd;
+  --theme-elevation-400: #64718b;
+  --theme-elevation-500: #53617a;
+  --theme-elevation-600: #41506a;
+  --theme-elevation-700: #2f3d56;
+  --theme-elevation-800: #16223a;
+  --theme-elevation-900: #0b1220;
+  --theme-text: #16223a;
+  --theme-input-bg: #ffffff;
+}

@@ -161,6 +161,7 @@ export interface Media {
   alt?: string | null;
   caption?: string | null;
   credit?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -218,9 +219,9 @@ export interface Post {
    */
   excerpt: string;
   /**
-   * Imagen destacada del artículo (mínimo 1200 px de ancho recomendado).
+   * Imagen destacada del artículo (mínimo 1200 px de ancho recomendado). Se requiere para publicar.
    */
-  coverImage: string | Media;
+  coverImage?: (string | null) | Media;
   /**
    * Escribe y da formato como en un procesador de textos: la barra superior queda fija y el texto se ve tal como se publicará.
    */
@@ -390,6 +391,7 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   credit?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

@@ -1,0 +1,51 @@
+/* ==========================================================================
+   TxDxNet — Base & app chrome
+   Template default, accessibility, scrollbars, links.
+   ========================================================================== */
+
+.template-default {
+  --theme-bg: var(--theme-elevation-0);
+  background: var(--theme-bg);
+}
+
+/* ── Links ─────────────────────────────────────────────────────────────── */
+
+a {
+  color: var(--txdx-blue);
+}
+
+/* ── Accessibility ─────────────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: var(--accessibility-outline);
+  outline-color: var(--txdx-cyan);
+  outline-offset: var(--accessibility-outline-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Scrollbars ────────────────────────────────────────────────────────── */
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--theme-elevation-200);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-elevation-400);
+  background-clip: content-box;
+}

@@ -81,9 +81,8 @@ export const Posts: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Portada',
-      required: true,
       admin: {
-        description: 'Imagen destacada del artículo (mínimo 1200 px de ancho recomendado).',
+        description: 'Imagen destacada del artículo (mínimo 1200 px de ancho recomendado). Se requiere para publicar.',
       },
     },
     {

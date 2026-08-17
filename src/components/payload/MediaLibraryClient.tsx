@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useMemo, useRef, useState } from 'react'
 
 export type MediaItem = {
@@ -60,7 +61,19 @@ function toItem(doc: UploadDoc): MediaItem {
   }
 }
 
-export function MediaLibraryClient({ items, total }: { items: MediaItem[]; total: number }) {
+type Props = {
+  editBasePath?: string
+  editLabel?: string
+  items: MediaItem[]
+  total: number
+}
+
+export function MediaLibraryClient({
+  editBasePath = '/admin/collections/media',
+  editLabel = 'Editar',
+  items,
+  total,
+}: Props) {
   const [files, setFiles] = useState<MediaItem[]>(items)
   const [query, setQuery] = useState('')
   const [uploading, setUploading] = useState(false)
@@ -213,15 +226,20 @@ export function MediaLibraryClient({ items, total }: { items: MediaItem[]; total
         <ul className="txdx-media__grid">
           {visible.map((file) => (
             <li key={file.id} className="txdx-media__tile">
-              <a className="txdx-media__thumb" href={`/admin/collections/media/${file.id}`} aria-label={file.filename}>
+              <Link
+                aria-label={file.filename}
+                className="txdx-media__thumb"
+                href={`${editBasePath}/${file.id}`}
+                prefetch={false}
+              >
                 {file.thumbnailURL ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img alt={file.alt || file.filename} src={file.thumbnailURL} loading="lazy" />
                 ) : (
                   <span className="txdx-media__thumb-fallback">{file.mimeType === 'application/pdf' ? 'PDF' : 'IMG'}</span>
                 )}
-                <span className="txdx-media__thumb-zoom">Editar</span>
-              </a>
+                <span className="txdx-media__thumb-zoom">{editLabel}</span>
+              </Link>
               <div className="txdx-media__meta">
                 <p className="txdx-media__name" title={file.filename}>
                   {file.filename}
@@ -234,7 +252,9 @@ export function MediaLibraryClient({ items, total }: { items: MediaItem[]; total
                   {formatBytes(file.filesize)} · {new Date(file.updatedAt).toLocaleDateString('es')}
                 </p>
                 <div className="txdx-media__actions">
-                  <a href={`/admin/collections/media/${file.id}`}>Editar</a>
+                  <Link href={`${editBasePath}/${file.id}`} prefetch={false}>
+                    {editLabel}
+                  </Link>
                   <button type="button" onClick={() => void removeItem(file.id, file.filename)}>
                     Eliminar
                   </button>

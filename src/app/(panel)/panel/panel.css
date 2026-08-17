@@ -1,0 +1,18 @@
+@import '../../(payload)/styles/_tokens.css';
+@import '../../(payload)/styles/_dashboard.css';
+@import '../../(payload)/styles/_my-articles.css';
+@import '../../(payload)/styles/_media-library.css';
+
+:root {
+  --base: 1rem;
+  --accessibility-outline: 3px solid var(--txdx-cyan);
+  --accessibility-outline-offset: 4px;
+}
+
+.txdx-panel-app {
+  background: #eef3fb;
+}
+
+#contenido-panel {
+  min-height: 100vh;
+}

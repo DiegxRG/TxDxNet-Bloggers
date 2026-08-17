@@ -1,0 +1,121 @@
+/* ==========================================================================
+   TxDxNet — Tables, list views, tabs, collapsibles
+   ========================================================================== */
+
+/* ── List header ───────────────────────────────────────────────────────── */
+
+.list-header h1,
+.list-header h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  color: var(--txdx-navy);
+}
+
+.list-controls {
+  background: #ffffff;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  box-shadow: 0 1px 0 rgba(7, 20, 45, 0.03);
+}
+
+/* ── Tables ────────────────────────────────────────────────────────────── */
+
+.table {
+  background: #ffffff;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  box-shadow: 0 1px 0 rgba(7, 20, 45, 0.03);
+  overflow: hidden;
+}
+.table thead th {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-500);
+  background: var(--theme-elevation-50);
+}
+.table tbody td {
+  color: var(--theme-elevation-800);
+}
+.table tbody tr {
+  border-bottom: 1px solid var(--theme-elevation-100);
+}
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+.table tbody tr:hover {
+  background-color: var(--color-blue-50);
+}
+html[data-theme='dark'] .table tbody tr:hover {
+  background-color: rgb(18 104 255 / 0.08);
+}
+.table a {
+  color: var(--txdx-blue);
+}
+
+/* ── Tabs (field-level) ────────────────────────────────────────────────── */
+
+.tabs-field__tab-button {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+.tabs-field__tab-button--active {
+  color: var(--color-blue-600);
+  box-shadow: inset 0 -2px 0 var(--txdx-orange);
+}
+html[data-theme='dark'] .tabs-field__tab-button--active {
+  color: var(--color-blue-150);
+}
+
+/* ── Document tabs ─────────────────────────────────────────────────────── */
+
+.doc-tabs {
+  border-bottom: 1px solid var(--theme-elevation-150);
+}
+.doc-tab {
+  color: var(--theme-elevation-500);
+  font-weight: 700;
+}
+.doc-tab:hover {
+  color: var(--txdx-navy);
+}
+.doc-tab--active {
+  color: var(--txdx-blue);
+  box-shadow: inset 0 -2px 0 var(--txdx-orange);
+}
+
+/* ── Collapsibles ──────────────────────────────────────────────────────── */
+
+.document-fields {
+  background: transparent;
+}
+
+.collapsible {
+  background: #ffffff;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  box-shadow: 0 1px 0 rgba(7, 20, 45, 0.03);
+  overflow: hidden;
+}
+.collapsible--style-default,
+.collapsible--style-light-gray {
+  background: #ffffff;
+  border-color: var(--theme-elevation-150);
+}
+.collapsible__toggle {
+  color: var(--txdx-navy);
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.collapsible--is-open {
+  border-color: var(--color-blue-150);
+}
+
+.group-field__wrap {
+  background: #ffffff;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+}
