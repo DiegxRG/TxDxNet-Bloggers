@@ -200,7 +200,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               </a>
               <a href="https://play.google.com/store/apps/details?id=com.vibecode.xocapp&hl=es_PE" rel="noreferrer" target="_blank">
                 <span className="article-resource-logo article-resource-logo--store">
-                  <Image alt="Disponible en Google Play" height={32} src="/Google_Play-Logo.wine.svg" width={120} />
+                  <Image alt="Google Play" height={48} src="/Google_Play_2022_icon.svg.webp" width={48} />
                 </span>
                 <span>ANDROID</span>
                 <strong>Play Store</strong>
@@ -208,7 +208,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               </a>
               <a href="https://apps.apple.com/uy/app/xoc/id6759814234" rel="noreferrer" target="_blank">
                 <span className="article-resource-logo article-resource-logo--store">
-                  <Image alt="Disponible en App Store" height={32} src="/available-on-the-app-store.svg" width={94} />
+                  <Image alt="App Store" height={48} src="/App_Store_(iOS).svg.webp" width={48} />
                 </span>
                 <span>IOS</span>
                 <strong>App Store</strong>

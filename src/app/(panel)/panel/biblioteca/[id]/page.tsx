@@ -85,7 +85,11 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
   if (media.mimeType === 'application/pdf') notFound()
 
   const alert = getAlert(status)
-  const thumbnailURL = getMediaURL(media, 'card') || getMediaURL(media, 'thumbnail') || media.url || null
+  const previewURL =
+    getMediaURL(media, 'original') ||
+    getMediaURL(media, 'hero') ||
+    getMediaURL(media, 'card') ||
+    getMediaURL(media, 'thumbnail')
   const updatedAt = new Intl.DateTimeFormat('es-PE', {
     day: '2-digit',
     month: 'short',
@@ -98,20 +102,20 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
   measure.end({ mediaID: media.id })
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.02fr_0.98fr]" id="contenido-panel">
-      <section className="rounded-[1.8rem] border border-[var(--theme-elevation-150)] bg-white p-6 shadow-[0_20px_50px_rgba(7,20,45,0.06)] md:p-7 xl:self-start">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="grid gap-4 xl:grid-cols-[1.02fr_0.98fr]" id="contenido-panel">
+      <section className="rounded-[1.5rem] border border-[var(--theme-elevation-150)] bg-white p-5 shadow-[0_20px_50px_rgba(7,20,45,0.06)] md:p-6 xl:self-start">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--color-blue-500)]">
               Activo multimedia
             </p>
-            <h1 className="mt-3 break-words font-display text-[clamp(2rem,3vw,3rem)] font-extrabold tracking-[-0.06em] text-[var(--txdx-navy)]">
+            <h1 className="mt-2 break-words font-display text-[clamp(1.75rem,2.5vw,2.5rem)] font-extrabold tracking-[-0.06em] text-[var(--txdx-navy)]">
               {media.filename || 'Archivo sin nombre'}
             </h1>
           </div>
 
           <Link
-            className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-[var(--theme-elevation-200)] px-4 text-sm font-bold text-[var(--theme-elevation-700)] transition hover:border-[var(--color-blue-150)] hover:text-[var(--color-blue-600)]"
+            className="inline-flex min-h-10 items-center justify-center rounded-2xl border border-[var(--theme-elevation-200)] px-3.5 text-sm font-bold text-[var(--theme-elevation-700)] transition hover:border-[var(--color-blue-150)] hover:text-[var(--color-blue-600)]"
             href="/panel/biblioteca"
           >
             Volver a biblioteca
@@ -119,7 +123,7 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
         </div>
 
         {alert ? (
-          <div className={`mt-5 rounded-2xl border px-4 py-3 text-sm font-semibold ${alert.className}`}>
+          <div className={`mt-4 rounded-2xl border px-4 py-2.5 text-sm font-semibold ${alert.className}`}>
             {alert.text}
           </div>
         ) : null}
@@ -127,10 +131,16 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
         <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--color-blue-500)]">
           Preview
         </p>
-        <div className="mt-5 overflow-hidden rounded-[1.6rem] border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)]">
-          <div className="relative aspect-[16/10] bg-[var(--theme-elevation-100)]">
-            {thumbnailURL ? (
-              <Image alt={media.alt || media.filename || 'Preview'} fill sizes="(max-width: 1200px) 100vw, 720px" src={thumbnailURL} />
+        <div className="mt-4 overflow-hidden rounded-[1.4rem] border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)]">
+          <div className="relative aspect-[16/9] bg-[var(--theme-elevation-100)]">
+            {previewURL ? (
+              <Image
+                alt={media.alt || media.filename || 'Preview'}
+                className="object-contain"
+                fill
+                sizes="(max-width: 1200px) 100vw, 720px"
+                src={previewURL}
+              />
             ) : (
               <div className="grid h-full place-items-center px-6 text-center">
                 <div>
@@ -146,49 +156,49 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-4">
+        <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+          <div className="rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-3.5">
             <p className="text-xs font-extrabold uppercase tracking-[0.15em] text-[var(--theme-elevation-500)]">
               Tipo
             </p>
-            <p className="mt-2 text-sm font-bold text-[var(--txdx-navy)]">{media.mimeType || 'Desconocido'}</p>
+            <p className="mt-1.5 text-sm font-bold text-[var(--txdx-navy)]">{media.mimeType || 'Desconocido'}</p>
           </div>
-          <div className="rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-4">
+          <div className="rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-3.5">
             <p className="text-xs font-extrabold uppercase tracking-[0.15em] text-[var(--theme-elevation-500)]">
               Peso
             </p>
-            <p className="mt-2 text-sm font-bold text-[var(--txdx-navy)]">{formatBytes(media.filesize)}</p>
+            <p className="mt-1.5 text-sm font-bold text-[var(--txdx-navy)]">{formatBytes(media.filesize)}</p>
           </div>
-          <div className="rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-4">
+          <div className="rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-3.5">
             <p className="text-xs font-extrabold uppercase tracking-[0.15em] text-[var(--theme-elevation-500)]">
               Dimensiones
             </p>
-            <p className="mt-2 text-sm font-bold text-[var(--txdx-navy)]">
+            <p className="mt-1.5 text-sm font-bold text-[var(--txdx-navy)]">
               {media.width && media.height ? `${media.width} × ${media.height}` : 'No aplica'}
             </p>
           </div>
-          <div className="rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-4">
+          <div className="rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-3.5">
             <p className="text-xs font-extrabold uppercase tracking-[0.15em] text-[var(--theme-elevation-500)]">
               Ultima actualizacion
             </p>
-            <p className="mt-2 text-sm font-bold text-[var(--txdx-navy)]">{updatedAt}</p>
+            <p className="mt-1.5 text-sm font-bold text-[var(--txdx-navy)]">{updatedAt}</p>
           </div>
         </div>
       </section>
 
-      <div className="grid gap-5 content-start">
-      <section className="rounded-[1.8rem] border border-[var(--theme-elevation-150)] bg-white p-6 shadow-[0_20px_50px_rgba(7,20,45,0.06)] md:p-7">
+      <div className="grid content-start gap-4">
+      <section className="rounded-[1.5rem] border border-[var(--theme-elevation-150)] bg-white p-5 shadow-[0_20px_50px_rgba(7,20,45,0.06)] md:p-6">
         <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--color-blue-500)]">
           Metadata editorial
         </p>
-        <h2 className="mt-2 font-display text-[1.45rem] font-extrabold tracking-[-0.05em] text-[var(--txdx-navy)]">
+        <h2 className="mt-1.5 font-display text-[1.3rem] font-extrabold tracking-[-0.05em] text-[var(--txdx-navy)]">
           Describe la imagen una sola vez
         </h2>
-        <p className="mt-3 text-sm leading-6 text-[var(--theme-elevation-600)]">
+        <p className="mt-2.5 text-sm leading-6 text-[var(--theme-elevation-600)]">
           El campo importante es `alt`: se usa cuando publiques esta imagen en un articulo.
         </p>
 
-        <form action={updatePanelMediaAction.bind(null, media.id)} className="mt-6 grid gap-5">
+        <form action={updatePanelMediaAction.bind(null, media.id)} className="mt-4 grid gap-4">
           <label className="block">
             <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Texto alternativo</span>
             <input
@@ -204,19 +214,19 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
             </span>
           </label>
 
-          <details className="rounded-[1.4rem] border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] px-4 py-4">
+          <details className="rounded-[1.2rem] border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] px-4 py-3">
             <summary className="cursor-pointer list-none text-sm font-bold text-[var(--txdx-navy)] [&::-webkit-details-marker]:hidden">
               Metadatos opcionales
             </summary>
-            <p className="mt-2 text-sm leading-6 text-[var(--theme-elevation-500)]">
+            <p className="mt-1.5 text-sm leading-6 text-[var(--theme-elevation-500)]">
               Usa esto solo si necesitas dar contexto adicional o registrar la fuente.
             </p>
 
-            <div className="mt-4 grid gap-4">
+            <div className="mt-3 grid gap-3.5">
               <label className="block">
                 <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Leyenda</span>
                 <textarea
-                  className="min-h-24 w-full rounded-2xl border border-[var(--theme-elevation-200)] bg-white px-4 py-3 text-sm leading-6 text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
+                  className="min-h-20 w-full rounded-2xl border border-[var(--theme-elevation-200)] bg-white px-4 py-3 text-sm leading-6 text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
                   defaultValue={media.caption || ''}
                   name="caption"
                   placeholder="Contexto corto si la imagen lo necesita"
@@ -236,27 +246,27 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
             </div>
           </details>
 
-          <div className="flex flex-wrap gap-3 pt-2">
+          <div className="flex flex-wrap gap-3 pt-1">
             <PanelSubmitButton pendingLabel="Guardando metadata...">Guardar cambios</PanelSubmitButton>
           </div>
         </form>
       </section>
 
-      <section className="rounded-[1.35rem] border border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.06)] p-5 shadow-[0_20px_50px_rgba(7,20,45,0.05)] md:p-6">
+      <section className="rounded-[1.25rem] border border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.06)] p-4 shadow-[0_20px_50px_rgba(7,20,45,0.05)] md:p-5">
         <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--txdx-orange)]">
           Zona delicada
         </p>
-        <h2 className="mt-2 font-display text-[1.2rem] font-extrabold tracking-[-0.05em] text-[var(--txdx-navy)]">
+        <h2 className="mt-1.5 font-display text-[1.15rem] font-extrabold tracking-[-0.05em] text-[var(--txdx-navy)]">
           Eliminar archivo
         </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--theme-elevation-700)]">
+        <p className="mt-2.5 max-w-2xl text-sm leading-6 text-[var(--theme-elevation-700)]">
           Borra este activo solo si estas seguro de que no se utiliza en articulos, vistas sociales o
           bloques del contenido. La eliminacion es permanente.
         </p>
 
-        <form action={deletePanelMediaAction.bind(null, media.id)} className="mt-4">
+        <form action={deletePanelMediaAction.bind(null, media.id)} className="mt-3">
           <button
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[rgba(255,90,24,0.22)] bg-[rgba(255,90,24,0.14)] px-5 text-sm font-extrabold text-[var(--txdx-orange)] transition hover:-translate-y-0.5 hover:bg-[rgba(255,90,24,0.18)]"
+            className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-[rgba(255,90,24,0.22)] bg-[rgba(255,90,24,0.14)] px-4 text-sm font-extrabold text-[var(--txdx-orange)] transition hover:-translate-y-0.5 hover:bg-[rgba(255,90,24,0.18)]"
             type="submit"
           >
             Eliminar archivo definitivamente

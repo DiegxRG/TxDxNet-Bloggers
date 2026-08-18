@@ -278,8 +278,15 @@
  }
 
  .panel-lexical-editor th {
-   background: var(--color-blue-50);
-   color: var(--txdx-navy);
+   background: var(--color-blue-100) !important;
+   color: var(--txdx-navy) !important;
+   font-weight: 800;
+ }
+
+ .panel-lexical-editor table tr:first-child > th,
+ .panel-lexical-editor table tr:first-child > td {
+   background: var(--color-blue-100) !important;
+   color: var(--txdx-navy) !important;
    font-weight: 800;
  }
 

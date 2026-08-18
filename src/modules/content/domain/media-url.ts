@@ -2,14 +2,14 @@ import type { Media } from '@/payload-types'
 
 export function getMediaURL(
   media: string | Media | null | undefined,
-  size: 'avatar' | 'card' | 'hero' | 'thumbnail' = 'card',
+  size: 'avatar' | 'card' | 'hero' | 'original' | 'thumbnail' = 'card',
 ) {
   if (!media) return null
   if (typeof media === 'string') {
     return /^(https?:\/\/|\/)/i.test(media) ? media : null
   }
 
-  const mediaURL = media.sizes?.[size]?.url || media.url
+  const mediaURL = size === 'original' ? media.url : media.sizes?.[size]?.url || media.url
 
   if (!mediaURL) return null
 

@@ -52,8 +52,8 @@
 
 .txdx-my__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--base);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: calc(var(--base) * 1.25);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -63,7 +63,7 @@
   flex-direction: column;
   background: #ffffff;
   border: 1px solid var(--theme-elevation-150);
-  border-radius: var(--style-radius-l);
+  border-radius: 1.35rem;
   overflow: hidden;
   text-decoration: none !important; /* override link style */
   box-shadow: 0 1px 0 rgba(7, 20, 45, 0.04);
@@ -108,8 +108,8 @@
 .txdx-my__body {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  padding: var(--base);
+  gap: 0.8rem;
+  padding: 1.25rem;
   flex: 1;
 }
 .txdx-my__meta {
@@ -145,8 +145,8 @@
 }
 .txdx-my__card-title {
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  line-height: 1.25;
+  font-size: 1.18rem;
+  line-height: 1.3;
   letter-spacing: -0.01em;
   margin: 0;
   color: var(--txdx-navy);
@@ -154,6 +154,40 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Keep card actions aligned even when titles or summaries have different lengths. */
+.txdx-my__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--theme-elevation-100);
+}
+.txdx-my__action-button {
+  width: 100%;
+}
+.txdx-my__delete-action {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.txdx-my__delete-action > button,
+.txdx-my__delete-action > div {
+  width: 100%;
+}
+.txdx-my__delete-action > div {
+  max-width: none;
+}
+
+@media (max-width: 420px) {
+  .txdx-my__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .txdx-my__delete-action {
+    grid-column: auto;
+  }
 }
 
 /* ── Empty state ───────────────────────────────────────────────────────── */

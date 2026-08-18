@@ -194,9 +194,9 @@ export function PanelArticlesIndex({ deleteAction, initialFilter, items }: Props
                       <span>{formatDate(item.status === 'published' ? item.publishedAt : item.updatedAt)}</span>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap gap-3">
+                    <div className="txdx-my__actions">
                       <Link
-                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--txdx-orange)] px-4 text-sm font-extrabold text-white transition hover:-translate-y-0.5"
+                        className="txdx-my__action-button inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--txdx-orange)] px-4 text-sm font-extrabold text-white transition hover:-translate-y-0.5"
                         href={`/panel/articulos/${item.id}`}
                       >
                         <IconEdit />
@@ -205,7 +205,7 @@ export function PanelArticlesIndex({ deleteAction, initialFilter, items }: Props
 
                       {previewHref ? (
                         <Link
-                          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[rgba(18,104,255,0.2)] bg-[rgba(18,104,255,0.06)] px-4 text-sm font-bold text-[var(--color-blue-600)] transition hover:border-[var(--color-blue-400)] hover:bg-[rgba(18,104,255,0.1)]"
+                          className="txdx-my__action-button inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[rgba(18,104,255,0.2)] bg-[rgba(18,104,255,0.06)] px-4 text-sm font-bold text-[var(--color-blue-600)] transition hover:border-[var(--color-blue-400)] hover:bg-[rgba(18,104,255,0.1)]"
                           href={previewHref}
                           prefetch={false}
                           target="_blank"
@@ -214,7 +214,9 @@ export function PanelArticlesIndex({ deleteAction, initialFilter, items }: Props
                           Vista publica
                         </Link>
                       ) : null}
-                      <PanelDeletePostButton action={deleteAction} compact postID={item.id} />
+                      <div className="txdx-my__delete-action">
+                        <PanelDeletePostButton action={deleteAction} compact postID={item.id} />
+                      </div>
                     </div>
                   </div>
                 </article>

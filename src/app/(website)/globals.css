@@ -19,6 +19,7 @@
 
 :root {
   --grid-line: rgb(255 255 255 / 0.055);
+  --table-header: #dbe7ff;
 }
 
 * {
@@ -2521,6 +2522,7 @@ button:focus-visible {
   margin-top: 1.6rem;
 }
 
+.article-prose h1,
 .article-prose h2,
 .article-prose h3,
 .article-prose h4 {
@@ -2532,8 +2534,12 @@ button:focus-visible {
   line-height: 1;
 }
 
+.article-prose h1 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+}
+
 .article-prose h2 {
-  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-size: clamp(1.8rem, 3.4vw, 2.8rem);
 }
 
 .article-prose h3 {
@@ -2599,8 +2605,15 @@ button:focus-visible {
 .article-prose table.lexical-table th,
 .article-prose table.lexical-table .lexical-table-cell-header-1,
 .article-prose table.lexical-table .lexical-table-cell-header-2 {
-  background: var(--color-ink-950);
-  color: white;
+  background: var(--table-header) !important;
+  color: var(--color-ink-950) !important;
+  font-weight: 800;
+}
+
+.article-prose table.lexical-table tbody tr:first-child > th,
+.article-prose table.lexical-table tbody tr:first-child > td {
+  background: var(--table-header) !important;
+  color: var(--color-ink-950) !important;
   font-weight: 800;
 }
 
@@ -2656,8 +2669,8 @@ button:focus-visible {
 }
 
 .article-comparison thead th {
-  background: var(--color-ink-950);
-  color: white;
+  background: var(--table-header);
+  color: var(--color-ink-950);
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
