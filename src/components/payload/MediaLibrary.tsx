@@ -8,10 +8,16 @@ import { MediaLibraryClient } from './MediaLibraryClient'
 export default async function MediaLibrary(props: ListViewServerProps) {
   const { payload } = props
 
-  const { docs, totalDocs } = await payload.find({
+  const { docs } = await payload.find({
     collection: 'media',
     limit: 100,
     sort: '-createdAt',
+    where: {
+      and: [
+        { mimeType: { not_equals: 'application/pdf' } },
+        { or: [{ purpose: { equals: 'editorial' } }, { purpose: { exists: false } }] },
+      ],
+    },
   })
 
   const items = docs.map((media) => {
@@ -30,5 +36,5 @@ export default async function MediaLibrary(props: ListViewServerProps) {
     }
   })
 
-  return <MediaLibraryClient items={items} total={totalDocs} />
+  return <MediaLibraryClient items={items} />
 }

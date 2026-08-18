@@ -15,8 +15,10 @@ export default function DomainsPage() {
     <main id="contenido">
       <InteriorHero
         code="11 categorías"
-        description="Desde las personas hasta los agentes de IA: cada dominio reúne artículos y guías para comprender una parte concreta de la operación sin perder de vista el contexto completo."
+        description="Cada dominio reúne artículos y guías para entender una parte de la operación sin perder el contexto completo."
         eyebrow="Biblioteca por dominios"
+        compact
+        showXocLogo
         title="Once perspectivas. Una sola operación."
       />
       <section className="bg-paper px-5 py-20 sm:px-8 lg:px-12 lg:py-28">

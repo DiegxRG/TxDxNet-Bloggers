@@ -8,10 +8,10 @@ export function BrandMark({ priority = false }: { priority?: boolean }) {
         <Image
           alt="TxDxSecure"
           className="brand-logo"
-          height={58}
+          fill
           priority={priority}
           src="/logotxdx.png"
-          width={58}
+          sizes="(max-width: 620px) 44px, 54px"
         />
       </span>
       <span className="brand-copy">

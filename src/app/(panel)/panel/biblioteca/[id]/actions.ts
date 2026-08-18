@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { getPanelSession } from '@/modules/panel/server/session'
+import { isMediaReferenced } from '@/modules/panel/server/media-references'
 
 function asString(formData: FormData, key: string) {
   return formData.get(key)?.toString().trim() || ''
@@ -40,6 +41,14 @@ export async function updatePanelMediaAction(mediaID: string, formData: FormData
 
 export async function deletePanelMediaAction(mediaID: string) {
   const { payload, user } = await getPanelSession()
+
+  let referenced = false
+  try {
+    referenced = await isMediaReferenced(payload, user, mediaID)
+  } catch {
+    redirect(`/panel/biblioteca/${mediaID}?estado=error-eliminar`)
+  }
+  if (referenced) redirect(`/panel/biblioteca/${mediaID}?estado=error-en-uso`)
 
   try {
     await payload.delete({

@@ -1,18 +1,337 @@
-@import '../../(payload)/styles/_tokens.css';
-@import '../../(payload)/styles/_dashboard.css';
-@import '../../(payload)/styles/_my-articles.css';
-@import '../../(payload)/styles/_media-library.css';
+ @import '../../(payload)/styles/_tokens.css';
+ @import '../../(payload)/styles/_dashboard.css';
+ @import '../../(payload)/styles/_my-articles.css';
+ @import '../../(payload)/styles/_media-library.css';
 
-:root {
-  --base: 1rem;
-  --accessibility-outline: 3px solid var(--txdx-cyan);
-  --accessibility-outline-offset: 4px;
-}
+ :root {
+   --base: 1rem;
+   --accessibility-outline: 3px solid var(--txdx-cyan);
+   --accessibility-outline-offset: 4px;
+ }
 
-.txdx-panel-app {
-  background: #eef3fb;
-}
+ .txdx-panel-app {
+   background: #eef3fb;
+ }
 
-#contenido-panel {
-  min-height: 100vh;
-}
+ /* ── Lexical editor ──────────────────────────────────────────────────── */
+
+ .panel-lexical-editor {
+   border: 1px solid var(--theme-elevation-150);
+   border-radius: var(--style-radius-s);
+   background: #fff;
+   overflow: hidden;
+ }
+ .panel-lexical-editor:focus-within {
+   border-color: var(--txdx-blue);
+   box-shadow: 0 0 0 3px rgba(18, 104, 255, 0.12);
+ }
+
+ .panel-lexical-editor__content {
+   min-height: 420px;
+   max-height: 70vh;
+   overflow-y: auto;
+   padding: 0.8rem 1.2rem;
+ }
+
+ .panel-lexical-editor__editable {
+   outline: none;
+   min-height: 380px;
+ }
+
+ .panel-lexical-editor__placeholder {
+   color: var(--theme-elevation-400);
+   pointer-events: none;
+   font-style: italic;
+ }
+
+ /* ── Toolbar ─────────────────────────────────────────────────────────── */
+
+ .panel-toolbar {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 2px;
+   padding: 6px 8px;
+   background: var(--theme-elevation-50);
+   border-bottom: 1px solid var(--theme-elevation-150);
+ }
+
+ .panel-toolbar__row {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   gap: 2px;
+ }
+
+ .panel-toolbar__group {
+   display: flex;
+   gap: 2px;
+ }
+
+ .panel-toolbar__divider {
+   display: inline-block;
+   width: 1px;
+   height: 18px;
+   background: var(--theme-elevation-200);
+   margin: 0 4px;
+   align-self: center;
+ }
+
+ .panel-toolbar__btn {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   width: 30px;
+   height: 30px;
+   border: none;
+   border-radius: 6px;
+   background: transparent;
+   color: var(--theme-elevation-600);
+   cursor: pointer;
+   font-size: 0.8rem;
+   font-weight: 700;
+   transition: background-color 0.12s, color 0.12s;
+ }
+ .panel-toolbar__btn:hover:not(:disabled) {
+   background: var(--color-blue-50);
+ }
+ .panel-toolbar__btn--active {
+   background: var(--color-blue-100) !important;
+   color: var(--txdx-blue) !important;
+ }
+ .panel-toolbar__btn:disabled {
+   opacity: 0.4;
+   cursor: not-allowed;
+ }
+
+ .panel-toolbar__relative {
+   position: relative;
+ }
+
+ .panel-toolbar__dropdown {
+   position: absolute;
+   top: 100%;
+   left: 0;
+   z-index: 20;
+   min-width: 180px;
+   background: #fff;
+   border: 1px solid var(--theme-elevation-200);
+   border-radius: 8px;
+   box-shadow: 0 8px 24px rgba(7, 20, 45, 0.12);
+   padding: 4px;
+   margin-top: 4px;
+ }
+
+ .panel-toolbar__dropdown-item {
+   display: block;
+   width: 100%;
+   padding: 8px 12px;
+   border: none;
+   border-radius: 6px;
+   background: transparent;
+   color: var(--theme-elevation-700);
+   font-size: 0.82rem;
+   font-weight: 600;
+   text-align: left;
+   cursor: pointer;
+   transition: background-color 0.12s;
+ }
+ .panel-toolbar__dropdown-item:hover {
+   background: var(--color-blue-50);
+   color: var(--txdx-blue);
+ }
+
+ .panel-toolbar__dropdown-label {
+   margin: 0;
+   padding: 7px 12px 5px;
+   color: var(--theme-elevation-500);
+   font-size: 0.68rem;
+   font-weight: 800;
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
+ }
+
+ /* ── Embed cards (upload + block nodes) ──────────────────────────────── */
+
+ .lexical-embed-card {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   padding: 10px 14px;
+   margin: 4px 0;
+   border: 1px dashed var(--theme-elevation-200);
+   border-radius: 10px;
+   background: var(--theme-elevation-50);
+   user-select: none;
+ }
+ .lexical-embed-card--upload {
+   border-color: var(--color-blue-200);
+   display: grid;
+   grid-template-columns: minmax(0, 1fr) auto;
+   overflow: hidden;
+ }
+ .lexical-embed-card--block {
+   border-color: var(--txdx-orange);
+   border-style: solid;
+ }
+
+ .lexical-embed-card__icon {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 36px;
+   height: 36px;
+   border-radius: 8px;
+   background: #fff;
+   color: var(--theme-elevation-500);
+   flex-shrink: 0;
+ }
+
+ .lexical-embed-card__media {
+   position: relative;
+   min-height: 180px;
+   overflow: hidden;
+   border-radius: 8px;
+   background: var(--theme-elevation-100);
+ }
+
+ .lexical-embed-card__media img {
+   object-fit: cover;
+ }
+ .lexical-embed-card--upload .lexical-embed-card__icon {
+   color: var(--txdx-blue);
+ }
+ .lexical-embed-card--block .lexical-embed-card__icon {
+   color: var(--txdx-orange);
+ }
+
+ .lexical-embed-card__body {
+   display: flex;
+   flex-direction: column;
+   gap: 2px;
+   min-width: 0;
+ }
+ .lexical-embed-card__type {
+   font-size: 0.78rem;
+   font-weight: 700;
+   color: var(--theme-elevation-700);
+ }
+ .lexical-embed-card__detail {
+   font-size: 0.72rem;
+   color: var(--theme-elevation-500);
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+ }
+
+ .lexical-embed-card figcaption {
+   grid-column: 1 / -1;
+   color: var(--theme-elevation-500);
+   font-size: 0.72rem;
+ }
+
+ .lexical-embed-card__controls {
+   display: flex;
+   align-items: center;
+   gap: 0.25rem;
+   margin-left: auto;
+   flex-shrink: 0;
+ }
+
+ .lexical-embed-card__controls button {
+   border: 1px solid var(--theme-elevation-200);
+   border-radius: 0.45rem;
+   background: #fff;
+   padding: 0.3rem 0.45rem;
+   color: var(--theme-elevation-600);
+   cursor: pointer;
+   font-size: 0.68rem;
+   font-weight: 800;
+ }
+
+ .lexical-embed-card__controls button:hover,
+ .lexical-embed-card__controls button:focus-visible {
+   border-color: var(--txdx-blue);
+   color: var(--txdx-blue);
+ }
+
+ .panel-lexical-editor .lexical-table-container {
+   overflow-x: auto;
+   margin-block: 1rem;
+ }
+
+ .panel-lexical-editor .LexicalEditorTheme__tableScrollableWrapper {
+   overflow-x: auto;
+   margin-block: 1rem;
+ }
+
+ .panel-lexical-editor table {
+   min-width: 36rem;
+   width: 100%;
+   border-collapse: collapse;
+ }
+
+ .panel-lexical-editor th,
+ .panel-lexical-editor td {
+   border: 1px solid var(--theme-elevation-200);
+   padding: 0.65rem 0.8rem;
+   text-align: left;
+ }
+
+ .panel-lexical-editor th {
+   background: var(--color-blue-50);
+   color: var(--txdx-navy);
+   font-weight: 800;
+ }
+
+ /* ── Rich text WYSIWYG (matching Payload theme) ──────────────────────── */
+
+ .panel-lexical-editor .LexicalEditorTheme__paragraph,
+ .panel-lexical-editor .LexicalEditorTheme__quote,
+ .panel-lexical-editor .LexicalEditorTheme__listItem,
+ .panel-lexical-editor .LexicalEditorTheme__nestedListItem {
+   font-size: 1.02rem;
+   line-height: 1.75;
+ }
+
+ .panel-lexical-editor .LexicalEditorTheme__h1,
+ .panel-lexical-editor .LexicalEditorTheme__h2,
+ .panel-lexical-editor .LexicalEditorTheme__h3,
+ .panel-lexical-editor .LexicalEditorTheme__h4 {
+   font-weight: 800;
+   letter-spacing: -0.02em;
+   color: var(--txdx-navy);
+ }
+ .panel-lexical-editor .LexicalEditorTheme__h1 {
+   font-size: 2rem;
+   line-height: 1.12;
+   margin-block: 0.6em 0.4em;
+ }
+ .panel-lexical-editor .LexicalEditorTheme__h2 {
+   font-size: 1.5rem;
+   line-height: 1.2;
+   margin-block: 0.7em 0.4em;
+ }
+ .panel-lexical-editor .LexicalEditorTheme__h3 {
+   font-size: 1.2rem;
+   line-height: 1.3;
+ }
+
+ .panel-lexical-editor .LexicalEditorTheme__quote {
+   border-left: 4px solid var(--txdx-orange);
+   padding-left: 12px;
+   font-style: italic;
+   color: var(--theme-elevation-700);
+ }
+
+ .panel-lexical-editor .LexicalEditorTheme__textBold {
+   font-weight: 800;
+ }
+
+ .panel-lexical-editor .LexicalEditorTheme__ul {
+   list-style: disc;
+   padding-left: 1.5rem;
+ }
+ .panel-lexical-editor .LexicalEditorTheme__ol1 {
+   list-style: decimal;
+   padding-left: 1.5rem;
+ }

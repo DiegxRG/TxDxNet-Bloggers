@@ -42,5 +42,14 @@ export const Admins: CollectionConfig = {
         width: '50%',
       },
     },
+    {
+      name: 'avatar',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Foto de perfil',
+      admin: {
+        description: 'Foto circular que se muestra junto a tu firma en los articulos publicos.',
+      },
+    },
   ],
 }

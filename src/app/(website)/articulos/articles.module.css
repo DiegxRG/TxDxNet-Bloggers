@@ -2,7 +2,7 @@
 .upcoming {
   background: #f8f8f4;
   color: var(--color-ink-950);
-  padding: clamp(5rem, 9vw, 8rem) 0;
+  padding: clamp(2rem, 4vw, 4rem) 0;
 }
 
 .upcoming {
@@ -20,8 +20,6 @@
   align-items: end;
   justify-content: space-between;
   gap: 2.5rem;
-  border-top: 1px solid rgb(7 20 45 / 0.15);
-  padding-top: 1.25rem;
 }
 
 .libraryBar > div > span,

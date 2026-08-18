@@ -29,11 +29,19 @@ export const Posts: CollectionConfig = {
     beforeChange: [
       ({ data, operation, req }) => {
         if (operation !== 'create') return data
-        const user = req.user as { id?: string; name?: string; publicTitle?: string } | null
+        const user = req.user as {
+          avatar?: string | { id?: string } | null
+          id?: string
+          name?: string
+          publicTitle?: string
+        } | null
         if (!user) return data
         if (!data.createdBy) data.createdBy = user.id || ''
         if (!data.authorName) data.authorName = user.name || ''
         if (!data.authorRole) data.authorRole = user.publicTitle || ''
+        if (!data.authorAvatar && user.avatar) {
+          data.authorAvatar = typeof user.avatar === 'string' ? user.avatar : user.avatar.id || null
+        }
         return data
       },
     ],
@@ -158,6 +166,15 @@ export const Posts: CollectionConfig = {
           admin: {
             placeholder: 'Usa el título del artículo si no lo sabes',
             description: 'Máximo 70 caracteres. Si se deja vacío se usa el título.',
+          },
+        },
+        {
+          name: 'authorAvatar',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Foto del autor',
+          admin: {
+            hidden: true,
           },
         },
         {

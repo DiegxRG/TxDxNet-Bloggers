@@ -4,6 +4,8 @@ import { startPanelMeasure } from '@/modules/panel/server/perf'
 import { getPanelSession } from '@/modules/panel/server/session'
 import type { Post } from '@/payload-types'
 
+import { deletePanelPostFromFormAction } from './actions'
+
 type PanelSearchParams = Record<string, string | string[] | undefined>
 
 type Props = {
@@ -20,14 +22,28 @@ export default async function PanelArticlesPage({ searchParams }: Props) {
       ? requestedStatus
       : 'all'
 
-  const { docs } = await payload.find({
-    collection: 'posts',
-    depth: 1,
-    limit: 60,
-    overrideAccess: false,
-    user,
-    sort: '-updatedAt',
-  })
+  const [{ docs }, { docs: publishedDocs }] = await Promise.all([
+    payload.find({
+      collection: 'posts',
+      depth: 1,
+      draft: true,
+      limit: 60,
+      overrideAccess: false,
+      user,
+      sort: '-updatedAt',
+    }),
+    payload.find({
+      collection: 'posts',
+      depth: 1,
+      draft: false,
+      limit: 60,
+      overrideAccess: false,
+      user,
+      sort: '-updatedAt',
+    }),
+  ])
+
+  const publishedIDs = new Set(publishedDocs.map((doc) => String(doc.id)))
 
   const items: PanelArticleItem[] = docs.map((doc) => {
     const post = doc as unknown as Post
@@ -36,7 +52,7 @@ export default async function PanelArticlesPage({ searchParams }: Props) {
       id: post.id,
       title: post.title || 'Articulo sin titulo',
       excerpt: post.excerpt || 'Sin resumen todavia.',
-      status: post._status || 'draft',
+      status: publishedIDs.has(String(post.id)) ? 'published' : post._status || 'draft',
       featured: Boolean(post.featured),
       slug: post.slug || '',
       coverAlt: getMediaAlt(post.coverImage, post.title || 'Articulo'),
@@ -48,5 +64,5 @@ export default async function PanelArticlesPage({ searchParams }: Props) {
 
   measure.end({ docs: items.length, initialFilter })
 
-  return <PanelArticlesIndex initialFilter={initialFilter} items={items} />
+  return <PanelArticlesIndex deleteAction={deletePanelPostFromFormAction} initialFilter={initialFilter} items={items} />
 }

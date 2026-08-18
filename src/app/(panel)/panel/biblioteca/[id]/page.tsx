@@ -50,6 +50,12 @@ function getAlert(status: null | string) {
           'border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.08)] text-[var(--txdx-orange)]',
         text: 'No se pudo eliminar el archivo. Revisa si sigue siendo necesario en alguna pieza.',
       }
+    case 'error-en-uso':
+      return {
+        className:
+          'border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.08)] text-[var(--txdx-orange)]',
+        text: 'Este archivo sigue vinculado a un perfil, artículo o bloque. Se conserva para evitar romper contenido publicado.',
+      }
     default:
       return null
   }
@@ -76,9 +82,10 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
     notFound()
   }
 
+  if (media.mimeType === 'application/pdf') notFound()
+
   const alert = getAlert(status)
   const thumbnailURL = getMediaURL(media, 'card') || getMediaURL(media, 'thumbnail') || media.url || null
-  const isPDF = media.mimeType === 'application/pdf'
   const updatedAt = new Intl.DateTimeFormat('es-PE', {
     day: '2-digit',
     month: 'short',
@@ -88,7 +95,7 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
     timeZone: 'America/Lima',
   }).format(new Date(media.updatedAt))
 
-  measure.end({ mediaID: media.id, isPDF })
+  measure.end({ mediaID: media.id })
 
   return (
     <div className="grid gap-5 xl:grid-cols-[1.02fr_0.98fr]" id="contenido-panel">
@@ -122,18 +129,16 @@ export default async function PanelMediaDetailPage({ params, searchParams }: Pro
         </p>
         <div className="mt-5 overflow-hidden rounded-[1.6rem] border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)]">
           <div className="relative aspect-[16/10] bg-[var(--theme-elevation-100)]">
-            {thumbnailURL && !isPDF ? (
+            {thumbnailURL ? (
               <Image alt={media.alt || media.filename || 'Preview'} fill sizes="(max-width: 1200px) 100vw, 720px" src={thumbnailURL} />
             ) : (
               <div className="grid h-full place-items-center px-6 text-center">
                 <div>
                   <p className="font-display text-4xl font-extrabold tracking-[-0.05em] text-[var(--txdx-navy)]">
-                    {isPDF ? 'PDF' : 'FILE'}
+                    FILE
                   </p>
                   <p className="mt-3 text-sm leading-6 text-[var(--theme-elevation-600)]">
-                    {isPDF
-                      ? 'El archivo es un PDF. Abre el activo para revisar el documento completo.'
-                      : 'No hay miniatura disponible para este archivo.'}
+                    No hay miniatura disponible para este archivo.
                   </p>
                 </div>
               </div>

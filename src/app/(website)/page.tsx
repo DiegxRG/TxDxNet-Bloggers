@@ -1,18 +1,21 @@
 import { ClosingCTA } from '@/components/site/ClosingCTA'
 import { EditorialOpening } from '@/components/site/EditorialOpening'
 import { HomeBlogList } from '@/components/site/HomeBlogList'
-import { getPublishedPosts } from '@/modules/content/infrastructure/payload/posts'
+import { getFeaturedPublishedPosts, getPublishedPosts } from '@/modules/content/infrastructure/payload/posts'
 
 import styles from './home.module.css'
 
 export const revalidate = 60
 
 export default async function HomePage() {
-  const latestPosts = await getPublishedPosts(9)
+  const [latestPosts, featuredPosts] = await Promise.all([
+    getPublishedPosts(12),
+    getFeaturedPublishedPosts(3),
+  ])
 
   return (
     <main className={styles.main} id="contenido">
-      <EditorialOpening posts={latestPosts} />
+      <EditorialOpening featuredPosts={featuredPosts} posts={latestPosts} />
 
       <HomeBlogList />
 
@@ -28,4 +31,3 @@ export default async function HomePage() {
     </main>
   )
 }
-

@@ -27,7 +27,11 @@ export function SiteHeader() {
         <BrandMark priority />
         <nav aria-label="Navegación principal" className={styles.navigation}>
           {navigation.map((item) => (
-            <Link href={item.href} key={item.href}>
+            <Link
+              aria-current={pathname === item.href || pathname.startsWith(`${item.href}/`) ? 'page' : undefined}
+              href={item.href}
+              key={item.href}
+            >
               {item.label}
             </Link>
           ))}

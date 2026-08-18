@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
       { pathname: '/api/media/file/**' },
       { pathname: '/logotxdx.png' },
       { pathname: '/Logo_XOC_Vectorial.png' },
+      { pathname: '/logo_blanco.png' },
+      { pathname: '/Google_Play-Logo.wine.svg' },
+      { pathname: '/available-on-the-app-store.svg' },
     ],
     remotePatterns: [
       {

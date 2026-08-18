@@ -65,14 +65,12 @@ type Props = {
   editBasePath?: string
   editLabel?: string
   items: MediaItem[]
-  total: number
 }
 
 export function MediaLibraryClient({
   editBasePath = '/admin/collections/media',
   editLabel = 'Editar',
   items,
-  total,
 }: Props) {
   const [files, setFiles] = useState<MediaItem[]>(items)
   const [query, setQuery] = useState('')
@@ -122,9 +120,11 @@ export function MediaLibraryClient({
 
   async function removeItem(id: string, filename: string) {
     setError(null)
-    const res = await fetch(`/api/media/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/panel/media/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setFiles((prev) => prev.filter((file) => file.id !== id))
+    } else if (res.status === 409) {
+      setError(`No se puede eliminar «${filename}»: todavía se usa en contenido editorial.`)
     } else {
       setError(`No se pudo eliminar «${filename}».`)
     }
@@ -138,33 +138,17 @@ export function MediaLibraryClient({
 
   return (
     <div className="txdx-media">
-      <header className="txdx-media__head">
-        <div>
-          <h1 className="txdx-media__title">Biblioteca multimedia</h1>
-          <p className="txdx-media__sub">
-            {total} {total === 1 ? 'archivo' : 'archivos'} — sube imágenes y PDFs para usarlos en tus artículos.
-          </p>
-        </div>
-        <button
-          className="txdx-media__add"
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          disabled={uploading}
-        >
-          {uploading ? 'Subiendo…' : 'Añadir archivos'}
-        </button>
-        <input
-          ref={inputRef}
-          className="txdx-media__input"
-          type="file"
-          multiple
-          accept="image/*,application/pdf"
-          onChange={(event) => {
-            if (event.target.files) void uploadFiles(event.target.files)
-            event.target.value = ''
-          }}
-        />
-      </header>
+      <input
+        ref={inputRef}
+        className="txdx-media__input"
+        type="file"
+        multiple
+        accept="image/*"
+        onChange={(event) => {
+          if (event.target.files) void uploadFiles(event.target.files)
+          event.target.value = ''
+        }}
+      />
 
       {error && (
         <p className="txdx-media__error" role="alert">
@@ -236,7 +220,7 @@ export function MediaLibraryClient({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img alt={file.alt || file.filename} src={file.thumbnailURL} loading="lazy" />
                 ) : (
-                  <span className="txdx-media__thumb-fallback">{file.mimeType === 'application/pdf' ? 'PDF' : 'IMG'}</span>
+                  <span className="txdx-media__thumb-fallback">IMG</span>
                 )}
                 <span className="txdx-media__thumb-zoom">{editLabel}</span>
               </Link>

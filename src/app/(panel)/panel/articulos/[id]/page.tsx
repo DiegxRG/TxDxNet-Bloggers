@@ -2,16 +2,11 @@ import { notFound } from 'next/navigation'
 
 import { PanelPostEditor, type PanelEditorMediaItem } from '@/components/panel/PanelPostEditor'
 import { getMediaURL } from '@/modules/content/infrastructure/payload/posts'
-import {
-  canEditSimpleContent,
-  plainTextToEditableHTML,
-  richTextToPlainText,
-} from '@/modules/panel/server/post-editor'
 import { startPanelMeasure } from '@/modules/panel/server/perf'
 import { getPanelSession } from '@/modules/panel/server/session'
 import type { Media, Post } from '@/payload-types'
 
-import { updatePanelPostAction } from '../actions'
+import { deletePanelPostAction, updatePanelPostAction } from '../actions'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -30,6 +25,13 @@ function normalizeMediaItem(media: Media) {
 export default async function PanelArticleDetailPage({ params, searchParams }: Props) {
   const measure = startPanelMeasure('articulos:detail')
   const { payload, user } = await getPanelSession()
+  const profile = await payload.findByID({
+    collection: 'admins',
+    depth: 1,
+    id: user.id,
+    overrideAccess: false,
+    user,
+  })
   const { id } = await params
   const query = await searchParams
   const status = Array.isArray(query.estado) ? query.estado[0] : query.estado || null
@@ -41,6 +43,7 @@ export default async function PanelArticleDetailPage({ params, searchParams }: P
       collection: 'posts',
       id,
       depth: 2,
+      draft: true,
       overrideAccess: false,
       user,
     })) as Post
@@ -55,6 +58,12 @@ export default async function PanelArticleDetailPage({ params, searchParams }: P
     overrideAccess: false,
     user,
     sort: '-createdAt',
+    where: {
+      and: [
+        { mimeType: { not_equals: 'application/pdf' } },
+        { or: [{ purpose: { equals: 'editorial' } }, { purpose: { exists: false } }] },
+      ],
+    },
   })
 
   const mediaMap = new Map<string, PanelEditorMediaItem>()
@@ -72,23 +81,20 @@ export default async function PanelArticleDetailPage({ params, searchParams }: P
   })
 
   const mediaItems = Array.from(mediaMap.values())
-  const simpleContentEnabled = canEditSimpleContent(article.content)
-  const contentPlainText = richTextToPlainText(article.content)
-  const editableHTML = plainTextToEditableHTML(contentPlainText)
   const previewCoverURL = getMediaURL(article.coverImage, 'card')
 
-  measure.end({ articleID: article.id, mediaItems: mediaItems.length, simpleContentEnabled })
+  measure.end({ articleID: article.id, mediaItems: mediaItems.length })
 
   return (
     <PanelPostEditor
       article={article}
-      authorDefaults={{ name: article.authorName || '', role: article.authorRole || '' }}
-      contentPlainText={editableHTML}
+      authorDefaults={{ avatarURL: getMediaURL(profile.avatar, 'avatar'), name: article.authorName || '', role: article.authorRole || '' }}
+      contentLexicalValue={article.content || undefined}
+      deleteAction={deletePanelPostAction.bind(null, article.id)}
       formAction={updatePanelPostAction.bind(null, article.id)}
       mediaItems={mediaItems}
       mode="edit"
       previewCoverURL={previewCoverURL}
-      simpleContentEnabled={simpleContentEnabled}
       status={status}
     />
   )

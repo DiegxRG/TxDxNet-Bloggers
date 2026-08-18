@@ -4,6 +4,8 @@ import { getPayload } from 'payload'
 
 import type { Media, Post } from '@/payload-types'
 
+export { getMediaURL } from '@/modules/content/domain/media-url'
+
 const publishedFilter: Where = {
   _status: { equals: 'published' },
 }
@@ -24,6 +26,28 @@ export async function getPublishedPosts(limit = 12): Promise<Post[]> {
     return result.docs
   } catch (error) {
     console.error('[editorial] No se pudieron cargar los artículos publicados.', error)
+    return []
+  }
+}
+
+export async function getFeaturedPublishedPosts(limit = 3): Promise<Post[]> {
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload.find({
+      collection: 'posts',
+      depth: 2,
+      draft: false,
+      limit,
+      overrideAccess: false,
+      sort: '-publishedAt',
+      where: {
+        and: [publishedFilter, { featured: { equals: true } }],
+      },
+    })
+
+    return result.docs
+  } catch (error) {
+    console.error('[editorial] No se pudieron cargar los favoritos de portada.', error)
     return []
   }
 }
@@ -95,32 +119,6 @@ export function estimateReadingMinutes(post: Post): number {
 
   const words = collectText(post.content).join(' ').trim().split(/\s+/).filter(Boolean).length
   return Math.max(2, Math.ceil(words / 210))
-}
-
-export function getMediaURL(
-  media: string | Media | null | undefined,
-  size: 'card' | 'hero' | 'thumbnail' = 'card',
-) {
-  if (!media || typeof media === 'string') return null
-
-  const mediaURL = media.sizes?.[size]?.url || media.url
-
-  if (!mediaURL) return null
-
-  // Payload may persist its own media URLs with the development origin. Keeping
-  // same-app files relative lets Next encode filenames with spaces correctly and
-  // avoids treating our own API as an external image host.
-  try {
-    const parsedURL = new URL(mediaURL)
-
-    if (parsedURL.pathname.startsWith('/api/media/file/')) {
-      return `${parsedURL.pathname}${parsedURL.search}`
-    }
-  } catch {
-    // Relative and non-standard URLs can be returned unchanged.
-  }
-
-  return mediaURL
 }
 
 export function getMediaAlt(media: string | Media | null | undefined, fallback: string) {

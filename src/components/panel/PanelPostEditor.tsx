@@ -1,13 +1,15 @@
 'use client'
 
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import type { Media, Post } from '@/payload-types'
 
 import { PanelArticlePreview } from './PanelArticlePreview'
-import { PanelRichEditor } from './PanelRichEditor'
+import { PanelDeletePostButton } from './PanelDeletePostButton'
+import { PanelLexicalEditor } from './PanelLexicalEditor'
 import { PanelSubmitButton } from './PanelSubmitButton'
 
 export type PanelEditorMediaItem = {
@@ -20,15 +22,16 @@ export type PanelEditorMediaItem = {
 type Props = {
   article: null | Post
   authorDefaults: {
+    avatarURL?: null | string
     name: string
     role: string
   }
-  contentPlainText: string
+  contentLexicalValue?: DefaultTypedEditorState
+  deleteAction?: (formData: FormData) => void | Promise<void>
   formAction: (formData: FormData) => void | Promise<void>
   mediaItems: PanelEditorMediaItem[]
   mode: 'create' | 'edit'
   previewCoverURL: null | string
-  simpleContentEnabled: boolean
   status: null | string
 }
 
@@ -70,6 +73,24 @@ function getStatusAlert(status: null | string) {
           'border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.08)] text-[var(--txdx-orange)]',
         text: 'No se pudo publicar. Revisa campos requeridos, slug unico y portada.',
       }
+    case 'error-publicar-validacion':
+      return {
+        className:
+          'border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.08)] text-[var(--txdx-orange)]',
+        text: 'Revisa Resumen (obligatorio, máximo 320 caracteres) y Descripción SEO (máximo 170). El borrador sigue guardado.',
+      }
+    case 'error-publicar-favoritos':
+      return {
+        className:
+          'border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.08)] text-[var(--txdx-orange)]',
+        text: 'La portada admite hasta 3 favoritos. Quita el favorito de otro articulo o publica este sin marcarlo.',
+      }
+    case 'error-eliminar':
+      return {
+        className:
+          'border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.08)] text-[var(--txdx-orange)]',
+        text: 'No se pudo eliminar el artículo. Intenta de nuevo.',
+      }
     case 'error-guardar':
     case 'error':
       return {
@@ -89,43 +110,62 @@ function getImageID(value: Media | null | string | undefined) {
 
 type PreviewTab = 'card' | 'article'
 
+type CharacterCounts = {
+  excerpt: number
+  seoDescription: number
+  seoTitle: number
+  title: number
+}
+
+function CharacterCounter({ max, required = false, value }: { max: number; required?: boolean; value: number }) {
+  const over = value > max
+  const missing = required && value === 0
+
+  return (
+    <span
+      aria-live="polite"
+      className={`text-xs font-semibold ${over || missing ? 'text-[var(--txdx-orange)]' : 'text-[var(--theme-elevation-500)]'}`}
+    >
+      {value}/{max}{over ? ' · excede el límite' : missing ? ' · obligatorio' : ''}
+    </span>
+  )
+}
+
 type LiveValues = {
-  content: string
   excerpt: string
   featured: boolean
+  lexicalContent: DefaultTypedEditorState | undefined
   title: string
 }
 
 type PreviewArticle = {
+  authorAvatar?: Post['authorAvatar']
   authorName?: string
   authorRole?: string
   content?: Post['content']
   excerpt?: string
   featured?: boolean
-  htmlContent?: string
   publishedAt?: string
   slug?: string
   title?: string
 }
 
-function readLiveValues(form: HTMLFormElement): LiveValues {
+function readLiveValues(form: HTMLFormElement): Omit<LiveValues, 'lexicalContent'> {
   const title = (form.elements.namedItem('title') as HTMLInputElement | null)?.value || ''
   const excerpt = (form.elements.namedItem('excerpt') as HTMLTextAreaElement | null)?.value || ''
   const featured = (form.elements.namedItem('featured') as HTMLInputElement | null)?.checked || false
-  const contentInput = form.querySelector<HTMLInputElement>('input[name="contentHtml"]')
-  const content = contentInput?.value || ''
-  return { content, excerpt, featured, title }
+  return { excerpt, featured, title }
 }
 
 export function PanelPostEditor({
   article,
   authorDefaults,
-  contentPlainText,
+  contentLexicalValue,
+  deleteAction,
   formAction,
   mediaItems,
   mode,
   previewCoverURL,
-  simpleContentEnabled,
   status,
 }: Props) {
   const alert = getStatusAlert(status)
@@ -142,23 +182,40 @@ export function PanelPostEditor({
     return () => clearTimeout(timer)
   }, [status, dismissedStatus])
   const [liveValues, setLiveValues] = useState<LiveValues>({
-    content: contentPlainText,
     excerpt: article?.excerpt || '',
     featured: Boolean(article?.featured),
+    lexicalContent: contentLexicalValue,
     title: article?.title || '',
   })
+  const [characterCounts, setCharacterCounts] = useState<CharacterCounts>({
+    excerpt: article?.excerpt?.length || 0,
+    seoDescription: article?.seoDescription?.length || 0,
+    seoTitle: article?.seoTitle?.length || 0,
+    title: article?.title?.length || 0,
+  })
   const [liveCoverURL, setLiveCoverURL] = useState<null | string>(previewCoverURL)
+  const [selectedCoverID, setSelectedCoverID] = useState(currentCoverID)
 
   useEffect(() => {
     const form = formRef.current
     if (!form) return
 
-    const handleChange = () => {
+    const handleChange = (event: Event) => {
+      const target = event.target as HTMLInputElement | HTMLTextAreaElement | null
+      if (!target || !['coverImage', 'excerpt', 'featured', 'seoDescription', 'seoTitle', 'title'].includes(target.name)) return
+
       const values = readLiveValues(form)
-      setLiveValues(values)
+      setLiveValues((prev) => ({ ...prev, ...values }))
+      setCharacterCounts({
+        excerpt: ((form.elements.namedItem('excerpt') as HTMLTextAreaElement | null)?.value || '').length,
+        seoDescription: ((form.elements.namedItem('seoDescription') as HTMLTextAreaElement | null)?.value || '').length,
+        seoTitle: ((form.elements.namedItem('seoTitle') as HTMLInputElement | null)?.value || '').length,
+        title: ((form.elements.namedItem('title') as HTMLInputElement | null)?.value || '').length,
+      })
 
       const coverRadio = form.elements.namedItem('coverImage') as RadioNodeList | null
       const selectedID = coverRadio?.value || ''
+      setSelectedCoverID(selectedID)
       if (!selectedID) {
         setLiveCoverURL(null)
       } else {
@@ -175,15 +232,20 @@ export function PanelPostEditor({
     }
   }, [mediaItems])
 
+  const handleLexicalChange = useCallback((state: DefaultTypedEditorState | undefined) => {
+    setLiveValues((prev) => ({ ...prev, lexicalContent: state }))
+  }, [])
+
   const previewArticle: PreviewArticle = {
+    authorAvatar: article?.authorAvatar || authorDefaults.avatarURL,
     authorName: article?.authorName || authorDefaults.name,
     authorRole: article?.authorRole || authorDefaults.role,
+    content: liveValues.lexicalContent || undefined,
     publishedAt: article?.publishedAt || undefined,
     slug: article?.slug,
     title: liveValues.title,
     excerpt: liveValues.excerpt,
     featured: liveValues.featured,
-    htmlContent: liveValues.content || undefined,
   }
 
   return (
@@ -205,6 +267,16 @@ export function PanelPostEditor({
           </div>
 
           <div className="flex flex-wrap gap-3">
+            {article?.id ? (
+              <Link
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--txdx-orange)] px-5 text-sm font-extrabold text-[var(--txdx-orange)] transition hover:bg-[var(--txdx-orange)] hover:text-white"
+                href={`/articulos/preview/${article.id}`}
+                prefetch={false}
+                target="_blank"
+              >
+                Vista pública
+              </Link>
+            ) : null}
             <Link
               className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--theme-elevation-200)] px-5 text-sm font-bold text-[var(--theme-elevation-700)] transition hover:border-[var(--color-blue-150)] hover:text-[var(--color-blue-600)]"
               href="/panel/articulos"
@@ -221,6 +293,7 @@ export function PanelPostEditor({
                 Ver publicacion
               </Link>
             ) : null}
+            {mode === 'edit' && deleteAction ? <PanelDeletePostButton action={deleteAction} /> : null}
           </div>
         </div>
 
@@ -248,12 +321,17 @@ export function PanelPostEditor({
               <label className="block">
                 <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Titulo</span>
                 <input
-                  className="min-h-[3.25rem] w-full rounded-2xl border border-[var(--theme-elevation-200)] bg-white px-4 text-base font-semibold text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
+                  className={`min-h-[3.25rem] w-full rounded-2xl border bg-white px-4 text-base font-semibold text-[var(--theme-elevation-800)] outline-none transition focus:ring-4 ${characterCounts.title > 70 || characterCounts.title === 0 ? 'border-[var(--txdx-orange)] focus:border-[var(--txdx-orange)] focus:ring-[rgba(255,90,24,0.12)]' : 'border-[var(--theme-elevation-200)] focus:border-[var(--txdx-blue)] focus:ring-[rgba(18,104,255,0.12)]'}`}
                   defaultValue={article?.title || ''}
                   name="title"
+                  aria-invalid={characterCounts.title > 70 || characterCounts.title === 0}
+                  required
                   placeholder="Ej.: Operar con claridad en entornos hiperconectados"
                   type="text"
                 />
+                <div className="mt-1 flex justify-end">
+                  <CharacterCounter max={70} required value={characterCounts.title} />
+                </div>
               </label>
 
               <label className="block">
@@ -273,11 +351,16 @@ export function PanelPostEditor({
               <label className="block">
                 <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Resumen</span>
                 <textarea
-                  className="min-h-28 w-full rounded-2xl border border-[var(--theme-elevation-200)] bg-white px-4 py-3 text-sm leading-6 text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
+                  className={`min-h-28 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6 text-[var(--theme-elevation-800)] outline-none transition focus:ring-4 ${characterCounts.excerpt > 320 || characterCounts.excerpt === 0 ? 'border-[var(--txdx-orange)] focus:border-[var(--txdx-orange)] focus:ring-[rgba(255,90,24,0.12)]' : 'border-[var(--theme-elevation-200)] focus:border-[var(--txdx-blue)] focus:ring-[rgba(18,104,255,0.12)]'}`}
                   defaultValue={article?.excerpt || ''}
                   name="excerpt"
+                  aria-invalid={characterCounts.excerpt > 320 || characterCounts.excerpt === 0}
+                  required
                   placeholder="Una sintesis breve que explique por que vale la pena leerlo."
                 />
+                <div className="mt-1 flex justify-end">
+                  <CharacterCounter max={320} required value={characterCounts.excerpt} />
+                </div>
               </label>
             </div>
 
@@ -303,9 +386,9 @@ export function PanelPostEditor({
                   <label className="flex items-start gap-3 rounded-2xl border border-[var(--theme-elevation-150)] bg-white px-4 py-4">
                     <input className="mt-1 h-4 w-4" defaultChecked={Boolean(article?.featured)} name="featured" type="checkbox" />
                     <span>
-                      <strong className="block text-sm text-[var(--txdx-navy)]">Destacar articulo</strong>
+                      <strong className="block text-sm text-[var(--txdx-navy)]">Marcar como favorito</strong>
                       <span className="mt-1 block text-xs leading-5 text-[var(--theme-elevation-500)]">
-                        Lo empuja a espacios editoriales principales.
+                        Aparecera en los libros destacados de la portada. Puedes tener hasta 3 favoritos publicados.
                       </span>
                     </span>
                   </label>
@@ -363,26 +446,11 @@ export function PanelPostEditor({
               </h2>
             </div>
 
-            {simpleContentEnabled ? (
-              <>
-                <input name="allowSimpleContentUpdate" type="hidden" value="1" />
-                <PanelRichEditor
-                  mediaItems={mediaItems}
-                  name="contentHtml"
-                  placeholder="Escribe tu articulo aqui..."
-                  value={contentPlainText}
-                />
-              </>
-            ) : (
-              <div className="rounded-[1.4rem] border border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.06)] px-5 py-5 text-sm leading-6 text-[var(--theme-elevation-700)]">
-                <p className="font-extrabold text-[var(--txdx-orange)]">
-                  Este articulo ya contiene formato enriquecido o bloques avanzados.
-                </p>
-                <p className="mt-2">
-                  El contenido actual no se puede convertir sin riesgo desde esta version del editor.
-                </p>
-              </div>
-            )}
+            <PanelLexicalEditor
+              initialValue={contentLexicalValue}
+              name="contentLexical"
+              onChange={handleLexicalChange}
+            />
           </div>
         </section>
 
@@ -396,15 +464,36 @@ export function PanelPostEditor({
             </h2>
 
             <div className="mt-5 grid gap-3">
-              <input className="peer sr-only" defaultChecked={!currentCoverID} name="coverImage" type="radio" value="" id="cover-none" />
+              <input
+                checked={!selectedCoverID}
+                className="peer sr-only"
+                id="cover-none"
+                name="coverImage"
+                onChange={() => setSelectedCoverID('')}
+                type="radio"
+                value=""
+              />
 
-              <div className="flex items-center justify-between rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] px-4 py-3">
-                <span className="text-sm font-semibold text-[var(--theme-elevation-600)]">
-                  {currentCoverID
-                    ? `Portada actual: ${mediaItems.find((m) => m.id === currentCoverID)?.filename || 'imagen seleccionada'}`
-                    : 'Sin portada seleccionada'}
-                </span>
-                {currentCoverID ? (
+              <div className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] px-4 py-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  {selectedCoverID && mediaItems.find((m) => m.id === selectedCoverID)?.thumbnailURL ? (
+                    <span className="relative h-12 w-16 shrink-0 overflow-hidden rounded-xl bg-[var(--theme-elevation-100)]">
+                      <Image
+                        alt=""
+                        className="object-cover"
+                        fill
+                        sizes="64px"
+                        src={mediaItems.find((m) => m.id === selectedCoverID)?.thumbnailURL || ''}
+                      />
+                    </span>
+                  ) : null}
+                  <span className="min-w-0 text-sm font-semibold text-[var(--theme-elevation-600)]">
+                    {selectedCoverID
+                      ? `Portada seleccionada: ${mediaItems.find((m) => m.id === selectedCoverID)?.filename || 'imagen seleccionada'}`
+                      : 'Sin portada seleccionada'}
+                  </span>
+                </div>
+                {selectedCoverID ? (
                   <button
                     className="ml-3 shrink-0 rounded-xl border border-[var(--theme-elevation-200)] bg-white px-3 py-1.5 text-xs font-bold text-[var(--theme-elevation-600)] transition hover:border-[var(--txdx-orange)] hover:text-[var(--txdx-orange)]"
                     onClick={() => {
@@ -418,10 +507,17 @@ export function PanelPostEditor({
                 ) : null}
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div aria-label="Portadas disponibles" className="flex snap-x gap-3 overflow-x-auto pb-3" role="region">
                 {mediaItems.slice(0, 6).map((item) => (
-                  <label className="group relative cursor-pointer" key={`cover-${item.id}`}>
-                    <input className="peer sr-only" defaultChecked={currentCoverID === item.id} name="coverImage" type="radio" value={item.id} />
+                  <label className="group relative w-[min(19rem,78vw)] shrink-0 snap-start cursor-pointer" key={`cover-${item.id}`}>
+                    <input
+                      checked={selectedCoverID === item.id}
+                      className="peer sr-only"
+                      name="coverImage"
+                      onChange={() => setSelectedCoverID(item.id)}
+                      type="radio"
+                      value={item.id}
+                    />
                     <span className="absolute right-3 top-3 z-10 hidden items-center gap-1.5 rounded-full bg-[var(--txdx-blue)] px-3 py-1.5 text-[0.7rem] font-extrabold uppercase tracking-[0.08em] text-white shadow-[0_8px_20px_rgba(18,104,255,0.35)] peer-checked:flex">
                       <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                         <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
@@ -475,20 +571,30 @@ export function PanelPostEditor({
               <label className="block">
                 <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Titulo SEO</span>
                 <input
-                  className="min-h-12 w-full rounded-2xl border border-[var(--theme-elevation-200)] bg-white px-4 text-sm text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
+                  autoComplete="off"
+                  className={`min-h-12 w-full rounded-2xl border bg-white px-4 text-sm text-[var(--theme-elevation-800)] outline-none transition focus:ring-4 ${characterCounts.seoTitle > 70 ? 'border-[var(--txdx-orange)] focus:border-[var(--txdx-orange)] focus:ring-[rgba(255,90,24,0.12)]' : 'border-[var(--theme-elevation-200)] focus:border-[var(--txdx-blue)] focus:ring-[rgba(18,104,255,0.12)]'}`}
                   defaultValue={article?.seoTitle || ''}
                   name="seoTitle"
+                  aria-invalid={characterCounts.seoTitle > 70}
                   type="text"
                 />
+                <div className="mt-1 flex justify-end">
+                  <CharacterCounter max={70} value={characterCounts.seoTitle} />
+                </div>
               </label>
 
               <label className="block">
                 <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Descripcion SEO</span>
                 <textarea
-                  className="min-h-24 w-full rounded-2xl border border-[var(--theme-elevation-200)] bg-white px-4 py-3 text-sm leading-6 text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
+                  autoComplete="off"
+                  className={`min-h-24 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6 text-[var(--theme-elevation-800)] outline-none transition focus:ring-4 ${characterCounts.seoDescription > 170 ? 'border-[var(--txdx-orange)] focus:border-[var(--txdx-orange)] focus:ring-[rgba(255,90,24,0.12)]' : 'border-[var(--theme-elevation-200)] focus:border-[var(--txdx-blue)] focus:ring-[rgba(18,104,255,0.12)]'}`}
                   defaultValue={article?.seoDescription || ''}
                   name="seoDescription"
+                  aria-invalid={characterCounts.seoDescription > 170}
                 />
+                <div className="mt-1 flex justify-end">
+                  <CharacterCounter max={170} value={characterCounts.seoDescription} />
+                </div>
               </label>
 
               <label className="block">

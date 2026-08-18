@@ -62,8 +62,14 @@
 }
 
 .navigation a:hover::after,
-.navigation a:focus-visible::after {
+.navigation a:focus-visible::after,
+.navigation a[aria-current='page']::after {
   right: 0;
+}
+
+.navigation a[aria-current='page'] {
+  color: var(--color-ink-950);
+  font-weight: 850;
 }
 
 .actions {

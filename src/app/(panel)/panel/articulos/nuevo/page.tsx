@@ -1,5 +1,4 @@
 import { getMediaURL } from '@/modules/content/infrastructure/payload/posts'
-import { plainTextToEditableHTML } from '@/modules/panel/server/post-editor'
 import { startPanelMeasure } from '@/modules/panel/server/perf'
 import { getPanelSession } from '@/modules/panel/server/session'
 
@@ -14,6 +13,13 @@ type Props = {
 export default async function NewPanelArticlePage({ searchParams }: Props) {
   const measure = startPanelMeasure('articulos:nuevo')
   const { payload, user } = await getPanelSession()
+  const profile = await payload.findByID({
+    collection: 'admins',
+    depth: 1,
+    id: user.id,
+    overrideAccess: false,
+    user,
+  })
   const params = await searchParams
   const status = Array.isArray(params.estado) ? params.estado[0] : params.estado || null
 
@@ -24,6 +30,12 @@ export default async function NewPanelArticlePage({ searchParams }: Props) {
     overrideAccess: false,
     user,
     sort: '-createdAt',
+    where: {
+      and: [
+        { mimeType: { not_equals: 'application/pdf' } },
+        { or: [{ purpose: { equals: 'editorial' } }, { purpose: { exists: false } }] },
+      ],
+    },
   })
 
   const mediaItems: PanelEditorMediaItem[] = docs.map((doc) => ({
@@ -38,13 +50,11 @@ export default async function NewPanelArticlePage({ searchParams }: Props) {
   return (
     <PanelPostEditor
       article={null}
-      authorDefaults={{ name: user.name || '', role: user.publicTitle || '' }}
-      contentPlainText={plainTextToEditableHTML('')}
+      authorDefaults={{ avatarURL: getMediaURL(profile.avatar, 'avatar'), name: user.name || '', role: user.publicTitle || '' }}
       formAction={createPanelPostAction}
       mediaItems={mediaItems}
       mode="create"
       previewCoverURL={null}
-      simpleContentEnabled
       status={status}
     />
   )

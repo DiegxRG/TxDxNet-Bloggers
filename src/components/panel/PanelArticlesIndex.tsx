@@ -4,6 +4,24 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useDeferredValue, useMemo, useState } from 'react'
 
+import { PanelDeletePostButton } from './PanelDeletePostButton'
+
+function IconEdit() {
+  return (
+    <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+      <path d="m14.5 5.5 4 4M4 20l3.9-1 10.9-10.9a2.1 2.1 0 0 0-3-3L4.9 16 4 20Z" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function IconExternal() {
+  return (
+    <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+      <path d="M14 5h5v5M19 5l-8 8M19 13v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export type PanelArticleItem = {
   id: string
   title: string
@@ -20,6 +38,7 @@ export type PanelArticleItem = {
 type FilterKey = 'all' | 'draft' | 'featured' | 'published'
 
 type Props = {
+  deleteAction: (formData: FormData) => void | Promise<void>
   initialFilter: FilterKey
   items: PanelArticleItem[]
 }
@@ -28,7 +47,7 @@ const FILTERS: Array<{ key: FilterKey; label: string }> = [
   { key: 'all', label: 'Todos' },
   { key: 'draft', label: 'Borradores' },
   { key: 'published', label: 'Publicados' },
-  { key: 'featured', label: 'Destacados' },
+  { key: 'featured', label: 'Favoritos' },
 ]
 
 function formatDate(value: null | string) {
@@ -41,7 +60,7 @@ function formatDate(value: null | string) {
   }).format(new Date(value))
 }
 
-export function PanelArticlesIndex({ initialFilter, items }: Props) {
+export function PanelArticlesIndex({ deleteAction, initialFilter, items }: Props) {
   const [filter, setFilter] = useState<FilterKey>(initialFilter)
   const [query, setQuery] = useState('')
   const deferredQuery = useDeferredValue(query)
@@ -69,21 +88,9 @@ export function PanelArticlesIndex({ initialFilter, items }: Props) {
 
   return (
     <div className="txdx-my">
-      <header className="txdx-my__head">
-        <div>
-          <h1 className="txdx-my__title">Articulos</h1>
-          <p className="txdx-my__sub">
-            Filtra y entra al editor solo cuando haga falta.
-          </p>
-        </div>
-        <Link className="txdx-my__new" href="/panel/articulos/nuevo">
-          Nuevo articulo
-        </Link>
-      </header>
-
       <div className="rounded-[1.4rem] border border-[var(--theme-elevation-150)] bg-white p-4 shadow-[0_14px_40px_rgba(7,20,45,0.05)] sm:p-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
             {FILTERS.map((entry) => {
               const active = filter === entry.key
 
@@ -104,7 +111,8 @@ export function PanelArticlesIndex({ initialFilter, items }: Props) {
             })}
           </div>
 
-          <label className="block w-full max-w-xl lg:w-[360px]">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center xl:justify-end">
+            <label className="block w-full sm:w-[280px]">
             <span className="sr-only">Buscar articulos</span>
             <input
               className="min-h-12 w-full rounded-2xl border border-[var(--theme-elevation-200)] bg-[var(--theme-elevation-0)] px-4 text-sm text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
@@ -113,11 +121,24 @@ export function PanelArticlesIndex({ initialFilter, items }: Props) {
               type="search"
               value={query}
             />
-          </label>
+            </label>
+            <Link
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--txdx-orange)] px-5 text-sm font-extrabold text-white shadow-[0_10px_24px_rgba(255,90,24,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(255,90,24,0.38)]"
+              href="/panel/articulos/nuevo"
+            >
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+              </svg>
+              Nuevo articulo
+            </Link>
+          </div>
         </div>
 
-        <div className="mt-4 rounded-2xl border border-[rgba(18,104,255,0.08)] bg-[rgba(18,104,255,0.04)] px-4 py-3 text-sm text-[var(--theme-elevation-600)]">
-          {filtered.length} {filtered.length === 1 ? 'resultado visible' : 'resultados visibles'}.
+        <div className="mt-4 flex items-center gap-2 text-sm text-[var(--theme-elevation-600)]">
+          <span className="inline-flex min-w-8 items-center justify-center rounded-full bg-[var(--color-blue-50)] px-2 py-1 text-xs font-extrabold text-[var(--color-blue-600)]">
+            {filtered.length}
+          </span>
+          <span>{filtered.length === 1 ? 'resultado visible' : 'resultados visibles'}</span>
         </div>
       </div>
 
@@ -157,7 +178,7 @@ export function PanelArticlesIndex({ initialFilter, items }: Props) {
                       </span>
                       {item.featured ? (
                         <span className="rounded-full bg-[rgba(255,90,24,0.12)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-[var(--txdx-orange)]">
-                          Destacado
+                          Favorito
                         </span>
                       ) : null}
                     </div>
@@ -168,30 +189,32 @@ export function PanelArticlesIndex({ initialFilter, items }: Props) {
                       {item.excerpt}
                     </p>
 
-                    <div className="mt-auto flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold text-[var(--theme-elevation-500)]">
-                      <span>{formatDate(item.updatedAt)}</span>
-                      <span aria-hidden="true">/</span>
-                      <span>{formatDate(item.publishedAt)}</span>
+                    <div className="mt-auto flex flex-wrap items-center gap-2 pt-2 text-xs font-semibold text-[var(--theme-elevation-500)]">
+                      <span>{item.status === 'published' ? 'Publicado' : 'Actualizado'}</span>
+                      <span>{formatDate(item.status === 'published' ? item.publishedAt : item.updatedAt)}</span>
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-3">
                       <Link
-                        className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-[var(--txdx-orange)] px-4 text-sm font-extrabold text-white transition hover:-translate-y-0.5"
+                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--txdx-orange)] px-4 text-sm font-extrabold text-white transition hover:-translate-y-0.5"
                         href={`/panel/articulos/${item.id}`}
                       >
-                        Editar en panel
+                        <IconEdit />
+                        Editar
                       </Link>
 
                       {previewHref ? (
                         <Link
-                          className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-[var(--theme-elevation-200)] px-4 text-sm font-bold text-[var(--theme-elevation-700)] transition hover:border-[var(--color-blue-150)] hover:text-[var(--color-blue-600)]"
+                          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[rgba(18,104,255,0.2)] bg-[rgba(18,104,255,0.06)] px-4 text-sm font-bold text-[var(--color-blue-600)] transition hover:border-[var(--color-blue-400)] hover:bg-[rgba(18,104,255,0.1)]"
                           href={previewHref}
                           prefetch={false}
                           target="_blank"
                         >
-                          Vista previa
+                          <IconExternal />
+                          Vista publica
                         </Link>
                       ) : null}
+                      <PanelDeletePostButton action={deleteAction} compact postID={item.id} />
                     </div>
                   </div>
                 </article>

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, authenticated } from '@/access'
+import { isMediaReferenced } from '@/modules/panel/server/media-references'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -23,9 +24,28 @@ export const Media: CollectionConfig = {
     read: anyone,
     create: authenticated,
     update: authenticated,
-    delete: authenticated,
+    delete: async ({ id, req }) => {
+      if (!req.user || !id) return false
+
+      try {
+        return !(await isMediaReferenced(req.payload, req.user, String(id)))
+      } catch {
+        return false
+      }
+    },
   },
   fields: [
+    {
+      name: 'purpose',
+      type: 'select',
+      label: 'Uso del archivo',
+      defaultValue: 'editorial',
+      options: [
+        { label: 'Editorial', value: 'editorial' },
+        { label: 'Avatar', value: 'avatar' },
+      ],
+      admin: { hidden: true },
+    },
     {
       name: 'alt',
       type: 'text',
@@ -50,7 +70,8 @@ export const Media: CollectionConfig = {
       { name: 'thumbnail', width: 480, height: 320, position: 'centre' },
       { name: 'card', width: 960, height: 640, position: 'centre' },
       { name: 'hero', width: 1920, height: 1080, position: 'centre' },
+      { name: 'avatar', width: 256, height: 256, position: 'centre' },
     ],
-    mimeTypes: ['image/*', 'application/pdf'],
+    mimeTypes: ['image/*'],
   },
 }

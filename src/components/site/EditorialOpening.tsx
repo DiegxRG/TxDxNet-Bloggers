@@ -12,8 +12,20 @@ import {
   type OpeningStory,
 } from './EditorialLibraryStage'
 
-export function EditorialOpening({ posts }: { posts: Post[] }) {
-  const publishedStories: OpeningStory[] = posts.slice(0, 3).map((post) => ({
+type Props = {
+  featuredPosts?: Post[]
+  posts: Post[]
+}
+
+export function EditorialOpening({ featuredPosts = [], posts }: Props) {
+  const favoritePosts = featuredPosts.length ? featuredPosts : posts.filter((post) => post.featured).slice(0, 3)
+  const favoriteIDs = new Set(favoritePosts.map((post) => String(post.id)))
+  const selectedPosts = [
+    ...favoritePosts,
+    ...posts.filter((post) => !favoriteIDs.has(String(post.id))),
+  ].slice(0, 3)
+
+  const publishedStories: OpeningStory[] = selectedPosts.map((post) => ({
     key: `post-${post.id}`,
     author: post.authorName,
     category: 'Insight TxDxNet',

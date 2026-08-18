@@ -2,16 +2,17 @@
 
 import Image from 'next/image'
 
+import { AuthorAvatar } from '@/components/site/AuthorAvatar'
 import { PanelRichTextPreview } from './PanelRichTextPreview'
 import type { Post } from '@/payload-types'
 
 type ArticleData = {
+  authorAvatar?: Post['authorAvatar']
   authorName?: string
   authorRole?: string
   content?: Post['content']
   excerpt?: string
   featured?: boolean
-  htmlContent?: string
   publishedAt?: string
   title?: string
 }
@@ -19,6 +20,7 @@ type ArticleData = {
 type Props = {
   article: null | ArticleData | Post
   authorDefaults: {
+    avatarURL?: null | string
     name: string
     role: string
   }
@@ -39,6 +41,7 @@ function CardPreview({ article, authorDefaults, coverURL }: Omit<Props, 'tab'>) 
   const title = article?.title || 'Titulo del articulo'
   const excerpt = article?.excerpt || 'Resumen del articulo aqui...'
   const authorName = article?.authorName || authorDefaults.name || 'Autor'
+  const authorAvatar = article?.authorAvatar || authorDefaults.avatarURL
   const date = formatDate(article?.publishedAt)
 
   return (
@@ -63,7 +66,8 @@ function CardPreview({ article, authorDefaults, coverURL }: Omit<Props, 'tab'>) 
         <p className="mt-2 line-clamp-2 text-sm leading-5 text-[var(--theme-elevation-500)]">
           {excerpt}
         </p>
-        <div className="mt-4 border-t border-[var(--theme-elevation-100)] pt-3 text-xs font-semibold text-[var(--theme-elevation-500)]">
+        <div className="mt-4 flex items-center gap-2 border-t border-[var(--theme-elevation-100)] pt-3 text-xs font-semibold text-[var(--theme-elevation-500)]">
+          <AuthorAvatar media={authorAvatar} name={authorName} size="small" />
           <span>{authorName}</span>
           <span aria-hidden="true" className="mx-1.5">·</span>
           <span>Leer articulo →</span>
@@ -78,6 +82,7 @@ function ArticlePreview({ article, authorDefaults, coverURL }: Omit<Props, 'tab'
   const excerpt = article?.excerpt || 'Resumen del articulo aqui...'
   const authorName = article?.authorName || authorDefaults.name || 'Autor'
   const authorRole = article?.authorRole || authorDefaults.role || ''
+  const authorAvatar = article?.authorAvatar || authorDefaults.avatarURL
   const date = formatDate(article?.publishedAt)
 
   return (
@@ -98,10 +103,13 @@ function ArticlePreview({ article, authorDefaults, coverURL }: Omit<Props, 'tab'
           {excerpt}
         </p>
         <div className="mt-5 flex flex-wrap gap-6 border-t border-white/10 pt-4">
-          <div className="grid gap-0.5">
-            <span className="text-[0.55rem] font-bold uppercase tracking-[0.09em] text-white/40">Por</span>
-            <span className="text-xs font-semibold">{authorName}</span>
-            {authorRole ? <span className="text-[0.6rem] text-white/40">{authorRole}</span> : null}
+          <div className="flex items-center gap-2.5">
+            <AuthorAvatar media={authorAvatar} name={authorName} size="small" />
+            <div className="grid gap-0.5">
+              <span className="text-[0.55rem] font-bold uppercase tracking-[0.09em] text-white/40">Por</span>
+              <span className="text-xs font-semibold">{authorName}</span>
+              {authorRole ? <span className="text-[0.6rem] text-white/40">{authorRole}</span> : null}
+            </div>
           </div>
           <div className="grid gap-0.5">
             <span className="text-[0.55rem] font-bold uppercase tracking-[0.09em] text-white/40">Publicado</span>
@@ -117,12 +125,7 @@ function ArticlePreview({ article, authorDefaults, coverURL }: Omit<Props, 'tab'
       ) : null}
 
       <div className="px-6 py-8 sm:px-10">
-        {'htmlContent' in (article || {}) && (article as ArticleData).htmlContent ? (
-          <div
-            className="prose prose-sm max-w-none [&_blockquote]:rounded-2xl [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--txdx-orange)] [&_blockquote]:bg-[rgba(255,90,24,0.06)] [&_blockquote]:px-5 [&_blockquote]:py-4 [&_img]:my-4 [&_img]:rounded-2xl [&_img]:max-h-[360px] [&_img]:w-full [&_img]:object-contain [&_h1]:text-3xl [&_h1]:font-extrabold [&_h1]:tracking-[-0.05em] [&_h2]:text-xl [&_h2]:font-bold [&_p]:my-2 [&_p]:leading-7 [&_ul]:pl-6 [&_ol]:pl-6"
-            dangerouslySetInnerHTML={{ __html: (article as ArticleData).htmlContent! }}
-          />
-        ) : article?.content ? (
+        {article?.content ? (
           <PanelRichTextPreview data={article.content} />
         ) : (
           <p className="text-sm leading-7 text-[var(--theme-elevation-500)]">

@@ -5,20 +5,30 @@ import type { Post } from '@/payload-types'
 
 import styles from './ArticleArtwork.module.css'
 
-export function ArticleArtwork({ post, priority = false }: { post: Post; priority?: boolean }) {
+export function ArticleArtwork({
+  post,
+  priority = false,
+  featured = false,
+}: {
+  post: Post
+  priority?: boolean
+  featured?: boolean
+}) {
   const imageURL = getMediaURL(post.coverImage, 'card')
 
   return (
-    <div className={styles.artwork}>
+    <div className={`${styles.artwork} ${featured ? styles.featured : ''}`}>
       {imageURL ? (
-        <Image
-          alt={getMediaAlt(post.coverImage, post.title)}
-          className={styles.image}
-          fill
-          priority={priority}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 65vw, 720px"
-          src={imageURL}
-        />
+        <div className={styles.imageFrame}>
+          <Image
+            alt={getMediaAlt(post.coverImage, post.title)}
+            className={styles.image}
+            fill
+            priority={priority}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 65vw, 720px"
+            src={imageURL}
+          />
+        </div>
       ) : (
         <>
           <span aria-hidden="true" className={styles.shape} />

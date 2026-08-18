@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { AuthorAvatar } from '@/components/site/AuthorAvatar'
 import {
   estimateReadingMinutes,
   formatArticleDate,
@@ -21,7 +22,7 @@ export function ArticleCard({
   return (
     <article className={`${styles.card} ${variant === 'featured' ? styles.featured : ''}`}>
       <Link aria-label={`Leer: ${post.title}`} className={styles.link} href={`/articulos/${post.slug}`}>
-        <ArticleArtwork post={post} priority={priority} />
+        <ArticleArtwork featured={variant === 'featured'} post={post} priority={priority} />
         <div className={styles.copy}>
           <div className={styles.meta}>
             <span>Insight TxDxNet</span>
@@ -30,8 +31,11 @@ export function ArticleCard({
           <h3>{post.title}</h3>
           <p>{post.excerpt}</p>
           <div className={styles.footer}>
-            <span>
+            <span className={styles.author}>
+              <AuthorAvatar media={post.authorAvatar} name={post.authorName} size="small" />
+              <span>
               {post.authorName} · {formatArticleDate(post)}
+              </span>
             </span>
             <span aria-hidden="true">Leer artículo →</span>
           </div>

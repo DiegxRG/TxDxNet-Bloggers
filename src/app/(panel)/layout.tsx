@@ -3,6 +3,7 @@ import '@fontsource-variable/manrope'
 import type { ReactNode } from 'react'
 
 import { PanelShell } from '@/components/panel/PanelShell'
+import { getMediaURL } from '@/modules/content/infrastructure/payload/posts'
 import { getPanelSession } from '@/modules/panel/server/session'
 
 import '../(website)/globals.css'
@@ -11,10 +12,17 @@ import './panel/panel.css'
 export const dynamic = 'force-dynamic'
 
 export default async function PanelRootLayout({ children }: { children: ReactNode }) {
-  const { user } = await getPanelSession()
+  const { payload, user } = await getPanelSession()
+  const profile = await payload.findByID({
+    collection: 'admins',
+    depth: 1,
+    id: user.id,
+    overrideAccess: false,
+    user,
+  })
 
   return (
-    <html lang="es">
+    <html lang="es" data-scroll-behavior="smooth">
       <body className="txdx-panel-app">
         <a className="skip-link" href="#contenido-panel">
           Saltar al contenido del panel
@@ -24,6 +32,7 @@ export default async function PanelRootLayout({ children }: { children: ReactNod
             email: user.email,
             name: user.name,
             publicTitle: user.publicTitle,
+            avatarURL: getMediaURL(profile.avatar, 'avatar'),
           }}
         >
           {children}

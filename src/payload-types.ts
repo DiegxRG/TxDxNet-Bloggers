@@ -130,6 +130,10 @@ export interface Admin {
    * Cargo que se muestra como firma del autor en los artículos (ej.: Ingeniero de seguridad).
    */
   publicTitle?: string | null;
+  /**
+   * Foto circular que se muestra junto a tu firma en los articulos publicos.
+   */
+  avatar?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -155,6 +159,7 @@ export interface Admin {
  */
 export interface Media {
   id: string;
+  purpose?: ('editorial' | 'avatar') | null;
   /**
    * Describe la imagen para accesibilidad y SEO.
    */
@@ -191,6 +196,14 @@ export interface Media {
       filename?: string | null;
     };
     hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    avatar?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -260,6 +273,7 @@ export interface Post {
    * Máximo 70 caracteres. Si se deja vacío se usa el título.
    */
   seoTitle?: string | null;
+  authorAvatar?: (string | null) | Media;
   /**
    * Máximo 170 caracteres. Si se deja vacío se usa el resumen.
    */
@@ -366,6 +380,7 @@ export interface PayloadMigration {
 export interface AdminsSelect<T extends boolean = true> {
   name?: T;
   publicTitle?: T;
+  avatar?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -388,6 +403,7 @@ export interface AdminsSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  purpose?: T;
   alt?: T;
   caption?: T;
   credit?: T;
@@ -436,6 +452,16 @@ export interface MediaSelect<T extends boolean = true> {
               filesize?: T;
               filename?: T;
             };
+        avatar?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
       };
 }
 /**
@@ -453,6 +479,7 @@ export interface PostsSelect<T extends boolean = true> {
   authorName?: T;
   authorRole?: T;
   seoTitle?: T;
+  authorAvatar?: T;
   seoDescription?: T;
   noindex?: T;
   socialImage?: T;
@@ -549,6 +576,41 @@ export interface ActionCardBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'actionCard';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ComparisonTableBlock".
+ */
+export interface ComparisonTableBlock {
+  title: string;
+  caption?: string | null;
+  /**
+   * Array de textos, por ejemplo: ["Opción A", "Opción B"].
+   */
+  headers:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Array de objetos { label, cells }, donde cells es un array de textos.
+   */
+  rows:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'comparisonTable';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

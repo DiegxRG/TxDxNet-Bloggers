@@ -14,12 +14,18 @@ export default async function PanelMediaPage({ searchParams }: Props) {
   const { payload, user } = await getPanelSession()
   const params = await searchParams
 
-  const { docs, totalDocs } = await payload.find({
+  const { docs } = await payload.find({
     collection: 'media',
     limit: 100,
     overrideAccess: false,
     user,
     sort: '-createdAt',
+    where: {
+      and: [
+        { mimeType: { not_equals: 'application/pdf' } },
+        { or: [{ purpose: { equals: 'editorial' } }, { purpose: { exists: false } }] },
+      ],
+    },
   })
 
   const items: MediaItem[] = docs.map((media) => {
@@ -51,11 +57,7 @@ export default async function PanelMediaPage({ searchParams }: Props) {
           {statusMessage}
         </div>
       ) : null}
-      <div className="rounded-[1.5rem] border border-[rgba(18,104,255,0.08)] bg-[rgba(18,104,255,0.04)] px-5 py-4 text-sm leading-6 text-[var(--theme-elevation-600)] shadow-[0_10px_30px_rgba(7,20,45,0.04)]">
-        Sube archivos desde aqui y haz clic sobre cualquier activo para editar texto alternativo,
-        leyenda y credito sin salir del panel propio.
-      </div>
-      <MediaLibraryClient editBasePath="/panel/biblioteca" editLabel="Gestionar" items={items} total={totalDocs} />
+      <MediaLibraryClient editBasePath="/panel/biblioteca" editLabel="Gestionar" items={items} />
     </div>
   )
 }

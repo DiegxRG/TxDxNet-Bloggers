@@ -42,7 +42,7 @@ export const viewport: Viewport = {
 
 export default function WebsiteLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" data-scroll-behavior="smooth">
       <body>
         <a className="skip-link" href="#contenido">
           Saltar al contenido
