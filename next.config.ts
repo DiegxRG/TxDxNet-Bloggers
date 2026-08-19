@@ -14,8 +14,12 @@ const nextConfig: NextConfig = {
       { pathname: '/logotxdx.png' },
       { pathname: '/Logo_XOC_Vectorial.png' },
       { pathname: '/logo_blanco.png' },
-      { pathname: '/Google_Play-Logo.wine.svg' },
-      { pathname: '/available-on-the-app-store.svg' },
+      { pathname: '/Google_Play_2022_icon.svg.webp' },
+      { pathname: '/App_Store_*.svg.webp' },
+      { pathname: '/domains/**' },
+      { pathname: '/prompt*.png' },
+      { pathname: '/service*.png' },
+      { pathname: '/Designer__19_-removebg-preview.png' },
     ],
     remotePatterns: [
       {

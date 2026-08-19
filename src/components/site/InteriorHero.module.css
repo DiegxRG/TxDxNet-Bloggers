@@ -8,6 +8,18 @@
   color: var(--color-ink-950);
 }
 
+.hero::before {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgb(7 20 45 / 0.085) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(7 20 45 / 0.085) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  mask-image: linear-gradient(90deg, black, transparent 88%);
+  content: '';
+  opacity: 0.9;
+}
+
 .hero::after {
   position: absolute;
   top: -14rem;
@@ -95,7 +107,7 @@
   letter-spacing: -0.075em;
   line-height: 0.88;
   text-wrap: balance;
-  animation: hero-title-type 1600ms var(--ease-signal) both;
+  animation: hero-title-type 2600ms var(--ease-signal) both;
 }
 
 .content p {

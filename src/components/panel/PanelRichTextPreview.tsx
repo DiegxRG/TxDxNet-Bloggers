@@ -2,9 +2,16 @@
 
 import { RichText } from '@payloadcms/richtext-lexical/react'
 
-import { articleConverters } from '@/components/articles/article-rich-text-converters'
+import { createArticleConverters } from '@/components/articles/article-rich-text-converters'
 import type { Post } from '@/payload-types'
 
-export function PanelRichTextPreview({ data }: { data: Post['content'] }) {
-  return <RichText className="article-prose" converters={articleConverters} data={data} />
+type PreviewMediaItem = {
+  id: string
+  thumbnailURL: null | string
+}
+
+export function PanelRichTextPreview({ data, mediaItems }: { data: Post['content']; mediaItems?: PreviewMediaItem[] }) {
+  const resolveUploadURL = (id: string) => mediaItems?.find((item) => item.id === id)?.thumbnailURL || null
+
+  return <RichText className="article-prose" converters={createArticleConverters(resolveUploadURL)} data={data} />
 }

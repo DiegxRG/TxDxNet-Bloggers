@@ -564,12 +564,15 @@ export function PanelPostEditor({
 
           <section className="rounded-[1.7rem] border border-[var(--theme-elevation-150)] bg-white p-6 shadow-[0_18px_44px_rgba(7,20,45,0.05)]">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--color-blue-500)]">
-              SEO y control
+              SEO y control (opcional)
+            </p>
+            <p className="mt-2 max-w-2xl text-xs leading-6 text-[var(--theme-elevation-500)]">
+              Puedes dejar toda esta sección vacía. El artículo usará automáticamente su título, resumen, portada y URL pública.
             </p>
 
             <div className="mt-5 grid gap-4">
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Titulo SEO</span>
+                <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Título SEO (opcional)</span>
                 <input
                   autoComplete="off"
                   className={`min-h-12 w-full rounded-2xl border bg-white px-4 text-sm text-[var(--theme-elevation-800)] outline-none transition focus:ring-4 ${characterCounts.seoTitle > 70 ? 'border-[var(--txdx-orange)] focus:border-[var(--txdx-orange)] focus:ring-[rgba(255,90,24,0.12)]' : 'border-[var(--theme-elevation-200)] focus:border-[var(--txdx-blue)] focus:ring-[rgba(18,104,255,0.12)]'}`}
@@ -584,7 +587,7 @@ export function PanelPostEditor({
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Descripcion SEO</span>
+                <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">Descripción SEO (opcional)</span>
                 <textarea
                   autoComplete="off"
                   className={`min-h-24 w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-6 text-[var(--theme-elevation-800)] outline-none transition focus:ring-4 ${characterCounts.seoDescription > 170 ? 'border-[var(--txdx-orange)] focus:border-[var(--txdx-orange)] focus:ring-[rgba(255,90,24,0.12)]' : 'border-[var(--theme-elevation-200)] focus:border-[var(--txdx-blue)] focus:ring-[rgba(18,104,255,0.12)]'}`}
@@ -598,7 +601,7 @@ export function PanelPostEditor({
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">URL canonica</span>
+                <span className="mb-2 block text-sm font-bold text-[var(--txdx-navy)]">URL canónica (opcional)</span>
                 <input
                   className="min-h-12 w-full rounded-2xl border border-[var(--theme-elevation-200)] bg-white px-4 text-sm text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
                   defaultValue={article?.canonicalURL || ''}
@@ -656,6 +659,7 @@ export function PanelPostEditor({
               article={previewArticle}
               authorDefaults={authorDefaults}
               coverURL={liveCoverURL}
+              mediaItems={mediaItems}
               tab={previewTab}
             />
           </div>

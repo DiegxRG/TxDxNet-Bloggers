@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 
 import { ArticleCard } from '@/components/articles/ArticleCard'
 import { ArticleRichText } from '@/components/articles/ArticleRichText'
+import { ArticlePipeline, type ArticlePipelineStep } from '@/components/site/ArticlePipeline'
 import { ResourceIcon } from '@/components/icons/ResourceIcon'
 import { AuthorAvatar } from '@/components/site/AuthorAvatar'
 import { ShareIcon } from '@/components/site/ShareIcon'
@@ -65,6 +66,100 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const relatedPosts = await getRelatedPosts(post)
   const heroImage = getMediaURL(post.coverImage, 'hero')
   const articleURL = new URL(`/articulos/${post.slug}`, process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com').toString()
+  const shareSteps: ArticlePipelineStep[] = [
+    {
+      detail: 'Amplificar este análisis.',
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleURL)}`,
+      icon: <ShareIcon network="linkedin" />,
+      label: 'LinkedIn',
+      tone: 'linkedin',
+      track: 'AMPLIFICAR',
+    },
+    {
+      detail: 'Llevar la señal a tu red.',
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleURL)}`,
+      icon: <ShareIcon network="facebook" />,
+      label: 'Facebook',
+      tone: 'facebook',
+      track: 'COMPARTIR',
+    },
+    {
+      detail: 'Publicar una perspectiva.',
+      href: `https://x.com/intent/post?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(articleURL)}`,
+      icon: <ShareIcon network="x" />,
+      label: 'En X',
+      tone: 'x',
+      track: 'SEÑALAR',
+    },
+    {
+      detail: 'Enviar por WhatsApp.',
+      href: `https://wa.me/?text=${encodeURIComponent(`${post.title} ${articleURL}`)}`,
+      icon: <ShareIcon network="whatsapp" />,
+      label: 'WhatsApp',
+      tone: 'whatsapp',
+      track: 'CONECTAR',
+    },
+    {
+      detail: 'Compartir directamente.',
+      href: `mailto:?subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(articleURL)}`,
+      icon: <ShareIcon network="email" />,
+      label: 'Correo',
+      tone: 'email',
+      track: 'ENVIAR',
+    },
+    {
+      detail: 'Seguir la señal TxDxSecure.',
+      href: 'https://www.instagram.com/txdxsecure/',
+      icon: <ShareIcon network="instagram" />,
+      label: 'Instagram',
+      tone: 'instagram',
+      track: 'SEGUIR',
+    },
+  ]
+  const ecosystemSteps: ArticlePipelineStep[] = [
+    {
+      detail: 'Operación digital segura.',
+      href: 'https://xoc.app/',
+      icon: <Image alt="" height={40} src="/Logo_XOC_Vectorial.png" width={40} />,
+      label: 'XOC App',
+      track: 'PLATAFORMA',
+    },
+    {
+      detail: 'Descargar XOC App.',
+      href: 'https://play.google.com/store/apps/details?id=com.vibecode.xocapp&hl=es_PE',
+      icon: <Image alt="" height={40} src="/Google_Play_2022_icon.svg.webp" width={40} />,
+      label: 'Play Store',
+      track: 'ANDROID',
+    },
+    {
+      detail: 'Descargar XOC App.',
+      href: 'https://apps.apple.com/uy/app/xoc/id6759814234',
+      icon: <Image alt="" height={40} src="/App_Store_(iOS).svg.webp" width={40} />,
+      label: 'App Store',
+      track: 'IOS',
+    },
+    {
+      detail: 'Información de la aplicación.',
+      href: 'https://xoc.app/xoc-policies/index.html',
+      icon: <ResourceIcon type="support" />,
+      label: 'Políticas y soporte',
+      track: 'RECURSOS XOC',
+    },
+    {
+      detail: 'Conoce nuestro trabajo.',
+      href: 'https://www.txdxsecure.com/',
+      icon: <Image alt="" height={40} src="/logotxdx.png" width={70} />,
+      label: 'TxDxSecure',
+      track: 'EMPRESA',
+    },
+    {
+      detail: 'Explorar capacidades.',
+      href: '/dominios',
+      icon: <ResourceIcon type="domains" />,
+      label: '11 dominios XOC',
+      track: 'MAPA TXDX',
+    },
+  ]
 
   return (
     <main id="contenido" className="bg-paper text-ink-950">
@@ -115,134 +210,29 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </header>
 
         <div className="article-body-shell">
-          <aside aria-label="Compartir artículo" className="article-share-rail">
-            <span>Compartir esta señal</span>
-            <div className="article-share-links">
-              <a
-                aria-label="Compartir en LinkedIn"
-                className="article-share-link"
-                data-network="linkedin"
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleURL)}`}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <span aria-hidden="true" className="article-share-icon"><ShareIcon network="linkedin" /></span>
-                <span>LinkedIn</span>
-              </a>
-              <a
-                aria-label="Compartir en Facebook"
-                className="article-share-link"
-                data-network="facebook"
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleURL)}`}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <span aria-hidden="true" className="article-share-icon"><ShareIcon network="facebook" /></span>
-                <span>Facebook</span>
-              </a>
-              <a
-                aria-label="Compartir en X"
-                className="article-share-link"
-                data-network="x"
-                href={`https://x.com/intent/post?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(articleURL)}`}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <span aria-hidden="true" className="article-share-icon"><ShareIcon network="x" /></span>
-                <span>En X</span>
-              </a>
-              <a
-                aria-label="Compartir en WhatsApp"
-                className="article-share-link"
-                data-network="whatsapp"
-                href={`https://wa.me/?text=${encodeURIComponent(`${post.title} ${articleURL}`)}`}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <span aria-hidden="true" className="article-share-icon"><ShareIcon network="whatsapp" /></span>
-                <span>WhatsApp</span>
-              </a>
-              <a
-                aria-label="Compartir por correo"
-                className="article-share-link"
-                data-network="email"
-                href={`mailto:?subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(articleURL)}`}
-              >
-                <span aria-hidden="true" className="article-share-icon"><ShareIcon network="email" /></span>
-                <span>Correo</span>
-              </a>
-              <a
-                aria-label="Seguir a TxDxSecure en Instagram"
-                className="article-share-link article-share-link--follow"
-                data-network="instagram"
-                href="https://www.instagram.com/txdxsecure/"
-                rel="noreferrer"
-                target="_blank"
-              >
-                <span aria-hidden="true" className="article-share-icon"><ShareIcon network="instagram" /></span>
-                <span>Instagram</span>
-              </a>
-            </div>
-          </aside>
+          <ArticlePipeline
+            description="Pasa la señal a tu red para que una buena perspectiva no termine en una sola pantalla."
+            eyebrow="Compartir esta señal"
+            result="Señal distribuida"
+            resultLabel="CONOCIMIENTO EN MOVIMIENTO"
+            steps={shareSteps}
+            title="Amplifica el insight."
+            variant="share"
+          />
           <ArticleRichText data={post.content} />
-          <aside aria-label="Explorar el ecosistema TxDx" className="article-resource-panel">
-            <span>ECOSISTEMA TXDX</span>
-            <h2>Más allá de este insight.</h2>
-            <p>Conoce las plataformas, productos y espacios donde seguimos construyendo.</p>
-            <div className="article-resource-links">
-              <a href="https://xoc.app/" rel="noreferrer" target="_blank">
-                <span className="article-resource-logo article-resource-logo--xoc">
-                  <Image alt="Logo XOC" height={64} src="/Logo_XOC_Vectorial.png" width={64} />
-                </span>
-                <span>PLATAFORMA</span>
-                <strong>XOC App</strong>
-                <small>Operación digital segura ↗</small>
-              </a>
-              <a href="https://play.google.com/store/apps/details?id=com.vibecode.xocapp&hl=es_PE" rel="noreferrer" target="_blank">
-                <span className="article-resource-logo article-resource-logo--store">
-                  <Image alt="Google Play" height={48} src="/Google_Play_2022_icon.svg.webp" width={48} />
-                </span>
-                <span>ANDROID</span>
-                <strong>Play Store</strong>
-                <small>Descargar XOC App ↗</small>
-              </a>
-              <a href="https://apps.apple.com/uy/app/xoc/id6759814234" rel="noreferrer" target="_blank">
-                <span className="article-resource-logo article-resource-logo--store">
-                  <Image alt="App Store" height={48} src="/App_Store_(iOS).svg.webp" width={48} />
-                </span>
-                <span>IOS</span>
-                <strong>App Store</strong>
-                <small>Descargar XOC App ↗</small>
-              </a>
-              <a href="https://xoc.app/xoc-policies/index.html" rel="noreferrer" target="_blank">
-                <span className="article-resource-logo article-resource-logo--icon">
-                  <ResourceIcon type="support" />
-                </span>
-                <span>RECURSOS XOC</span>
-                <strong>Políticas y soporte</strong>
-                <small>Información de la aplicación ↗</small>
-              </a>
-              <a href="https://www.txdxsecure.com/" rel="noreferrer" target="_blank">
-                <span className="article-resource-logo article-resource-logo--company">
-                  <Image alt="Logo TxDxSecure" height={48} src="/logotxdx.png" width={120} />
-                </span>
-                <span>EMPRESA</span>
-                <strong>TxDxSecure</strong>
-                <small>Conoce nuestro trabajo ↗</small>
-              </a>
-              <a href="/dominios">
-                <span className="article-resource-logo article-resource-logo--icon">
-                  <ResourceIcon type="domains" />
-                </span>
-                <span>MAPA TXDX</span>
-                <strong>11 dominios XOC</strong>
-                <small>Explorar capacidades ↗</small>
-              </a>
-            </div>
-          </aside>
+          <ArticlePipeline
+            description="Explora las plataformas, productos y capacidades que forman el ecosistema TxDx."
+            eyebrow="Ecosistema TxDx"
+            result="Operación conectada"
+            resultLabel="ECOSISTEMA TXDX EN MARCHA"
+            steps={ecosystemSteps}
+            title="Más allá de este insight."
+            variant="ecosystem"
+          />
         </div>
 
         <section aria-labelledby="article-author-title" className="article-author-section">
+          <div aria-hidden="true" className="article-author-signal" />
           <div className="article-author-layout">
             <div>
               <span className="article-section-kicker">AUTORÍA / TXDXNET</span>
@@ -253,6 +243,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               </p>
             </div>
             <div className="article-author-card">
+              <div aria-hidden="true" className="article-author-outline" />
               <AuthorAvatar media={post.authorAvatar} name={post.authorName} size="large" />
               <div>
                 <h3>{post.authorName}</h3>

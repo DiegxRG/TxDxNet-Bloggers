@@ -37,6 +37,15 @@ export default function ServicesPage() {
           <div className={styles.grid}>
             {coreServices.map((service, index) => (
               <article className={styles.card} key={service.code}>
+                {service.image ? (
+                  <Image
+                    alt=""
+                    className={styles.cardImage}
+                    fill
+                    sizes="(max-width: 759px) 100vw, 50vw"
+                    src={service.image}
+                  />
+                ) : null}
                 <div className={styles.cardMeta}>
                   <span>{String(index + 1).padStart(2, '0')}</span>
                   <span>{service.eyebrow}</span>

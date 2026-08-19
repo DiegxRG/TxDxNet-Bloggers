@@ -31,3 +31,5 @@ Thumbs.db
 # temporary upstream sources
 /.payload-source
 /.payload-template
+
+.vercel

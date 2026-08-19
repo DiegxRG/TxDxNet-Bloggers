@@ -25,6 +25,7 @@ type Props = {
     role: string
   }
   coverURL: null | string
+  mediaItems: Array<{ id: string; thumbnailURL: null | string }>
   tab: 'article' | 'card'
 }
 
@@ -37,7 +38,7 @@ function formatDate(value: null | string | undefined) {
   }).format(new Date(value))
 }
 
-function CardPreview({ article, authorDefaults, coverURL }: Omit<Props, 'tab'>) {
+function CardPreview({ article, authorDefaults, coverURL }: Omit<Props, 'mediaItems' | 'tab'>) {
   const title = article?.title || 'Titulo del articulo'
   const excerpt = article?.excerpt || 'Resumen del articulo aqui...'
   const authorName = article?.authorName || authorDefaults.name || 'Autor'
@@ -77,7 +78,7 @@ function CardPreview({ article, authorDefaults, coverURL }: Omit<Props, 'tab'>) 
   )
 }
 
-function ArticlePreview({ article, authorDefaults, coverURL }: Omit<Props, 'tab'>) {
+function ArticlePreview({ article, authorDefaults, coverURL, mediaItems }: Omit<Props, 'tab'>) {
   const title = article?.title || 'Titulo del articulo'
   const excerpt = article?.excerpt || 'Resumen del articulo aqui...'
   const authorName = article?.authorName || authorDefaults.name || 'Autor'
@@ -86,61 +87,67 @@ function ArticlePreview({ article, authorDefaults, coverURL }: Omit<Props, 'tab'
   const date = formatDate(article?.publishedAt)
 
   return (
-    <div className="overflow-hidden rounded-xl border border-[var(--theme-elevation-150)] bg-white shadow-[0_12px_30px_rgba(7,20,45,0.08)]">
-      <div className="relative bg-[#07142d] px-6 py-10 text-white sm:px-10">
-        <span className="inline-block rounded-full border border-white/20 px-3 py-1 text-[0.55rem] font-bold uppercase tracking-[0.12em] text-white/60">
-          INSIGHT
-        </span>
-        {article?.featured ? (
-          <span className="ml-2 inline-block rounded-full border border-[rgb(255,90,24,0.45)] px-3 py-1 text-[0.55rem] font-bold uppercase tracking-[0.12em] text-[#ff9c74]">
-            SELECCION EDITORIAL
-          </span>
-        ) : null}
-        <h1 className="mt-5 font-display text-[clamp(1.8rem,4vw,3rem)] font-semibold leading-[0.88] tracking-[-0.06em]">
-          {title}
-        </h1>
-        <p className="mt-4 max-w-xl text-sm leading-6 text-white/60">
-          {excerpt}
-        </p>
-        <div className="mt-5 flex flex-wrap gap-6 border-t border-white/10 pt-4">
-          <div className="flex items-center gap-2.5">
-            <AuthorAvatar media={authorAvatar} name={authorName} size="small" />
-            <div className="grid gap-0.5">
-              <span className="text-[0.55rem] font-bold uppercase tracking-[0.09em] text-white/40">Por</span>
-              <span className="text-xs font-semibold">{authorName}</span>
-              {authorRole ? <span className="text-[0.6rem] text-white/40">{authorRole}</span> : null}
+    <div className="overflow-hidden rounded-[1.25rem] border border-[var(--theme-elevation-150)] bg-white shadow-[0_12px_30px_rgba(7,20,45,0.08)]">
+      <header className="article-hero">
+        <div className="article-hero-grid" />
+        <div className="relative mx-auto max-w-[1440px] px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
+          <span className="article-back-link">Vista previa privada</span>
+          <div className={`article-hero-layout${coverURL ? '' : ' article-hero-layout--no-image'}`}>
+            <div className="article-hero-copy">
+              <div className="article-kicker">
+                <span>INSIGHT</span>
+                {article?.featured ? <span>SELECCIÓN EDITORIAL</span> : null}
+              </div>
+              <h1>{title}</h1>
+              <p className="article-deck">{excerpt}</p>
+            </div>
+            {coverURL ? (
+              <div className="article-hero-media">
+                <Image alt="Portada preview" fill priority sizes="(max-width: 767px) 100vw, 48vw" src={coverURL} />
+              </div>
+            ) : null}
+            <div className="article-byline">
+              <div className="article-byline-author">
+                <AuthorAvatar media={authorAvatar} name={authorName} size="large" />
+                <div>
+                  <span>Por</span>
+                  <strong>{authorName}</strong>
+                  {authorRole ? <small>{authorRole}</small> : null}
+                </div>
+              </div>
+              <div>
+                <span>Publicado</span>
+                <strong>{date}</strong>
+                <small>Vista previa</small>
+              </div>
             </div>
           </div>
-          <div className="grid gap-0.5">
-            <span className="text-[0.55rem] font-bold uppercase tracking-[0.09em] text-white/40">Publicado</span>
-            <span className="text-xs font-semibold">{date}</span>
-          </div>
         </div>
-      </div>
+      </header>
 
-      {coverURL ? (
-        <div className="relative h-48 w-full bg-[#0b1d3d] sm:h-64">
-          <Image alt="Portada preview" fill sizes="100vw" src={coverURL} />
-        </div>
-      ) : null}
-
-      <div className="px-6 py-8 sm:px-10">
+      <div className="article-body-shell">
+        <aside className="article-side-note">
+          <span>TXDX / PREVIEW</span>
+          <p>Esta vista usa el mismo renderizador de contenido que el artículo público.</p>
+        </aside>
         {article?.content ? (
-          <PanelRichTextPreview data={article.content} />
+          <PanelRichTextPreview data={article.content} mediaItems={mediaItems} />
         ) : (
-          <p className="text-sm leading-7 text-[var(--theme-elevation-500)]">
-            Escribe en el editor para ver el contenido aqui.
-          </p>
+          <p className="article-prose">Escribe en el editor para ver el contenido aquí.</p>
         )}
+        <aside className="article-share-note">
+          <span>BORRADOR PRIVADO</span>
+          <p>Guarda los cambios y publica cuando el contenido esté listo.</p>
+        </aside>
       </div>
     </div>
   )
 }
 
-export function PanelArticlePreview({ article, authorDefaults, coverURL, tab }: Props) {
+export function PanelArticlePreview({ article, authorDefaults, coverURL, mediaItems, tab }: Props) {
   if (tab === 'card') {
     return <CardPreview article={article} authorDefaults={authorDefaults} coverURL={coverURL} />
   }
 
-  return <ArticlePreview article={article} authorDefaults={authorDefaults} coverURL={coverURL} />
+  return <ArticlePreview article={article} authorDefaults={authorDefaults} coverURL={coverURL} mediaItems={mediaItems} />
 }

@@ -113,12 +113,17 @@
 }
 
 .featured .copy {
+  min-width: 0;
   min-height: 25rem;
+  overflow: hidden;
   padding: clamp(1.7rem, 4vw, 3.4rem);
 }
 
 .featured .copy h3 {
-  font-size: clamp(2.8rem, 5.3vw, 5.4rem);
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: break-word;
+  font-size: clamp(2.35rem, 4.2vw, 4.5rem);
   letter-spacing: -0.065em;
   line-height: 0.94;
 }
@@ -136,7 +141,7 @@
 
 @media (min-width: 960px) {
   .featured .link {
-    grid-template-columns: minmax(0, 1.12fr) minmax(24rem, 0.88fr);
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
   }
 }
 
