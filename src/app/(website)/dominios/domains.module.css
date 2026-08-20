@@ -456,14 +456,15 @@
 }
 
 .sectionHeading h2 {
-  max-width: none;
+  max-width: 23ch;
   margin-top: 0.7rem;
   color: var(--color-ink-950);
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.7rem);
+  font-size: clamp(1.95rem, 3.5vw, 3.45rem);
   font-weight: 650;
   letter-spacing: -0.075em;
-  line-height: 0.92;
+  line-height: 0.98;
+  text-wrap: pretty;
 }
 
 .sectionHeading p {
@@ -505,165 +506,239 @@
   background: linear-gradient(90deg, transparent, var(--color-signal-orange));
 }
 
-.domainGrid {
+.domainFeatureList {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  margin-top: clamp(2rem, 4vw, 4rem);
 }
 
-.domainGridFinal {
+.domainFeature {
+  --feature-accent: var(--color-signal-orange);
   display: grid;
-  width: calc(66.666% - 0.65rem);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-  margin: 1rem auto 0;
-}
-
-.domainCard {
-  position: relative;
-  display: flex;
-  min-height: 22rem;
-  flex-direction: column;
+  grid-template-columns: minmax(16rem, 0.78fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0;
   overflow: hidden;
-  border: 1px solid rgb(255 255 255 / 0.16);
-  border-radius: 1.25rem;
-  background: linear-gradient(145deg, #123a78, #07142d 80%);
-  color: #fff;
+  border: 1px solid rgb(7 20 45 / 0.13);
+  border-radius: 1rem 0.3rem 1rem 0.3rem;
+  background: #fff;
+  box-shadow: 0 16px 42px rgb(7 20 45 / 0.07);
+}
+
+.domainFeatureReverse {
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.78fr);
+}
+
+.domainFeatureReverse .domainFeatureMedia {
+  order: 2;
+}
+
+.domainFeatureReverse .domainFeatureCopy {
+  order: 1;
+}
+
+.domainFeatureMedia {
+  position: relative;
+  min-height: 18rem;
+  padding: 0.75rem;
+}
+
+.domainFeatureImageFrame {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+  border: 1px solid rgb(7 20 45 / 0.16);
+  border-radius: 0.7rem 0.2rem 0.7rem 0.2rem;
+  background: #07142d;
   isolation: isolate;
-  opacity: 0;
-  transform: translateY(2rem) scale(0.98);
-  transition: border-color 420ms ease, box-shadow 650ms ease, opacity 1150ms ease, transform 1350ms cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
 }
 
-.domainCardIn {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.domainCard::before {
+.domainFeatureImageFrame::before {
   position: absolute;
   z-index: 2;
-  top: 0;
-  right: 1.3rem;
-  left: 1.3rem;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-signal-orange), var(--color-signal-cyan), transparent);
+  inset: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.26);
+  border-radius: 0.65rem 0.15rem 0.65rem 0.15rem;
   content: '';
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 500ms var(--ease-signal);
+  pointer-events: none;
 }
 
-.domainCard:hover::before,
-.domainCard:focus-visible::before {
-  transform: scaleX(1);
-}
-
-.domainCard:nth-child(3n + 2) { background: linear-gradient(145deg, #0d4d83, #07142d 82%); }
-.domainCard:nth-child(3n + 3) { background: linear-gradient(145deg, #374b73, #0b1833 82%); }
-
-.domainCard:hover,
-.domainCard:focus-visible {
-  border-color: rgb(88 217 255 / 0.7);
-  box-shadow: 0 1.5rem 3rem rgb(7 20 45 / 0.22);
-  transform: translateY(-0.45rem);
-}
-
-.domainImage {
+.domainFeatureImage {
   z-index: -2;
   object-fit: cover;
-  opacity: 0.42;
-  transition: opacity 350ms ease, transform 700ms var(--ease-signal);
+  opacity: 0.9;
+  transform: scale(1.08);
+  transition: opacity 900ms ease, transform 1100ms var(--ease-signal), filter 900ms ease;
+  filter: saturate(0.82) contrast(1.05) brightness(0.72);
 }
 
-.domainCard:hover .domainImage { opacity: 0.62; transform: scale(1.06); }
-
-.domainCardGlow {
-  position: absolute;
-  z-index: -1;
-  top: -8rem;
-  right: -5rem;
-  width: 18rem;
-  height: 18rem;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(88 217 255 / 0.24), transparent 68%);
-  content: '';
-  transition: transform 600ms var(--ease-signal);
-}
-
-.domainCard:hover .domainCardGlow { transform: translate(-2rem, 2rem); }
-
-.domainCardGrid {
+.domainFeatureImageShade {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background-image: linear-gradient(rgb(255 255 255 / 0.08) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.08) 1px, transparent 1px);
-  background-size: 2.5rem 2.5rem;
-  mask-image: linear-gradient(to bottom, black, transparent 70%);
-  opacity: 0.3;
+  background:
+    linear-gradient(135deg, rgb(7 20 45 / 0.16), transparent 45%),
+    linear-gradient(0deg, rgb(7 20 45 / 0.76), transparent 52%);
 }
 
-.domainCardTopline {
+.domainFeatureImageMeta {
+  position: absolute;
+  z-index: 3;
+  right: 1.25rem;
+  bottom: 1.15rem;
+  left: 1.25rem;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.2rem 1.25rem;
-  color: var(--color-signal-orange);
-  font-family: var(--font-display);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  align-items: end;
+  color: white;
 }
 
-.domainCardIcon {
-  display: grid;
-  width: 2.6rem;
-  height: 2.6rem;
-  place-items: center;
-  border: 1px solid rgb(88 217 255 / 0.35);
-  border-radius: 50%;
+.domainFeatureImageMeta span {
   color: var(--color-signal-cyan);
-  transition: background 260ms ease, transform 350ms var(--ease-signal);
-}
-
-.domainCardIcon svg { width: 1.2rem; height: 1.2rem; }
-.domainCard:hover .domainCardIcon { background: rgb(88 217 255 / 0.14); transform: rotate(35deg); }
-
-.domainCardContent {
-  display: flex;
-  min-height: 0;
-  flex: 1;
-  flex-direction: column;
-  justify-content: end;
-  padding: 1.25rem;
-  background: linear-gradient(180deg, transparent, rgb(3 12 30 / 0.84) 48%);
-}
-
-.domainCardTag {
-  color: rgb(220 234 255 / 0.58);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 850;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
+}
+
+.domainFeatureScanline {
+  position: absolute;
+  z-index: 3;
+  top: 18%;
+  right: 1rem;
+  left: 1rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(88 217 255 / 0.72), transparent);
+  opacity: 0;
+  transform: translateY(8rem);
+}
+
+.domainFeatureCopy {
+  max-width: none;
+  padding: clamp(1.5rem, 3vw, 2.75rem);
+}
+
+.domainFeatureEyebrow {
+  color: var(--feature-accent);
+  font-size: 0.64rem;
+  font-weight: 850;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.domainCard h3 {
-  max-width: 17rem;
-  margin-top: 0.65rem;
+.domainFeatureTitle {
+  margin-top: 1rem;
+  color: var(--color-ink-950);
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 2.4vw, 2rem);
-  font-weight: 650;
-  letter-spacing: -0.06em;
-  line-height: 0.98;
+  font-size: clamp(3rem, 5.5vw, 6.2rem);
+  font-weight: 620;
+  letter-spacing: -0.075em;
+  line-height: 0.9;
+  text-wrap: balance;
 }
 
-.domainCard p {
-  max-width: 23rem;
-  margin-top: 0.8rem;
-  color: rgb(220 234 255 / 0.72);
-  font-size: 0.76rem;
-  line-height: 1.6;
+.domainFeatureIntro {
+  max-width: 31rem;
+  margin-top: 1.6rem;
+  color: var(--color-ink-600);
+  font-size: clamp(0.98rem, 1.35vw, 1.12rem);
+  line-height: 1.8;
+}
+
+.domainFeatureRule {
+  width: min(100%, 20rem);
+  height: 1px;
+  margin-top: 2rem;
+  background: linear-gradient(90deg, var(--feature-accent), transparent);
+}
+
+.domainFeatureFocus {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1.4rem;
+  color: var(--color-ink-700);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.domainFeatureFocus li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+
+.domainFeatureFocus li::before {
+  width: 0.38rem;
+  height: 0.38rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--color-signal-orange);
+  box-shadow: 0 0 0 0.22rem rgb(255 90 24 / 0.1);
+  content: '';
+}
+
+.domainFeatureLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  border-bottom: 1px solid rgb(7 20 45 / 0.2);
+  padding-bottom: 0.5rem;
+  color: var(--color-ink-950);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: border-color 220ms ease, color 220ms ease, gap 280ms var(--ease-signal);
+}
+
+.domainFeatureLink:hover,
+.domainFeatureLink:focus-visible {
+  gap: 1rem;
+  border-color: var(--color-signal-orange);
+  color: var(--color-signal-orange);
+}
+
+.domainFeature.motionReady:not(.isVisible) .domainFeatureImage {
+  opacity: 0;
+  filter: saturate(0.45) contrast(1.05) brightness(0.5);
+  transform: scale(1.16) translateY(1.5rem);
+}
+
+.domainFeature.motionReady:not(.isVisible) .domainFeatureCopy {
+  opacity: 0;
+  transform: translateY(2rem);
+}
+
+.domainFeature.isVisible .domainFeatureImage {
+  opacity: 0.9;
+  filter: saturate(0.82) contrast(1.05) brightness(0.72);
+  transform: scale(1);
+}
+
+.domainFeature.isVisible .domainFeatureCopy {
+  animation: domain-feature-copy-enter 800ms var(--feature-delay) var(--ease-signal) both;
+}
+
+.domainFeature.isVisible .domainFeatureTitle {
+  animation: domain-feature-copy-enter 800ms var(--feature-delay) var(--ease-signal) both;
+}
+
+.domainFeature.isVisible .domainFeatureIntro {
+  animation: domain-feature-copy-enter 800ms calc(var(--feature-delay) + 260ms) var(--ease-signal) both;
+}
+
+.domainFeature.isVisible .domainFeatureFocus {
+  animation: domain-feature-copy-enter 800ms calc(var(--feature-delay) + 420ms) var(--ease-signal) both;
+}
+
+.domainFeature.isVisible .domainFeatureScanline {
+  opacity: 1;
+  transform: translateY(21rem);
+  transition: opacity 300ms ease, transform 1300ms var(--ease-signal);
+}
+
+@keyframes domain-feature-copy-enter {
+  from { opacity: 0; transform: translateY(1.2rem); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .footerSection {
@@ -821,8 +896,6 @@
   .heroLayout { grid-template-columns: 1fr; }
   .heroCopy h1 { max-width: 12ch; }
   .orbitStage { max-width: 31rem; }
-  .domainGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .domainGridFinal { width: calc(100% - 0.5rem); }
 }
 
 @media (max-width: 700px) {
@@ -838,9 +911,18 @@
   .sectionHeading { display: grid; align-items: start; gap: 1rem; }
   .sectionHeadingAside { width: 100%; text-align: left; }
   .sectionHeadingAside p { text-align: left; }
-  .domainGrid { grid-template-columns: 1fr; }
-  .domainGridFinal { width: 100%; grid-template-columns: 1fr; }
-  .domainCard { min-height: 20rem; }
+  .domainFeature,
+  .domainFeatureReverse {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .domainFeatureReverse .domainFeatureMedia,
+  .domainFeatureReverse .domainFeatureCopy {
+    order: initial;
+  }
+  .domainFeatureMedia { min-height: 17rem; }
+  .domainFeatureImageFrame { min-height: 16rem; }
+  .domainFeatureCopy { padding: 1.35rem 1.25rem 1.5rem; }
   .orbitReadout { font-size: 0.5rem; }
   .footerPanel {
     min-height: 42rem;
@@ -862,8 +944,8 @@
   .orbitRingMiddle,
   .orbitRingInner,
   .orbitParticleTrack,
-  .domainCard,
-  .domainImage {
+  .domainFeatureImage,
+  .domainFeatureCopy {
     opacity: 1;
     animation: none;
     transition: none;
@@ -883,8 +965,25 @@
     animation: none;
   }
 
-  .domainCard,
-  .domainImage {
+  .domainFeature.motionReady:not(.isVisible) .domainFeatureImage,
+  .domainFeature.motionReady:not(.isVisible) .domainFeatureCopy,
+  .domainFeature.isVisible .domainFeatureImage,
+  .domainFeature.isVisible .domainFeatureCopy,
+  .domainFeature.isVisible .domainFeatureTitle,
+  .domainFeature.isVisible .domainFeatureIntro,
+  .domainFeature.isVisible .domainFeatureFocus {
+    opacity: 1;
+    animation: none;
+    filter: none;
     transform: none;
+  }
+
+  .domainFeatureImage,
+  .domainFeatureScanline {
+    transition: none;
+  }
+
+  .domainFeatureScanline {
+    display: none;
   }
 }

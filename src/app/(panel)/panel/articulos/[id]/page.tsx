@@ -25,47 +25,65 @@ function normalizeMediaItem(media: Media) {
 export default async function PanelArticleDetailPage({ params, searchParams }: Props) {
   const measure = startPanelMeasure('articulos:detail')
   const { payload, user } = await getPanelSession()
-  const profile = await payload.findByID({
-    collection: 'admins',
-    depth: 1,
-    id: user.id,
-    overrideAccess: false,
-    user,
-  })
   const { id } = await params
   const query = await searchParams
   const status = Array.isArray(query.estado) ? query.estado[0] : query.estado || null
 
-  let article: Post
-
-  try {
-    article = (await payload.findByID({
+  const [profile, articleResult, { docs }] = await Promise.all([
+    payload.findByID({
+      collection: 'admins',
+      depth: 1,
+      id: user.id,
+      overrideAccess: false,
+      select: { avatar: true },
+      user,
+    }),
+    payload.findByID({
       collection: 'posts',
       id,
-      depth: 2,
+      depth: 1,
       draft: true,
       overrideAccess: false,
+      select: {
+        _status: true,
+        authorAvatar: true,
+        authorName: true,
+        authorRole: true,
+        canonicalURL: true,
+        content: true,
+        coverImage: true,
+        excerpt: true,
+        featured: true,
+        id: true,
+        noindex: true,
+        publishedAt: true,
+        seoDescription: true,
+        seoTitle: true,
+        slug: true,
+        socialImage: true,
+        title: true,
+      },
       user,
-    })) as Post
-  } catch {
-    notFound()
-  }
+    }).catch(() => null),
+    payload.find({
+      collection: 'media',
+      depth: 0,
+      limit: 12,
+      overrideAccess: false,
+      select: { id: true, filename: true, alt: true, sizes: true },
+      user,
+      sort: '-createdAt',
+      where: {
+        and: [
+          { mimeType: { not_equals: 'application/pdf' } },
+          { or: [{ purpose: { equals: 'editorial' } }, { purpose: { exists: false } }] },
+        ],
+      },
+    }),
+  ])
 
-  const { docs } = await payload.find({
-    collection: 'media',
-    depth: 0,
-    limit: 12,
-    overrideAccess: false,
-    select: { id: true, filename: true, alt: true, sizes: true },
-    user,
-    sort: '-createdAt',
-    where: {
-      and: [
-        { mimeType: { not_equals: 'application/pdf' } },
-        { or: [{ purpose: { equals: 'editorial' } }, { purpose: { exists: false } }] },
-      ],
-    },
-  })
+  if (!articleResult) notFound()
+  const article = articleResult as Post
 
   const mediaMap = new Map<string, PanelEditorMediaItem>()
 

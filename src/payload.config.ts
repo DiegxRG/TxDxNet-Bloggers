@@ -13,6 +13,12 @@ import { editorialEditor } from './editor'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const configuredPoolMax = Number.parseInt(process.env.DATABASE_POOL_MAX || '', 10)
+const databasePoolMax = Number.isInteger(configuredPoolMax) && configuredPoolMax > 0
+  ? configuredPoolMax
+  : process.env.NODE_ENV === 'development'
+    ? 3
+    : 5
 const hasS3Config = Boolean(
   process.env.S3_ENDPOINT &&
     process.env.S3_ACCESS_KEY_ID &&
@@ -57,7 +63,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: '— TxDxNet',
+      titleSuffix: '— TxDxSecure',
     },
   },
   collections: [Admins, Media, Posts],
@@ -71,7 +77,7 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, 'migrations'),
     pool: {
       connectionString: process.env.DATABASE_URL || '',
-      max: 10,
+      max: databasePoolMax,
     },
     push: process.env.PAYLOAD_DB_PUSH === 'true',
     schemaName: 'cms',

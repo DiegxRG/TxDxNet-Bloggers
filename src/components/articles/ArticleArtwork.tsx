@@ -32,7 +32,7 @@ export function ArticleArtwork({
       ) : (
         <>
           <span aria-hidden="true" className={styles.shape} />
-          <span className={styles.issue}>Insight TxDxNet</span>
+          <span className={styles.issue}>Insight TxDxSecure</span>
           <span aria-hidden="true" className={styles.wordmark}>TxDx</span>
           <span className={styles.coverLine}>Conocimiento aplicado</span>
         </>

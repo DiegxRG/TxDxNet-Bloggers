@@ -97,6 +97,29 @@
   margin-top: 2.75rem;
 }
 
+.more {
+  display: grid;
+  gap: 1.5rem;
+  justify-items: center;
+  width: 100%;
+}
+
+.more summary {
+  list-style: none;
+}
+
+.more summary::-webkit-details-marker {
+  display: none;
+}
+
+.more[open] summary i {
+  transform: rotate(180deg);
+}
+
+.more .grid {
+  width: 100%;
+}
+
 .button {
   display: inline-flex;
   min-height: 3.6rem;

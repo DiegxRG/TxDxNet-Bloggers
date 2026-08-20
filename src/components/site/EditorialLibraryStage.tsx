@@ -57,7 +57,7 @@ function StoryVolume({ story, index }: { story: OpeningStory; index: number }) {
         <span aria-hidden="true" className={styles.pageBlock} />
         <span aria-hidden="true" className={styles.volumeSpine}>
           <small>{String(index + 1).padStart(2, '0')}</small>
-          <strong>TXDXNET</strong>
+          <strong>TXDXSECURE</strong>
         </span>
         <div className={styles.volumeCover}>
           <div className={styles.coverFrame}>
@@ -78,7 +78,7 @@ function StoryVolume({ story, index }: { story: OpeningStory; index: number }) {
           </div>
 
           <div className={styles.volumeTopline}>
-            <span>TxDxNet</span>
+            <span>TxDxSecure</span>
             <span>Vol. {String(index + 1).padStart(2, '0')}</span>
           </div>
           <p className={styles.volumeCategory}>{story.category}</p>
@@ -321,7 +321,7 @@ export function EditorialLibraryStage({ stories }: { stories: OpeningStory[] }) 
           <div className={styles.footerTopics}>
             <span>Dominios XOC</span>
             <i aria-hidden="true" />
-            <span>Servicios TxDxSecure</span>
+            <span>Equipo editorial</span>
             <i aria-hidden="true" />
             <span>Análisis y guías</span>
           </div>

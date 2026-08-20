@@ -195,7 +195,7 @@ export function XocRadar() {
       <div className="radar-status" ref={statusRef}>
         <div className="radar-status-header">
           <LibraryIcon className="radar-status-library-icon" />
-          <span>Biblioteca TxDxNet</span>
+          <span>Biblioteca TxDxSecure</span>
           <i>Activa</i>
         </div>
         <div className="radar-status-body">

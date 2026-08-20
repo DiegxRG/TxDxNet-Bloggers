@@ -6,7 +6,7 @@ export function BrandMark({ priority = false }: { priority?: boolean }) {
     <Link aria-label="TxDxNet — Inicio" className="brand-mark group" href="/">
       <span className="brand-logo-wrap">
         <Image
-          alt="TxDxSecure"
+          alt="TxDxNet"
           className="brand-logo"
           fill
           priority={priority}
@@ -17,7 +17,8 @@ export function BrandMark({ priority = false }: { priority?: boolean }) {
       <span className="brand-copy">
         <span className="brand-name">TxDxNet</span>
         <span className="brand-powered">
-          Biblioteca de TxDxSecure
+          <span aria-hidden="true" className="brand-divider">/</span>
+          <span>Artículos por TxDxSecure</span>
         </span>
       </span>
     </Link>

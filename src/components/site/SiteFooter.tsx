@@ -53,8 +53,8 @@ export function SiteFooter() {
             <Link className={styles.link} href="/dominios">
               11 dominios
             </Link>
-            <Link className={styles.link} href="/servicios">
-              Servicios
+            <Link className={styles.link} href="/equipo">
+              Equipo
             </Link>
             <Link className={styles.link} href="/articulos">
               Artículos

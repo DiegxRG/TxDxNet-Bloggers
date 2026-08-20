@@ -36,7 +36,7 @@ export function TxDxAdminLogo() {
           <img alt="" height="72" src="/logotxdx.png" style={imageStyle} width="72" />
         </span>
         <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-          <strong style={{ fontSize: 24, letterSpacing: '-0.04em', color: '#fff' }}>TxDxNet</strong>
+          <strong style={{ fontSize: 24, letterSpacing: '-0.04em', color: '#fff' }}>TxDxSecure</strong>
           <span
             style={{
               fontSize: 9,

@@ -1,0 +1,128 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(7 20 45 / 0.13);
+  border-radius: 1.2rem 0.35rem 1.2rem 0.35rem;
+  background: #fff;
+  box-shadow: 0 18px 45px rgb(7 20 45 / 0.08);
+  padding: clamp(1.25rem, 2.4vw, 2rem);
+  animation: team-card-enter 720ms var(--member-delay) var(--ease-signal) both;
+  transition: border-color 260ms ease, box-shadow 360ms var(--ease-signal), transform 360ms var(--ease-signal);
+}
+
+.card::before {
+  position: absolute;
+  top: 0;
+  right: 1.5rem;
+  left: 1.5rem;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-signal-orange), var(--color-signal-cyan), transparent);
+  content: '';
+}
+
+.card:hover,
+.card:focus-within {
+  border-color: rgb(18 104 255 / 0.3);
+  box-shadow: 0 28px 65px rgb(7 20 45 / 0.14);
+  transform: translateY(-0.35rem);
+}
+
+.cardTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-ink-500);
+  font-size: 0.58rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.signal {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--color-signal-orange);
+  box-shadow: 0 0 0 0.26rem rgb(255 90 24 / 0.1);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.identity h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.5vw, 2rem);
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.identity p {
+  margin-top: 0.4rem;
+  color: var(--color-signal-blue);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.bio {
+  min-height: 5.8rem;
+  margin-top: 1.5rem;
+  color: var(--color-ink-600);
+  font-size: 0.84rem;
+  line-height: 1.75;
+}
+
+.domains {
+  margin-top: 1.5rem;
+  border-top: 1px solid rgb(7 20 45 / 0.12);
+  padding-top: 1rem;
+}
+
+.domainsLabel {
+  color: var(--color-ink-500);
+  font-size: 0.58rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.domainList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.domainList span,
+.emptyDomains {
+  border: 1px solid rgb(18 104 255 / 0.16);
+  border-radius: 999px;
+  background: rgb(18 104 255 / 0.05);
+  padding: 0.4rem 0.55rem;
+  color: var(--color-ink-700);
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+.emptyDomains {
+  display: inline-block;
+  margin-top: 0.75rem;
+  border-color: rgb(7 20 45 / 0.12);
+  background: transparent;
+  color: var(--color-ink-500);
+}
+
+@keyframes team-card-enter {
+  from { opacity: 0; transform: translateY(1.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+    transition: none;
+  }
+}

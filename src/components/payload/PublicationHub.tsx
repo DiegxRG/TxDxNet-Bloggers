@@ -56,7 +56,6 @@ export default async function PublicationHub({ payload, user }: AdminViewServerP
   const media = `${adminRoute}/collections/media`
   const draftList = `${postList}?where[_status][equals]=draft`
   const publishedList = `${postList}?where[_status][equals]=published`
-  const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
   const formatDate = (value: string) =>
     new Intl.DateTimeFormat('es-PE', {
@@ -71,7 +70,7 @@ export default async function PublicationHub({ payload, user }: AdminViewServerP
     <div className="txdx-hub">
       <section className="txdx-hub__hero">
         <div>
-          <p className="txdx-dash__eyebrow">Panel editorial · TxDxNet</p>
+          <p className="txdx-dash__eyebrow">Panel editorial · TxDxSecure</p>
           <h1>
             ¿Qué quieres hacer
             <br />
@@ -106,13 +105,18 @@ export default async function PublicationHub({ payload, user }: AdminViewServerP
             <small>Ver en producción</small>
           </span>
         </Link>
-        <Link className="txdx-action txdx-action--graphite" href={siteURL}>
+        <a
+          className="txdx-action txdx-action--graphite"
+          href="https://txdxsecure.com/"
+          rel="noreferrer"
+          target="_blank"
+        >
           <span className="txdx-action__icon">↗</span>
           <span>
-            <strong>Ver el sitio</strong>
-            <small>txdxnet.com</small>
+            <strong>Conocer la empresa</strong>
+            <small>txdxsecure.com</small>
           </span>
-        </Link>
+        </a>
       </section>
 
       <section className="txdx-hub__grid">

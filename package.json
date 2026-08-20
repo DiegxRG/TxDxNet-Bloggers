@@ -7,12 +7,15 @@
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --webpack",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --turbopack",
+    "dev:webpack": "cross-env NODE_OPTIONS=--no-deprecation next dev --webpack",
     "dev:turbopack": "cross-env NODE_OPTIONS=--no-deprecation next dev --turbopack",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "db:baseline": "node ./scripts/baseline-payload-migrations.mjs",
+    "seed:team": "node ./scripts/seed-team-profiles.mjs",
     "setup:env": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/setup-local-env.ps1",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "typecheck": "tsc --noEmit --incremental false"

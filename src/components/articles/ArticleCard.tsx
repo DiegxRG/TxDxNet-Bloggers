@@ -25,7 +25,7 @@ export function ArticleCard({
         <ArticleArtwork featured={variant === 'featured'} post={post} priority={priority} />
         <div className={styles.copy}>
           <div className={styles.meta}>
-            <span>Insight TxDxNet</span>
+            <span>Insight TxDxSecure</span>
             <span>{estimateReadingMinutes(post)} min de lectura</span>
           </div>
           <h3>{post.title}</h3>

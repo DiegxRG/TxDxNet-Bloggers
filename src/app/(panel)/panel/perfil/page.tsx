@@ -3,6 +3,7 @@ import Image from 'next/image'
 
 import { ProfileAvatarField } from '@/components/panel/ProfileAvatarField'
 import { PanelSubmitButton } from '@/components/panel/PanelSubmitButton'
+import { domains } from '@/data/domains'
 import { getMediaURL } from '@/modules/content/infrastructure/payload/posts'
 import { getPanelSession } from '@/modules/panel/server/session'
 import type { Admin, Media } from '@/payload-types'
@@ -212,6 +213,8 @@ export default async function PanelProfilePage({ searchParams }: Props) {
   const initial = firstName.slice(0, 1).toUpperCase()
   const avatarID = typeof profile.avatar === 'string' ? profile.avatar : profile.avatar?.id || null
   const avatarURL = typeof profile.avatar === 'object' ? getMediaURL(profile.avatar, 'avatar') : null
+  const expertiseDomains = profile.expertiseDomains || []
+  const showOnTeam = profile.showOnTeam !== false
 
   return (
     <div className="grid content-start gap-6 md:gap-8" id="contenido-panel">
@@ -389,6 +392,51 @@ export default async function PanelProfilePage({ searchParams }: Props) {
               </div>
               <span className="mt-1.5 block text-[0.78rem] leading-5 text-[var(--theme-elevation-500)]">
                 Aparece junto a tu nombre en el articulo publicado.
+              </span>
+            </label>
+
+            <label className="block">
+              <span className="mb-1.5 block text-[0.82rem] font-bold text-[var(--txdx-navy)]">Biografía pública</span>
+              <textarea
+                className="min-h-28 w-full resize-y rounded-xl border border-[var(--theme-elevation-200)] bg-white px-3.5 py-3 text-sm leading-6 text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
+                defaultValue={profile.publicBio || ''}
+                name="publicBio"
+                placeholder="Cuenta qué problemas te gusta resolver y cómo lees la operación."
+                rows={4}
+              />
+              <span className="mt-1.5 block text-[0.78rem] leading-5 text-[var(--theme-elevation-500)]">
+                Se muestra en tu perfil público del equipo.
+              </span>
+            </label>
+
+            <fieldset className="rounded-xl border border-[var(--theme-elevation-200)] p-3.5">
+              <legend className="px-1 text-[0.82rem] font-bold text-[var(--txdx-navy)]">Dominios XOC que dominas</legend>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {domains.map((domain) => (
+                  <label className="flex items-start gap-2 rounded-lg border border-transparent px-2 py-1.5 text-[0.78rem] text-[var(--theme-elevation-700)] transition hover:border-[rgba(18,104,255,0.14)] hover:bg-[rgba(18,104,255,0.04)]" key={domain.id}>
+                    <input
+                      className="mt-0.5 accent-[var(--txdx-blue)]"
+                      defaultChecked={expertiseDomains.includes(domain.id as NonNullable<Admin['expertiseDomains']>[number])}
+                      name="expertiseDomains"
+                      type="checkbox"
+                      value={domain.id}
+                    />
+                    <span><strong>{domain.id}</strong> · {domain.name}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <label className="flex items-start gap-2 rounded-xl border border-[rgba(18,104,255,0.12)] bg-[rgba(18,104,255,0.04)] px-3.5 py-3 text-[0.8rem] text-[var(--theme-elevation-700)]">
+              <input
+                className="mt-0.5 accent-[var(--txdx-blue)]"
+                defaultChecked={showOnTeam}
+                name="showOnTeam"
+                type="checkbox"
+              />
+              <span>
+                <strong className="block text-[var(--txdx-navy)]">Mostrar mi perfil en Equipo</strong>
+                <span className="mt-0.5 block leading-5">Solo se publicarán estos datos editoriales, nunca tu email ni información de acceso.</span>
               </span>
             </label>
 

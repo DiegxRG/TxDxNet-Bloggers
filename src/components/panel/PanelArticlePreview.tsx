@@ -58,7 +58,7 @@ function CardPreview({ article, authorDefaults, coverURL }: Omit<Props, 'mediaIt
       </div>
       <div className="p-5">
         <div className="flex items-center justify-between text-[0.6rem] font-bold uppercase tracking-[0.1em] text-[var(--theme-elevation-500)]">
-          <span className="text-[#165fb8]">Insight TxDxNet</span>
+          <span className="text-[#165fb8]">Insight TxDxSecure</span>
           <span>{date}</span>
         </div>
         <h3 className="mt-3 font-display text-xl font-semibold leading-tight tracking-[-0.04em] text-[var(--color-ink-950)]">
@@ -140,6 +140,46 @@ function ArticlePreview({ article, authorDefaults, coverURL, mediaItems }: Omit<
           <p>Guarda los cambios y publica cuando el contenido esté listo.</p>
         </aside>
       </div>
+
+      <section aria-labelledby="panel-article-author-title" className="article-author-section">
+        <div aria-hidden="true" className="article-author-signal" />
+        <div aria-hidden="true" className="article-author-floaters">
+          <span className="article-author-floater article-author-floater--one">READ / 01</span>
+          <span className="article-author-floater article-author-floater--two">FIELD NOTE / 02</span>
+          <span className="article-author-floater article-author-floater--three">INSIGHT / TXDX</span>
+        </div>
+        <div className="article-author-layout">
+          <div>
+            <span className="article-section-kicker">AUTORÍA / TXDXSECURE</span>
+            <h2 id="panel-article-author-title">La señal detrás del análisis.</h2>
+            <p>
+              La vista previa también muestra la firma personal y el sello institucional del contenido.
+            </p>
+          </div>
+          <div className="article-author-cards">
+            <div className="article-author-card">
+              <div aria-hidden="true" className="article-author-outline" />
+              <AuthorAvatar media={authorAvatar} name={authorName} size="large" />
+              <div>
+                <span className="article-card-kicker">AUTOR DEL INSIGHT</span>
+                <h3>{authorName}</h3>
+                {authorRole ? <p>{authorRole}</p> : null}
+              </div>
+            </div>
+            <div className="article-company-card">
+              <div aria-hidden="true" className="article-company-mark">
+                <Image alt="" fill sizes="72px" src="/logotxdx.png" />
+              </div>
+              <div>
+                <span className="article-card-kicker">SELLO EDITORIAL</span>
+                <h3>TxDxSecure</h3>
+                <p>Contenido editorial de la empresa.</p>
+                <small>© TxDxSecure · Derechos reservados</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

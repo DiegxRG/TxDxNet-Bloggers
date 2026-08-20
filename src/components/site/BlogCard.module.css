@@ -1,12 +1,17 @@
 .card {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.65s ease, transform 0.65s var(--ease-signal);
+}
+
+.card.motionReady:not(.in) {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 0.65s ease, transform 0.65s var(--ease-signal);
 }
 
 .card.in {
   opacity: 1;
-  transform: none;
+  transform: translateY(0);
 }
 
 .link {

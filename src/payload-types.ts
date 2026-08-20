@@ -131,6 +131,15 @@ export interface Admin {
    */
   publicTitle?: string | null;
   /**
+   * Contexto breve para la ficha pública del equipo.
+   */
+  publicBio?: string | null;
+  /**
+   * Selecciona las superficies operacionales que puedes liderar o explicar.
+   */
+  expertiseDomains?: ('01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11')[] | null;
+  showOnTeam?: boolean | null;
+  /**
    * Foto circular que se muestra junto a tu firma en los articulos publicos.
    */
   avatar?: (string | null) | Media;
@@ -380,6 +389,9 @@ export interface PayloadMigration {
 export interface AdminsSelect<T extends boolean = true> {
   name?: T;
   publicTitle?: T;
+  publicBio?: T;
+  expertiseDomains?: T;
+  showOnTeam?: T;
   avatar?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -18,6 +18,7 @@ export default async function PanelRootLayout({ children }: { children: ReactNod
     depth: 1,
     id: user.id,
     overrideAccess: false,
+    select: { avatar: true },
     user,
   })
 

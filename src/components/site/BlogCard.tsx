@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 
 import type { plannedArticles } from '@/data/editorial'
 
@@ -17,17 +17,27 @@ export function BlogCard({
   index: number
 }) {
   const cardRef = useRef<HTMLElement>(null)
-  const [inView, setInView] = useState(false)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const card = cardRef.current
 
     if (!card) return
 
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const revealClass = styles.motionReady
+    const visibleClass = styles.in
+
+    card.classList.add(revealClass)
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      card.classList.add(visibleClass)
+      return
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setInView(true)
+          card.classList.add(visibleClass)
           observer.disconnect()
         }
       },
@@ -42,7 +52,7 @@ export function BlogCard({
 
   return (
     <article
-      className={`${styles.card} ${inView ? styles.in : ''}`}
+      className={styles.card}
       ref={cardRef}
       style={{ transitionDelay: `${(index % 6) * 90}ms` }}
     >

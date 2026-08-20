@@ -43,6 +43,42 @@ export const Admins: CollectionConfig = {
       },
     },
     {
+      name: 'publicBio',
+      type: 'textarea',
+      label: 'Biografía pública',
+      admin: {
+        description: 'Contexto breve para la ficha pública del equipo.',
+      },
+    },
+    {
+      name: 'expertiseDomains',
+      type: 'select',
+      hasMany: true,
+      label: 'Dominios XOC que domina',
+      options: [
+        { label: '01 · Capital Humano', value: '01' },
+        { label: '02 · Endpoints & Workplace', value: '02' },
+        { label: '03 · Aplicaciones, APIs & Code', value: '03' },
+        { label: '04 · Infraestructura de Cómputo', value: '04' },
+        { label: '05 · Cloud & SaaS', value: '05' },
+        { label: '06 · Infraestructura de Red', value: '06' },
+        { label: '07 · Perímetro de Seguridad', value: '07' },
+        { label: '08 · Servicios Externos / IPs Públicas', value: '08' },
+        { label: '09 · OT / IoT', value: '09' },
+        { label: '10 · Physical Security', value: '10' },
+        { label: '11 · Agentic / AI Models', value: '11' },
+      ],
+      admin: {
+        description: 'Selecciona las superficies operacionales que puedes liderar o explicar.',
+      },
+    },
+    {
+      name: 'showOnTeam',
+      type: 'checkbox',
+      label: 'Mostrar este perfil en Equipo',
+      defaultValue: true,
+    },
+    {
       name: 'avatar',
       type: 'upload',
       relationTo: 'media',

@@ -24,7 +24,7 @@ export default async function ArticlesPage() {
       <InteriorHero
         code="Artículos · Análisis · Guías"
         description="Perspectivas que conectan tecnología, seguridad y operación con preguntas reales de negocio."
-        eyebrow="Biblioteca TxDxNet"
+        eyebrow="Biblioteca TxDxSecure"
         title="Ideas para decidir mejor."
       />
 

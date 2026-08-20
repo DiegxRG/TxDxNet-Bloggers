@@ -28,7 +28,7 @@ export function EditorialOpening({ featuredPosts = [], posts }: Props) {
   const publishedStories: OpeningStory[] = selectedPosts.map((post) => ({
     key: `post-${post.id}`,
     author: post.authorName,
-    category: 'Insight TxDxNet',
+    category: 'Insight TxDxSecure',
     detail: `${formatArticleDate(post)} · ${estimateReadingMinutes(post)} min`,
     href: `/articulos/${post.slug}`,
     imageAlt: getMediaAlt(post.coverImage, post.title),

@@ -20,8 +20,8 @@ const PanelLexicalEditor = dynamic(
       <div className="min-h-[24rem] animate-pulse rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-6">
         <div className="h-4 w-48 animate-pulse rounded bg-[var(--theme-elevation-100)]" />
         <div className="mt-4 space-y-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-3 animate-pulse rounded bg-[var(--theme-elevation-100)]" style={{ width: `${60 + Math.random() * 40}%` }} />
+          {['72%', '91%', '64%', '84%', '76%', '88%'].map((width) => (
+            <div key={width} className="h-3 animate-pulse rounded bg-[var(--theme-elevation-100)]" style={{ width }} />
           ))}
         </div>
       </div>

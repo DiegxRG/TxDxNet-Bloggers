@@ -13,6 +13,14 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  partialPrefetching: true,
+  experimental: {
+    // Payload-backed routes are intentionally dynamic; validate Instant UI only
+    // on segments that explicitly opt in with `instant`.
+    instantInsights: {
+      validationLevel: 'manual-warning',
+    },
+  },
   poweredByHeader: false,
   images: {
     minimumCacheTTL: 60 * 60 * 24 * 30,

@@ -42,7 +42,7 @@ export default function BeforeLogin({ payload }: Props) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="txdx-login-panel__logo" alt="TxDxSecure" src="/logotxdx.png" />
         <span>
-          <span className="txdx-login-panel__word">TxDxNet</span>
+          <span className="txdx-login-panel__word">TxDxSecure</span>
           <span className="txdx-login-panel__tag">EDITORIAL HUB</span>
         </span>
       </Link>

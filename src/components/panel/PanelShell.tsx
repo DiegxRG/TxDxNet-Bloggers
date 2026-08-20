@@ -92,7 +92,7 @@ const VIEW_META = [
   {
     prefix: '/panel',
     kicker: 'Workspace editorial',
-    title: 'Consola editorial TxDx',
+    title: 'Consola editorial TxDxSecure',
     description: 'Resumen, articulos, biblioteca y perfil en un solo lugar.',
   },
 ]
@@ -154,14 +154,14 @@ export function PanelShell({ children, user }: Props) {
           <div className={`border-b border-white/10 pb-5 pt-6 ${sidebarCollapsed ? 'px-2 md:px-2' : 'px-5'}`}>
             <Link className={`flex items-center text-white ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`} href="/panel" onClick={() => setNavOpen(false)}>
               <span className="relative block h-[54px] w-[54px] shrink-0">
-                <Image alt="TxDxNet" fill priority sizes="54px" src="/logotxdx.png" />
+                <Image alt="TxDxSecure" fill priority sizes="54px" src="/logotxdx.png" />
               </span>
               <span className={`${sidebarCollapsed ? 'md:hidden' : ''} min-w-0`}>
                 <span className="block font-display text-xl font-extrabold tracking-[-0.05em]">
-                  TxDxNet
+                  TxDxSecure
                 </span>
                 <span className="mt-1 block text-[0.62rem] font-extrabold uppercase tracking-[0.26em] text-[rgba(255,255,255,0.58)]">
-                  Consola editorial TxDx
+                  Consola editorial TxDxSecure
                 </span>
               </span>
             </Link>

@@ -28,4 +28,14 @@ La primera apertura de `/admin` crea el esquema privado `cms` en el proyecto de
 desarrollo. Antes de producción se desactiva `PAYLOAD_DB_PUSH` y se usan migraciones
 versionadas.
 
+Si una base local existente fue creada con `PAYLOAD_DB_PUSH=true` y se va a cambiar
+a migraciones, ejecuta una sola vez `npm run db:baseline` y después
+`npm run payload -- migrate`, y deja `PAYLOAD_DB_PUSH=false` en `.env.local`. El baseline solo acepta el marcador `dev` de Payload
+y valida las columnas históricas antes de registrar el historial.
+
+Para preparar los cuatro perfiles editoriales sobre usuarios que ya existen en
+Payload, usa `npm run seed:team -- <correo-ciberseguridad> <correo-electronica> <correo-data-science> <correo-editorial>`. Puedes probar primero con `--dry-run`.
+El script conserva nombres, credenciales y avatares; solo establece cargo, biografía,
+dominios XOC y visibilidad pública.
+
 La web pública vive en `/` y el panel editorial en `/admin`.

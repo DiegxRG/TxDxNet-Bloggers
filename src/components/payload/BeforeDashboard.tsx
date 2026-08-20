@@ -36,7 +36,7 @@ export default async function BeforeDashboard({ payload, user }: Props) {
     <div className="txdx-dash">
       <div className="txdx-dash__head">
         <span className="txdx-dash__signal" aria-hidden="true" />
-        <p className="txdx-dash__eyebrow">Panel editorial · TxDxNet</p>
+        <p className="txdx-dash__eyebrow">Panel editorial · TxDxSecure</p>
         <h2 className="txdx-dash__title">
           Bienvenido/a, {user?.name?.split(' ')[0] ?? 'equipo'}.
         </h2>

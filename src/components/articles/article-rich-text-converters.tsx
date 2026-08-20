@@ -2,7 +2,7 @@ import type { JSXConverterArgs, JSXConvertersFunction } from '@payloadcms/richte
 import Image from 'next/image'
 import type { SerializedLexicalNode } from 'lexical'
 
-import { getMediaURL } from '@/modules/content/domain/media-url'
+import { getMediaURL, normalizeMediaURL } from '@/modules/content/domain/media-url'
 import type {
   ActionCardBlock,
   CalloutBlock,
@@ -76,9 +76,15 @@ function getUploadURL(
   const directURL = [fields.url, fields.thumbnailURL].find(
     (item): item is string => typeof item === 'string' && item.length > 0,
   )
-  if (directURL) return directURL
+  if (directURL) return normalizeMediaURL(directURL)
 
-  return typeof value === 'string' ? resolveUploadURL?.(value) || null : null
+  if (typeof value === 'string') {
+    const resolvedURL = resolveUploadURL?.(value)
+    if (resolvedURL) return normalizeMediaURL(resolvedURL)
+  }
+
+  const filename = typeof fields.filename === 'string' ? fields.filename : ''
+  return filename ? `/api/media/file/${encodeURIComponent(filename)}?prefix=editorial` : null
 }
 
 function renderUpload(

@@ -13,31 +13,34 @@ type Props = {
 export default async function NewPanelArticlePage({ searchParams }: Props) {
   const measure = startPanelMeasure('articulos:nuevo')
   const { payload, user } = await getPanelSession()
-  const profile = await payload.findByID({
-    collection: 'admins',
-    depth: 1,
-    id: user.id,
-    overrideAccess: false,
-    user,
-  })
   const params = await searchParams
   const status = Array.isArray(params.estado) ? params.estado[0] : params.estado || null
 
-  const { docs } = await payload.find({
-    collection: 'media',
-    depth: 0,
-    limit: 12,
-    overrideAccess: false,
-    select: { id: true, filename: true, alt: true, sizes: true },
-    user,
-    sort: '-createdAt',
-    where: {
-      and: [
-        { mimeType: { not_equals: 'application/pdf' } },
-        { or: [{ purpose: { equals: 'editorial' } }, { purpose: { exists: false } }] },
-      ],
-    },
-  })
+  const [profile, { docs }] = await Promise.all([
+    payload.findByID({
+      collection: 'admins',
+      depth: 1,
+      id: user.id,
+      overrideAccess: false,
+      select: { avatar: true },
+      user,
+    }),
+    payload.find({
+      collection: 'media',
+      depth: 0,
+      limit: 12,
+      overrideAccess: false,
+      select: { id: true, filename: true, alt: true, sizes: true },
+      user,
+      sort: '-createdAt',
+      where: {
+        and: [
+          { mimeType: { not_equals: 'application/pdf' } },
+          { or: [{ purpose: { equals: 'editorial' } }, { purpose: { exists: false } }] },
+        ],
+      },
+    }),
+  ])
 
   const mediaItems: PanelEditorMediaItem[] = docs.map((doc) => ({
     id: String(doc.id),

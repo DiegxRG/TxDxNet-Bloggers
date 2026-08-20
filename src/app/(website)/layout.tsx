@@ -14,20 +14,20 @@ const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com'
 export const metadata: Metadata = {
   metadataBase: new URL(siteURL),
   title: {
-    default: 'TxDxNet — Ideas para operar con más claridad',
-    template: '%s — TxDxNet',
+    default: 'TxDxSecure — Ideas para operar con más claridad',
+    template: '%s — TxDxSecure',
   },
   description:
     'Insights de TxDxSecure sobre ciberseguridad, redes, observabilidad, experiencia digital y los 11 dominios XOC.',
-  applicationName: 'TxDxNet',
+  applicationName: 'TxDxSecure',
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'es_PE',
-    siteName: 'TxDxNet',
-    title: 'TxDxNet — Ideas para operar con más claridad',
+    siteName: 'TxDxSecure',
+    title: 'TxDxSecure — Ideas para operar con más claridad',
     description:
       'Conocimiento para construir operaciones seguras, disponibles, observables y centradas en la experiencia.',
   },

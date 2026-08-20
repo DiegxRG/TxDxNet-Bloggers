@@ -1,16 +1,16 @@
 import type { MetadataRoute } from 'next'
 
-import { getPublishedPosts } from '@/modules/content/infrastructure/payload/posts'
+import { getPublishedPostPaths } from '@/modules/content/infrastructure/payload/posts'
 
 const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await getPublishedPosts(100)
+  const posts = await getPublishedPostPaths(100)
 
   return [
     { url: siteURL, changeFrequency: 'weekly', priority: 1 },
     { url: `${siteURL}/dominios`, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${siteURL}/servicios`, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${siteURL}/equipo`, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${siteURL}/articulos`, changeFrequency: 'weekly', priority: 0.8 },
     ...posts
       .filter((post) => !post.noindex)

@@ -230,22 +230,44 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
         <section aria-labelledby="article-author-title" className="article-author-section">
           <div aria-hidden="true" className="article-author-signal" />
+          <div aria-hidden="true" className="article-author-floaters">
+            <span className="article-author-floater article-author-floater--one">READ / 01</span>
+            <span className="article-author-floater article-author-floater--two">FIELD NOTE / 02</span>
+            <span className="article-author-floater article-author-floater--three">INSIGHT / TXDX</span>
+          </div>
           <div className="article-author-layout">
             <div>
-              <span className="article-section-kicker">AUTORÍA / TXDXNET</span>
+              <span className="article-section-kicker">AUTORÍA / TXDXSECURE</span>
               <h2 id="article-author-title">La señal detrás del análisis.</h2>
               <p>
-                Conoce a la persona que comparte esta perspectiva y convierte experiencia técnica en
-                conocimiento aplicable.
+                Conoce a la persona que comparte esta perspectiva y al sello que convierte experiencia
+                técnica en conocimiento aplicable.
               </p>
             </div>
-            <div className="article-author-card">
-              <div aria-hidden="true" className="article-author-outline" />
-              <AuthorAvatar media={post.authorAvatar} name={post.authorName} size="large" />
-              <div>
-                <h3>{post.authorName}</h3>
-                {post.authorRole ? <p>{post.authorRole}</p> : null}
-                <Link href="/articulos">Ver más insights <span aria-hidden="true">↗</span></Link>
+            <div className="article-author-cards">
+              <div className="article-author-card">
+                <div aria-hidden="true" className="article-author-outline" />
+                <AuthorAvatar media={post.authorAvatar} name={post.authorName} size="large" />
+                <div>
+                  <span className="article-card-kicker">AUTOR DEL INSIGHT</span>
+                  <h3>{post.authorName}</h3>
+                  {post.authorRole ? <p>{post.authorRole}</p> : null}
+                  <Link href="/articulos">Ver más insights <span aria-hidden="true">↗</span></Link>
+                </div>
+              </div>
+              <div className="article-company-card">
+                <div aria-hidden="true" className="article-company-mark">
+                  <Image alt="" fill sizes="72px" src="/logotxdx.png" />
+                </div>
+                <div>
+                  <span className="article-card-kicker">SELLO EDITORIAL</span>
+                  <h3>TxDxSecure</h3>
+                  <p>El conocimiento publicado aquí forma parte de la voz y experiencia de la empresa.</p>
+                  <small>© TxDxSecure · Derechos reservados</small>
+                  <a href="https://txdxsecure.com/" rel="noreferrer" target="_blank">
+                    Conocer la empresa <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

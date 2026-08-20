@@ -1,7 +1,4 @@
-'use client'
-
 import Link from 'next/link'
-import { useState } from 'react'
 
 import { plannedArticles } from '@/data/editorial'
 
@@ -11,22 +8,16 @@ import styles from './HomeBlogList.module.css'
 const PAGE_SIZE = 6
 
 export function HomeBlogList() {
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
-
   const total = plannedArticles.length
-  const visible = plannedArticles.slice(0, visibleCount)
-  const hasMore = visibleCount < total
-
-  const loadMore = () => {
-    setVisibleCount((count) => Math.min(count + PAGE_SIZE, total))
-  }
+  const visible = plannedArticles.slice(0, PAGE_SIZE)
+  const remaining = plannedArticles.slice(PAGE_SIZE)
 
   return (
     <section className={styles.section}>
       <div className={styles.container}>
         <div className={styles.heading}>
           <div>
-            <span className={styles.kicker}>Biblioteca TxDxNet</span>
+            <span className={styles.kicker}>Biblioteca TxDxSecure</span>
             <h2>Últimos análisis y guías</h2>
           </div>
           <div className={styles.headingAside}>
@@ -48,11 +39,18 @@ export function HomeBlogList() {
         ) : null}
 
         <div className={styles.loadMore}>
-          {hasMore ? (
-            <button className={styles.button} onClick={loadMore} type="button">
-              Cargar más publicaciones
-              <i aria-hidden="true">↓</i>
-            </button>
+          {remaining.length ? (
+            <details className={styles.more}>
+              <summary className={styles.button}>
+                Cargar más publicaciones
+                <i aria-hidden="true">↓</i>
+              </summary>
+              <div className={styles.grid}>
+                {remaining.map((article, index) => (
+                  <BlogCard article={article} index={PAGE_SIZE + index} key={article.index} />
+                ))}
+              </div>
+            </details>
           ) : (
             <Link className={styles.button} href="/articulos">
               Ver todos los artículos
@@ -60,7 +58,7 @@ export function HomeBlogList() {
             </Link>
           )}
           <span className={styles.progress}>
-            Mostrando {String(visibleCount).padStart(2, '0')} de {String(total).padStart(2, '0')}
+            Mostrando {String(visible.length).padStart(2, '0')} de {String(total).padStart(2, '0')}
           </span>
         </div>
       </div>

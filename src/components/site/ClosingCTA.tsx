@@ -23,7 +23,7 @@ export function ClosingCTA() {
       {(openModal) => (
         <div className={styles.closingCopy}>
           <p>
-            TxDxNet conecta experiencia técnica, contexto empresarial y decisiones prácticas para
+            TxDxSecure conecta experiencia técnica, contexto empresarial y decisiones prácticas para
             que cada publicación sea útil más allá de la lectura.
           </p>
           <button

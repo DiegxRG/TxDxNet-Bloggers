@@ -7,7 +7,7 @@ import styles from './home.module.css'
 
 export default async function HomePage() {
   const [latestPosts, featuredPosts] = await Promise.all([
-    getPublishedPosts(12),
+    getPublishedPosts(3),
     getFeaturedPublishedPosts(3),
   ])
 

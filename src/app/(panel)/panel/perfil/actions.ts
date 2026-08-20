@@ -1,10 +1,12 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { getPanelSession } from '@/modules/panel/server/session'
 import { isMediaReferenced } from '@/modules/panel/server/media-references'
+import { domains } from '@/data/domains'
+import type { Admin } from '@/payload-types'
 
 type PanelSession = Awaited<ReturnType<typeof getPanelSession>>
 type PanelPayload = PanelSession['payload']
@@ -14,6 +16,12 @@ const MAX_AVATAR_FILE_SIZE = 5 * 1024 * 1024
 
 function asString(formData: FormData, key: string) {
   return formData.get(key)?.toString().trim() || ''
+}
+
+function asDomainIDs(formData: FormData) {
+  type ExpertiseDomain = NonNullable<Admin['expertiseDomains']>[number]
+  const allowed = new Set(domains.map((domain) => domain.id) as ExpertiseDomain[])
+  return formData.getAll('expertiseDomains').map(String).filter((id): id is ExpertiseDomain => allowed.has(id as ExpertiseDomain))
 }
 
 async function validateAvatar(payload: PanelPayload, id: string, user: PanelUser) {
@@ -86,6 +94,9 @@ export async function updateProfileAction(formData: FormData) {
   const name = asString(formData, 'name')
   const email = asString(formData, 'email')
   const publicTitle = asString(formData, 'publicTitle')
+  const publicBio = asString(formData, 'publicBio')
+  const expertiseDomains = asDomainIDs(formData)
+  const showOnTeam = formData.get('showOnTeam') === 'on'
   const avatarID = asString(formData, 'avatar')
 
   if (!name || !email) {
@@ -118,8 +129,11 @@ export async function updateProfileAction(formData: FormData) {
       data: {
         avatar: validatedAvatarID,
         email,
+        expertiseDomains,
         name,
+        publicBio: publicBio || null,
         publicTitle: publicTitle || null,
+        showOnTeam,
       },
       id: user.id,
       overrideAccess: false,
@@ -142,5 +156,7 @@ export async function updateProfileAction(formData: FormData) {
 
   revalidatePath('/panel')
   revalidatePath('/panel/perfil')
+  revalidatePath('/equipo')
+  revalidateTag('team-members', 'hours')
   redirect('/panel/perfil?estado=guardado')
 }

@@ -8,7 +8,7 @@ export function PlannedArticleCard({ article, index }: { article: PlannedArticle
   return (
     <article className={styles.card}>
       <div aria-hidden="true" className={`${styles.cover} ${styles[`cover${index + 1}`]}`}>
-        <span>TxDxNet</span>
+        <span>TxDxSecure</span>
         <strong>{String(index + 1).padStart(2, '0')}</strong>
         <i>Perspectivas para una operación más clara.</i>
       </div>

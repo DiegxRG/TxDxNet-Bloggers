@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { DomainIcon } from '@/components/icons/DomainIcon'
 import { domains } from '@/data/domains'
 
-import { DomainCard } from './DomainCard'
+import { DomainFeature, type DomainFeatureContext } from './DomainFeature'
 import styles from './domains.module.css'
 
 export const metadata: Metadata = {
@@ -21,6 +21,36 @@ const orbitNodes = [
   { label: 'Experiencia', position: styles.heroOrbitNodeBottom },
   { label: 'Performance', position: styles.heroOrbitNodeLeft },
 ]
+
+const featuredDomainIDs = ['06', '07', '10', '11'] as const
+
+const domainContexts: Record<(typeof featuredDomainIDs)[number], DomainFeatureContext> = {
+  '06': {
+    eyebrow: 'Conectar sin perder el pulso',
+    focus: ['Disponibilidad de extremo a extremo', 'Rendimiento entre sedes, usuarios y servicios', 'Señales que explican una caída antes de que escale'],
+    intro: 'La red es el sistema nervioso de la operación. Cuando sus rutas, latencias y dependencias se entienden, la experiencia deja de ser una colección de síntomas.',
+  },
+  '07': {
+    eyebrow: 'Proteger el borde que cambia',
+    focus: ['Inspección y control del tráfico', 'Contención de amenazas en movimiento', 'Políticas que siguen el contexto, no solo la dirección IP'],
+    intro: 'El perímetro ya no es una muralla fija. Es una frontera dinámica que necesita leer identidades, comportamiento y riesgo mientras la operación continúa.',
+  },
+  '10': {
+    eyebrow: 'La continuidad también tiene una puerta',
+    focus: ['Espacios, activos y controles físicos', 'Señales que afectan disponibilidad y resiliencia', 'Conexión entre seguridad física y operación digital'],
+    intro: 'La seguridad física sostiene lo que la pantalla no muestra. Espacios, accesos y activos deben formar parte de la misma lectura de continuidad.',
+  },
+  '11': {
+    eyebrow: 'Pensar antes de delegar',
+    focus: ['Modelos y agentes bajo gobierno', 'Trazabilidad de decisiones automatizadas', 'Seguridad, privacidad y límites operacionales'],
+    intro: 'Los modelos agentic abren una nueva superficie crítica. La oportunidad aparece cuando la autonomía crece al mismo ritmo que el control.',
+  },
+}
+
+const featuredDomains = featuredDomainIDs.flatMap((id) => {
+  const domain = domains.find((item) => item.id === id)
+  return domain ? [{ context: domainContexts[id], domain }] : []
+})
 
 export default function DomainsPage() {
   return (
@@ -117,22 +147,21 @@ export default function DomainsPage() {
       <section className={styles.domainsSection} id="superficies-operacionales">
         <div className={styles.container}>
           <header className={styles.sectionHeading}>
-            <div>
-              <span className={styles.sectionCode}>Superficies operacionales</span>
-              <h2>Once puntos de vista. Una operación conectada.</h2>
-            </div>
-            <div className={styles.sectionHeadingAside}>
-              <span>MAPA XOC / 01—11</span>
-              <p>Selecciona un dominio para explorar artículos, análisis, guías y conocimiento práctico.</p>
-              <i aria-hidden="true" />
-            </div>
-          </header>
+              <div>
+                <span className={styles.sectionCode}>Superficies operacionales</span>
+                <h2>Cuatro superficies para leer la operación conectada.</h2>
+              </div>
+              <div className={styles.sectionHeadingAside}>
+                <span>MAPA XOC / 06—07 · 10—11</span>
+                <p>Una lectura editorial de cuatro superficies críticas. El contexto importa tanto como la tarjeta.</p>
+                <i aria-hidden="true" />
+              </div>
+            </header>
 
-          <div className={styles.domainGrid}>
-            {domains.slice(0, 9).map((domain, index) => <DomainCard domain={domain} index={index} key={domain.id} />)}
-          </div>
-          <div className={styles.domainGridFinal}>
-            {domains.slice(9).map((domain, index) => <DomainCard domain={domain} index={index + 9} key={domain.id} />)}
+          <div className={styles.domainFeatureList}>
+            {featuredDomains.map(({ context, domain }, index) => (
+              <DomainFeature context={context} domain={domain} index={index} key={domain.id} />
+            ))}
           </div>
         </div>
       </section>
@@ -150,7 +179,7 @@ export default function DomainsPage() {
               operación necesita proteger, observar y mejorar.
             </p>
             <Link className={styles.footerAction} href="/articulos">
-              Leer el conocimiento TxDxNet <span aria-hidden="true">↗</span>
+              Leer el conocimiento TxDxSecure <span aria-hidden="true">↗</span>
             </Link>
           </div>
         </div>
