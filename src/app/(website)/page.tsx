@@ -12,7 +12,7 @@ export default async function HomePage() {
   ])
 
   return (
-    <main className={styles.main} id="contenido">
+    <main className={`${styles.main} home-main--torn-space`} id="contenido">
       <EditorialOpening featuredPosts={featuredPosts} posts={latestPosts} />
 
       <HomeBlogList />

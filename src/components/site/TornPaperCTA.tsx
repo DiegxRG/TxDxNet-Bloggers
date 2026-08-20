@@ -1,0 +1,157 @@
+'use client'
+
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+type PanelState = 'open' | 'tab' | 'hidden'
+
+export function TornPaperCTA() {
+  const pathname = usePathname()
+  const isHome = pathname === '/'
+  const [state, setState] = useState<PanelState>('open')
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const close = useCallback(() => setState('tab'), [])
+
+  const handleTab = useCallback(() => {
+    if (state === 'tab') {
+      setState('open')
+    }
+  }, [state])
+
+  const dismiss = useCallback(() => {
+    setState('hidden')
+    timerRef.current = setTimeout(() => {
+      setState('tab')
+    }, 5000)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
+
+  const rootClass = [
+    'torn-paper',
+    isHome ? 'torn-paper--home' : 'torn-paper--interior',
+    state === 'open' ? 'torn-paper--open' : '',
+    state === 'tab' ? 'torn-paper--tab' : '',
+    state === 'hidden' ? 'torn-paper--hidden' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  return (
+    <div className={rootClass}>
+      <svg className="torn-paper__filters" aria-hidden="true">
+        <defs>
+          <filter id="torn-edge-filter">
+            <feTurbulence
+              baseFrequency="0.04"
+              numOctaves="5"
+              seed="3"
+              result="noise"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="noise"
+              scale="7"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </defs>
+      </svg>
+
+      {/* Collapsed tab */}
+      <button
+        className="torn-paper__tab"
+        onClick={handleTab}
+        aria-label="Abrir panel TxDxSecure"
+        type="button"
+      >
+        <Image
+          alt=""
+          className="torn-paper__tab-logo"
+          height={22}
+          src="/logotxdx.png"
+          width={22}
+        />
+        <span className="torn-paper__tab-dot" />
+      </button>
+
+      {/* Full paper sheet */}
+      <div className="torn-paper__sheet">
+        <button
+          className="torn-paper__close"
+          onClick={close}
+          aria-label="Cerrar panel"
+          type="button"
+        >
+          <svg fill="none" viewBox="0 0 24 24">
+            <path
+              d="M18 6L6 18M6 6l12 12"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+            />
+          </svg>
+        </button>
+
+        <div className="torn-paper__tape" />
+
+        <div className="torn-paper__grid" />
+
+        <div className="torn-paper__hatch" />
+
+        <div className="torn-paper__fold" />
+
+        <div className="torn-paper__shine" />
+
+        <div className="torn-paper__content">
+          <span className="torn-paper__label">Plataforma de seguridad</span>
+          <Image
+            alt="TxDxSecure"
+            className="torn-paper__logo"
+            height={44}
+            priority={false}
+            src="/logotxdx.png"
+            width={44}
+          />
+          <span className="torn-paper__company">TxDxSecure</span>
+
+          <a
+            className="torn-paper__btn"
+            href="https://txdxsecure.com"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <span className="torn-paper__btn-pulse" />
+            <span className="torn-paper__btn-label">Explorar plataforma</span>
+            <svg
+              aria-hidden="true"
+              className="torn-paper__btn-arrow"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M7 17L17 7M17 7H7M17 7v10"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+              />
+            </svg>
+          </a>
+
+          <span className="torn-paper__tagline">
+            Operaciones seguras, observables y centradas en la experiencia.
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}

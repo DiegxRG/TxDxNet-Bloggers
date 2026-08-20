@@ -6,6 +6,7 @@ import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { SiteHeader } from '@/components/site/SiteHeader'
+import { TornPaperCTA } from '@/components/site/TornPaperCTA'
 
 import './globals.css'
 
@@ -51,6 +52,7 @@ export default function WebsiteLayout({ children }: { children: ReactNode }) {
         <Suspense>
           <SiteHeader />
         </Suspense>
+        <TornPaperCTA />
         {children}
         <SiteFooter />
       </body>
