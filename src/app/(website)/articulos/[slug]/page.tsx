@@ -18,9 +18,6 @@ import {
   getRelatedPosts,
 } from '@/modules/content/infrastructure/payload/posts'
 
-export const revalidate = 60
-export const dynamicParams = true
-
 type ArticlePageProps = {
   params: Promise<{ slug: string }>
 }

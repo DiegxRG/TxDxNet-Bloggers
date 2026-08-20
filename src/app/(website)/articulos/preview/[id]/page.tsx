@@ -9,7 +9,7 @@ import { estimateReadingMinutes, formatArticleDate } from '@/modules/content/inf
 import { getPanelSession } from '@/modules/panel/server/session'
 import type { Media, Post } from '@/payload-types'
 
-export const dynamic = 'force-dynamic'
+export const instant = false
 
 type Props = { params: Promise<{ id: string }> }
 

@@ -1,6 +1,7 @@
 import configPromise from '@payload-config'
 import type { Where } from 'payload'
 import { getPayload } from 'payload'
+import { cacheLife, cacheTag } from 'next/cache'
 
 import type { Media, Post } from '@/payload-types'
 
@@ -11,6 +12,10 @@ const publishedFilter: Where = {
 }
 
 export async function getPublishedPosts(limit = 12): Promise<Post[]> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('posts-list')
+
   try {
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({
@@ -31,6 +36,10 @@ export async function getPublishedPosts(limit = 12): Promise<Post[]> {
 }
 
 export async function getFeaturedPublishedPosts(limit = 3): Promise<Post[]> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('posts-featured')
+
   try {
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({
@@ -53,6 +62,10 @@ export async function getFeaturedPublishedPosts(limit = 3): Promise<Post[]> {
 }
 
 export async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('post-detail')
+
   try {
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({
@@ -68,12 +81,16 @@ export async function getPublishedPostBySlug(slug: string): Promise<Post | null>
 
     return result.docs[0] || null
   } catch (error) {
-    console.error(`[editorial] No se pudo cargar el artículo “${slug}”.`, error)
+    console.error(`[editorial] No se pudo cargar el artículo "${slug}".`, error)
     return null
   }
 }
 
 export async function getRelatedPosts(post: Post, limit = 3): Promise<Post[]> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('posts-related')
+
   try {
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({

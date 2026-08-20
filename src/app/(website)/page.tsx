@@ -5,8 +5,6 @@ import { getFeaturedPublishedPosts, getPublishedPosts } from '@/modules/content/
 
 import styles from './home.module.css'
 
-export const revalidate = 60
-
 export default async function HomePage() {
   const [latestPosts, featuredPosts] = await Promise.all([
     getPublishedPosts(12),

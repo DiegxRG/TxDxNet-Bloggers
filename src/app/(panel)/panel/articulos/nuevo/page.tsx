@@ -28,6 +28,7 @@ export default async function NewPanelArticlePage({ searchParams }: Props) {
     depth: 0,
     limit: 12,
     overrideAccess: false,
+    select: { id: true, filename: true, alt: true, sizes: true },
     user,
     sort: '-createdAt',
     where: {

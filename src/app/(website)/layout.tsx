@@ -2,6 +2,7 @@ import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource-variable/manrope'
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
+import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { SiteHeader } from '@/components/site/SiteHeader'
@@ -47,7 +48,9 @@ export default function WebsiteLayout({ children }: { children: ReactNode }) {
         <a className="skip-link" href="#contenido">
           Saltar al contenido
         </a>
-        <SiteHeader />
+        <Suspense>
+          <SiteHeader />
+        </Suspense>
         {children}
         <SiteFooter />
       </body>

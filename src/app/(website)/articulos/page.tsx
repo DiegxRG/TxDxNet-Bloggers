@@ -14,8 +14,6 @@ export const metadata: Metadata = {
   alternates: { canonical: '/articulos' },
 }
 
-export const revalidate = 60
-
 export default async function ArticlesPage() {
   const posts = await getPublishedPosts(24)
   const featuredPost = posts.find((post) => post.featured) || posts[0]

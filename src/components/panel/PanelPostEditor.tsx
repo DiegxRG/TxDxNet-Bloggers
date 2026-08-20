@@ -3,14 +3,31 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import Image from 'next/image'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import type { Media, Post } from '@/payload-types'
 
 import { PanelArticlePreview } from './PanelArticlePreview'
 import { PanelDeletePostButton } from './PanelDeletePostButton'
-import { PanelLexicalEditor } from './PanelLexicalEditor'
 import { PanelSubmitButton } from './PanelSubmitButton'
+
+const PanelLexicalEditor = dynamic(
+  () => import('./PanelLexicalEditor').then((mod) => mod.PanelLexicalEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[24rem] animate-pulse rounded-2xl border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-50)] p-6">
+        <div className="h-4 w-48 animate-pulse rounded bg-[var(--theme-elevation-100)]" />
+        <div className="mt-4 space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-3 animate-pulse rounded bg-[var(--theme-elevation-100)]" style={{ width: `${60 + Math.random() * 40}%` }} />
+          ))}
+        </div>
+      </div>
+    ),
+  },
+)
 
 export type PanelEditorMediaItem = {
   alt: string

@@ -9,7 +9,7 @@ import { getPanelSession } from '@/modules/panel/server/session'
 import '../(website)/globals.css'
 import './panel/panel.css'
 
-export const dynamic = 'force-dynamic'
+export const instant = false
 
 export default async function PanelRootLayout({ children }: { children: ReactNode }) {
   const { payload, user } = await getPanelSession()

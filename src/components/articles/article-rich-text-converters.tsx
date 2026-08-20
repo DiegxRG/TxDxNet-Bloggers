@@ -104,7 +104,6 @@ function renderUpload(
           fill
           sizes="(max-width: 960px) 100vw, 1200px"
           src={imageURL}
-          unoptimized
         />
       </div>
       {caption ? <figcaption>{caption}</figcaption> : null}

@@ -105,7 +105,7 @@ export function SiteFooter() {
       </div>
 
       <div className={styles.bottomBar}>
-        <p>© {new Date().getFullYear()} TxDxSecure · Transformaciones digitales seguras</p>
+        <p>© 2026 TxDxSecure · Transformaciones digitales seguras</p>
       </div>
     </footer>
   )

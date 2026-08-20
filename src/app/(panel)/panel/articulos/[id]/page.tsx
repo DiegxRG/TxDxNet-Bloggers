@@ -56,6 +56,7 @@ export default async function PanelArticleDetailPage({ params, searchParams }: P
     depth: 0,
     limit: 12,
     overrideAccess: false,
+    select: { id: true, filename: true, alt: true, sizes: true },
     user,
     sort: '-createdAt',
     where: {

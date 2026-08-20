@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { slugify } from '@/modules/content/domain/slugify'
@@ -120,6 +120,10 @@ function isValidationError(error: unknown) {
 }
 
 function revalidatePublicArticle(slug: string) {
+  revalidateTag('posts-list', 'hours')
+  revalidateTag('posts-featured', 'hours')
+  revalidateTag('post-detail', 'hours')
+  revalidateTag('posts-related', 'hours')
   revalidatePath('/')
   revalidatePath('/articulos')
   revalidatePath('/sitemap.xml')
@@ -208,6 +212,7 @@ export async function createPanelPostAction(formData: FormData) {
     redirect('/panel/articulos/nuevo?estado=error')
   }
 
+  revalidateTag('posts-list', 'hours')
   revalidatePath('/panel')
   revalidatePath('/panel/articulos')
   redirect(`/panel/articulos/${created.id}?estado=creado`)
@@ -399,6 +404,10 @@ export async function deletePanelPostAction(postID: string) {
     redirect(`/panel/articulos/${postID}?estado=error-eliminar`)
   }
 
+  revalidateTag('posts-list', 'hours')
+  revalidateTag('posts-featured', 'hours')
+  revalidateTag('post-detail', 'hours')
+  revalidateTag('posts-related', 'hours')
   revalidatePath('/panel')
   revalidatePath('/panel/articulos')
   if (deletedSlug) revalidatePublicArticle(deletedSlug)

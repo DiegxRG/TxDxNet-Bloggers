@@ -16,8 +16,21 @@ export default async function PanelMediaPage({ searchParams }: Props) {
 
   const { docs } = await payload.find({
     collection: 'media',
+    depth: 0,
     limit: 100,
     overrideAccess: false,
+    select: {
+      id: true,
+      filename: true,
+      alt: true,
+      url: true,
+      filesize: true,
+      mimeType: true,
+      width: true,
+      height: true,
+      updatedAt: true,
+      sizes: true,
+    },
     user,
     sort: '-createdAt',
     where: {
