@@ -231,6 +231,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   <strong>{formatArticleDate(post)}</strong>
                   <small>{estimateReadingMinutes(post)} min de lectura</small>
                 </div>
+                <a className="article-pdf-link" download href={`/api/articulos/${post.slug}/pdf`}>
+                  Descargar PDF <span aria-hidden="true">↓</span>
+                </a>
               </div>
             </div>
           </div>

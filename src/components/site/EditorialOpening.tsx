@@ -1,4 +1,3 @@
-import { plannedArticles } from '@/data/editorial'
 import {
   estimateReadingMinutes,
   formatArticleDate,
@@ -36,15 +35,5 @@ export function EditorialOpening({ featuredPosts = [], posts }: Props) {
     title: post.title,
   }))
 
-  const plannedStories: OpeningStory[] = plannedArticles.map((article) => ({
-    key: `planned-${article.index}`,
-    author: 'Equipo TxDxSecure',
-    category: article.category,
-    detail: 'En edición',
-    title: article.title,
-  }))
-
-  const stories = [...publishedStories, ...plannedStories].slice(0, 3)
-
-  return <EditorialLibraryStage stories={stories} />
+  return <EditorialLibraryStage stories={publishedStories} />
 }

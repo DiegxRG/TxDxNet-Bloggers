@@ -2036,6 +2036,30 @@ button:focus-visible {
   font-size: 0.8rem;
 }
 
+.article-pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  align-self: end;
+  margin-left: auto;
+  border: 1px solid rgb(88 217 255 / 0.42);
+  border-radius: 999px;
+  padding: 0.65rem 0.9rem;
+  color: #dceaff;
+  font-size: 0.62rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: border-color 220ms ease, background 220ms ease, transform 220ms var(--ease-signal);
+}
+
+.article-pdf-link:hover,
+.article-pdf-link:focus-visible {
+  border-color: var(--color-signal-cyan);
+  background: rgb(88 217 255 / 0.12);
+  transform: translateY(-2px);
+}
+
 .article-hero-media {
   isolation: isolate;
   position: relative;

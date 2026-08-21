@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
     },
   },
   poweredByHeader: false,
-  serverExternalPackages: ['sharp'],
+  serverExternalPackages: ['pdfkit', 'sharp'],
   images: {
     minimumCacheTTL: 60 * 60 * 24 * 30,
     localPatterns: [

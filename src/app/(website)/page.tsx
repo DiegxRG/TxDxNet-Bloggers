@@ -7,7 +7,7 @@ import styles from './home.module.css'
 
 export default async function HomePage() {
   const [latestPosts, featuredPosts] = await Promise.all([
-    getPublishedPosts(3),
+    getPublishedPosts(6),
     getFeaturedPublishedPosts(3),
   ])
 
@@ -15,7 +15,7 @@ export default async function HomePage() {
     <main className={`${styles.main} home-main--torn-space`} id="contenido">
       <EditorialOpening featuredPosts={featuredPosts} posts={latestPosts} />
 
-      <HomeBlogList />
+      <HomeBlogList posts={latestPosts} />
 
       <section className={styles.closingSection}>
         <div className={styles.closingInner}>

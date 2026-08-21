@@ -1,16 +1,11 @@
 import Link from 'next/link'
+import type { Post } from '@/payload-types'
 
-import { plannedArticles } from '@/data/editorial'
-
-import { BlogCard } from './BlogCard'
+import { ArticleCard } from '@/components/articles/ArticleCard'
 import styles from './HomeBlogList.module.css'
 
-const PAGE_SIZE = 6
-
-export function HomeBlogList() {
-  const total = plannedArticles.length
-  const visible = plannedArticles.slice(0, PAGE_SIZE)
-  const remaining = plannedArticles.slice(PAGE_SIZE)
+export function HomeBlogList({ posts }: { posts: Post[] }) {
+  const total = posts.length
 
   return (
     <section className={styles.section}>
@@ -30,36 +25,20 @@ export function HomeBlogList() {
           </div>
         </div>
 
-        {visible.length ? (
+        {posts.length ? (
           <div className={styles.grid}>
-            {visible.map((article, index) => (
-              <BlogCard article={article} index={index} key={article.index} />
+            {posts.map((post, index) => (
+              <ArticleCard key={post.id} post={post} priority={index < 3} />
             ))}
           </div>
-        ) : null}
+        ) : <p className={styles.empty}>Todavía no hay artículos publicados.</p>}
 
         <div className={styles.loadMore}>
-          {remaining.length ? (
-            <details className={styles.more}>
-              <summary className={styles.button}>
-                Cargar más publicaciones
-                <i aria-hidden="true">↓</i>
-              </summary>
-              <div className={styles.grid}>
-                {remaining.map((article, index) => (
-                  <BlogCard article={article} index={PAGE_SIZE + index} key={article.index} />
-                ))}
-              </div>
-            </details>
-          ) : (
-            <Link className={styles.button} href="/articulos">
-              Ver todos los artículos
-              <i aria-hidden="true">→</i>
-            </Link>
-          )}
-          <span className={styles.progress}>
-            Mostrando {String(visible.length).padStart(2, '0')} de {String(total).padStart(2, '0')}
-          </span>
+          <Link className={styles.button} href="/articulos">
+            Ver todos los artículos
+            <i aria-hidden="true">→</i>
+          </Link>
+          <span className={styles.progress}>Mostrando {String(total).padStart(2, '0')} publicados</span>
         </div>
       </div>
     </section>
