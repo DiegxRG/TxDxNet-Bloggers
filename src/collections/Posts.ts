@@ -16,7 +16,7 @@ export const Posts: CollectionConfig = {
     defaultColumns: ['title', 'featured', '_status', 'publishedAt', 'updatedAt'],
     livePreview: {
       url: ({ data }) =>
-        `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/articulos/${data.slug || ''}`,
+        `${process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com'}/articulos/${data.slug || ''}`,
       openByDefault: true,
     },
   },

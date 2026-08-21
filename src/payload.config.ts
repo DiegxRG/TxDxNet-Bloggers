@@ -15,7 +15,7 @@ import { editorialEditor } from './editor'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com'
 const configuredPoolMax = Number.parseInt(process.env.DATABASE_POOL_MAX || '', 10)
 const databasePoolMax = Number.isInteger(configuredPoolMax) && configuredPoolMax > 0
   ? configuredPoolMax
