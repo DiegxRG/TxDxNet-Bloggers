@@ -79,6 +79,41 @@
   gap: clamp(0.65rem, 1.3vw, 1.4rem);
 }
 
+:global(.locale-switcher) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.35rem;
+  border: 1px solid rgb(7 20 45 / 0.16);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.72);
+  padding: 0.25rem 0.35rem;
+  color: var(--color-ink-600);
+  cursor: pointer;
+  font-size: 0.58rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  transition: border-color 180ms ease, color 180ms ease, transform 180ms var(--ease-signal);
+}
+
+:global(.locale-switcher span:first-child) {
+  border-radius: 999px;
+  background: var(--color-ink-950);
+  padding: 0.35rem 0.42rem;
+  color: white;
+}
+
+:global(.locale-switcher span:last-child) {
+  padding-right: 0.22rem;
+}
+
+:global(.locale-switcher:hover),
+:global(.locale-switcher:focus-visible) {
+  border-color: var(--color-signal-orange);
+  color: var(--color-signal-orange);
+  transform: translateY(-1px);
+}
+
 .library {
   display: inline-flex;
   min-height: 2.9rem;

@@ -1,14 +1,16 @@
-import Link from 'next/link'
 import Image from 'next/image'
 
 import { ProfileAvatarField } from '@/components/panel/ProfileAvatarField'
 import { PanelSubmitButton } from '@/components/panel/PanelSubmitButton'
+import { LogoutButton } from '@/components/panel/LogoutButton'
+import { BioCharacterCount } from '@/components/panel/BioCharacterCount'
+import { ExpertiseDomainField } from '@/components/panel/ExpertiseDomainField'
 import { domains } from '@/data/domains'
 import { getMediaURL } from '@/modules/content/infrastructure/payload/posts'
 import { getPanelSession } from '@/modules/panel/server/session'
 import type { Admin, Media } from '@/payload-types'
 
-import { updateProfileAction } from './actions'
+import { changePasswordAction, updateProfileAction } from './actions'
 
 type PanelSearchParams = Record<string, string | string[] | undefined>
 
@@ -53,46 +55,11 @@ function IconCalendar() {
   )
 }
 
-function IconDocument() {
-  return (
-    <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24">
-      <path d="M7 4.75h9.5A2.75 2.75 0 0 1 19.25 7.5v11A1.75 1.75 0 0 1 17.5 20.25H7A2.25 2.25 0 0 1 4.75 18V7A2.25 2.25 0 0 1 7 4.75Z" />
-      <path d="M8.5 9.25h7M8.5 12.25h7M8.5 15.25h4.5" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconCheck() {
-  return (
-    <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="9" />
-      <path d="m9 12 2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function IconPen() {
-  return (
-    <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24">
-      <path d="M15.232 5.232a2.828 2.828 0 1 1 4 4L7.5 20.964H3.5v-4L15.232 5.232Z" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 function IconShield() {
   return (
     <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
       <path d="M12 3 4 7v4.5c0 4.86 3.41 9.4 8 10.5 4.59-1.1 8-5.64 8-10.5V7l-8-4Z" strokeLinecap="round" strokeLinejoin="round" />
       <path d="m9 12 2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function IconKey() {
-  return (
-    <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-      <circle cx="15.5" cy="8.5" r="4.5" />
-      <path d="m12.5 11.5-8 8M8 17l2.5 2.5M5.5 14.5 8 17" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -118,40 +85,6 @@ export default async function PanelProfilePage({ searchParams }: Props) {
   })) as Admin & { avatar?: Media | null | string }
   const params = await searchParams
   const status = Array.isArray(params.estado) ? params.estado[0] : params.estado
-
-  const [drafts, published, total] = await Promise.all([
-    payload.find({
-      collection: 'posts',
-      draft: true,
-      limit: 1,
-      pagination: true,
-      overrideAccess: false,
-      user,
-      where: {
-        and: [{ _status: { equals: 'draft' } }, { createdBy: { equals: user.id } }],
-      },
-    }),
-    payload.find({
-      collection: 'posts',
-      draft: false,
-      limit: 1,
-      pagination: true,
-      overrideAccess: false,
-      user,
-      where: {
-        and: [{ _status: { equals: 'published' } }, { createdBy: { equals: user.id } }],
-      },
-    }),
-    payload.find({
-      collection: 'posts',
-      draft: true,
-      limit: 1,
-      pagination: true,
-      overrideAccess: false,
-      user,
-      where: { createdBy: { equals: user.id } },
-    }),
-  ])
 
   const memberSince = new Intl.DateTimeFormat('es-PE', {
     month: 'long',
@@ -195,6 +128,18 @@ export default async function PanelProfilePage({ searchParams }: Props) {
               ),
               text: 'La foto no es válida o supera el límite de 5 MB.',
             }
+          : status === 'perfil-limite'
+          ? {
+              className:
+                'border-[rgba(255,90,24,0.16)] bg-[rgba(255,90,24,0.08)] text-[var(--txdx-orange)]',
+              icon: (
+                <svg aria-hidden="true" className="h-4 w-4 flex-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 8v4M12 16h.01" strokeLinecap="round" />
+                </svg>
+              ),
+              text: 'La biografía admite hasta 320 caracteres y puedes seleccionar hasta 3 dominios.',
+            }
           : status === 'error'
           ? {
               className:
@@ -207,6 +152,15 @@ export default async function PanelProfilePage({ searchParams }: Props) {
               ),
               text: 'No se pudieron guardar los cambios. Revisa si el email ya esta en uso.',
             }
+          : null
+
+  const passwordAlert =
+    status === 'password-guardado'
+      ? 'Contraseña actualizada correctamente.'
+      : status === 'password-invalido'
+        ? 'Usa una contraseña de al menos 12 caracteres y confirma el mismo valor.'
+        : status === 'password-error'
+          ? 'La contraseña actual no es correcta o no se pudo completar el cambio.'
           : null
 
   const firstName = user.name.split(' ')[0] || 'W'
@@ -257,63 +211,6 @@ export default async function PanelProfilePage({ searchParams }: Props) {
           <div className="flex flex-none items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3.5 py-1.5 text-[0.82rem] font-bold text-white/90 backdrop-blur-md">
             <IconCalendar />
             <span>Desde {memberSince}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Stat cards — horizontal compact ─────────────────────────── */}
-      <section aria-label="Estadisticas editoriales" className="grid gap-4 sm:grid-cols-3">
-        {/* Total */}
-        <div className="group relative overflow-hidden rounded-xl border border-[var(--theme-elevation-150)] bg-white p-3 shadow-[0_6px_20px_rgba(7,20,45,0.04)] transition hover:-translate-y-0.5 hover:border-[var(--color-blue-150)] hover:shadow-[0_10px_28px_rgba(7,20,45,0.07)]">
-          <div aria-hidden="true" className="absolute left-0 top-0 h-full w-[3px] rounded-full bg-[var(--txdx-cyan)]" />
-          <div className="flex items-center gap-3 pl-2">
-            <span className="grid h-9 w-9 flex-none place-items-center rounded-lg bg-[rgba(88,217,255,0.1)] text-[var(--txdx-cyan)] transition group-hover:bg-[rgba(88,217,255,0.16)]">
-              <IconDocument />
-            </span>
-            <div className="min-w-0">
-              <p className="font-display text-xl font-extrabold tracking-[-0.04em] text-[var(--txdx-navy)]">
-                {total.totalDocs}
-              </p>
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--theme-elevation-500)]">
-                Total de piezas
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Publicadas */}
-        <div className="group relative overflow-hidden rounded-xl border border-[var(--theme-elevation-150)] bg-white p-3 shadow-[0_6px_20px_rgba(7,20,45,0.04)] transition hover:-translate-y-0.5 hover:border-[var(--color-blue-150)] hover:shadow-[0_10px_28px_rgba(7,20,45,0.07)]">
-          <div aria-hidden="true" className="absolute left-0 top-0 h-full w-[3px] rounded-full bg-[var(--txdx-blue)]" />
-          <div className="flex items-center gap-3 pl-2">
-            <span className="grid h-9 w-9 flex-none place-items-center rounded-lg bg-[rgba(18,104,255,0.08)] text-[var(--txdx-blue)] transition group-hover:bg-[rgba(18,104,255,0.14)]">
-              <IconCheck />
-            </span>
-            <div className="min-w-0">
-              <p className="font-display text-xl font-extrabold tracking-[-0.04em] text-[var(--txdx-navy)]">
-                {published.totalDocs}
-              </p>
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--theme-elevation-500)]">
-                Publicadas
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Borradores */}
-        <div className="group relative overflow-hidden rounded-xl border border-[var(--theme-elevation-150)] bg-white p-3 shadow-[0_6px_20px_rgba(7,20,45,0.04)] transition hover:-translate-y-0.5 hover:border-[rgba(255,90,24,0.18)] hover:shadow-[0_10px_28px_rgba(7,20,45,0.07)]">
-          <div aria-hidden="true" className="absolute left-0 top-0 h-full w-[3px] rounded-full bg-[var(--txdx-orange)]" />
-          <div className="flex items-center gap-3 pl-2">
-            <span className="grid h-9 w-9 flex-none place-items-center rounded-lg bg-[rgba(255,90,24,0.08)] text-[var(--txdx-orange)] transition group-hover:bg-[rgba(255,90,24,0.14)]">
-              <IconPen />
-            </span>
-            <div className="min-w-0">
-              <p className="font-display text-xl font-extrabold tracking-[-0.04em] text-[var(--txdx-navy)]">
-                {drafts.totalDocs}
-              </p>
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--theme-elevation-500)]">
-                Borradores
-              </p>
-            </div>
           </div>
         </div>
       </section>
@@ -384,8 +281,9 @@ export default async function PanelProfilePage({ searchParams }: Props) {
                 </span>
                 <input
                   className="min-h-11 w-full rounded-xl border border-[var(--theme-elevation-200)] bg-white py-2.5 pl-10 pr-3.5 text-sm text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
-                  defaultValue={user.publicTitle || ''}
-                  name="publicTitle"
+                   defaultValue={user.publicTitle || ''}
+                   maxLength={80}
+                   name="publicTitle"
                   placeholder="Ej.: Ingeniero de seguridad"
                   type="text"
                 />
@@ -397,34 +295,15 @@ export default async function PanelProfilePage({ searchParams }: Props) {
 
             <label className="block">
               <span className="mb-1.5 block text-[0.82rem] font-bold text-[var(--txdx-navy)]">Biografía pública</span>
-              <textarea
-                className="min-h-28 w-full resize-y rounded-xl border border-[var(--theme-elevation-200)] bg-white px-3.5 py-3 text-sm leading-6 text-[var(--theme-elevation-800)] outline-none transition focus:border-[var(--txdx-blue)] focus:ring-4 focus:ring-[rgba(18,104,255,0.12)]"
-                defaultValue={profile.publicBio || ''}
-                name="publicBio"
-                placeholder="Cuenta qué problemas te gusta resolver y cómo lees la operación."
-                rows={4}
-              />
+              <BioCharacterCount defaultValue={profile.publicBio || ''} />
               <span className="mt-1.5 block text-[0.78rem] leading-5 text-[var(--theme-elevation-500)]">
-                Se muestra en tu perfil público del equipo.
+                Se muestra en tu perfil público del equipo. Máximo 320 caracteres.
               </span>
             </label>
 
             <fieldset className="rounded-xl border border-[var(--theme-elevation-200)] p-3.5">
               <legend className="px-1 text-[0.82rem] font-bold text-[var(--txdx-navy)]">Dominios XOC que dominas</legend>
-              <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {domains.map((domain) => (
-                  <label className="flex items-start gap-2 rounded-lg border border-transparent px-2 py-1.5 text-[0.78rem] text-[var(--theme-elevation-700)] transition hover:border-[rgba(18,104,255,0.14)] hover:bg-[rgba(18,104,255,0.04)]" key={domain.id}>
-                    <input
-                      className="mt-0.5 accent-[var(--txdx-blue)]"
-                      defaultChecked={expertiseDomains.includes(domain.id as NonNullable<Admin['expertiseDomains']>[number])}
-                      name="expertiseDomains"
-                      type="checkbox"
-                      value={domain.id}
-                    />
-                    <span><strong>{domain.id}</strong> · {domain.name}</span>
-                  </label>
-                ))}
-              </div>
+              <ExpertiseDomainField domains={domains} selected={expertiseDomains} />
             </fieldset>
 
             <label className="flex items-start gap-2 rounded-xl border border-[rgba(18,104,255,0.12)] bg-[rgba(18,104,255,0.04)] px-3.5 py-3 text-[0.8rem] text-[var(--theme-elevation-700)]">
@@ -448,7 +327,7 @@ export default async function PanelProfilePage({ searchParams }: Props) {
 
         {/* Security card */}
         <aside className="grid content-start gap-5">
-          <section className="relative overflow-hidden rounded-[1.3rem] border border-[rgba(255,255,255,0.12)] bg-[linear-gradient(180deg,#07142d_0%,#0f2348_100%)] p-4 text-white shadow-[0_20px_50px_rgba(7,20,45,0.22)]">
+          <section className="relative overflow-hidden rounded-[1.3rem] border border-[rgba(255,255,255,0.12)] bg-[linear-gradient(180deg,#07142d_0%,#0f2348_100%)] p-4 text-white shadow-[0_20px_50px_rgba(7,20,45,0.22)]" id="seguridad">
             {/* Decorative orb */}
             <div aria-hidden="true" className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[radial-gradient(circle,rgba(88,217,255,0.12),transparent_70%)]" />
 
@@ -463,26 +342,35 @@ export default async function PanelProfilePage({ searchParams }: Props) {
               </div>
 
               <p className="mt-3 text-[0.82rem] leading-5 text-white/68">
-                Password y ajustes sensibles de tu cuenta editorial.
+                Cambia tu contraseña temporal desde este mismo panel editorial.
               </p>
 
-              <div className="mt-3.5 grid gap-2">
-                <Link
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-white px-3.5 text-[0.82rem] font-extrabold text-[var(--txdx-navy)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(7,20,45,0.12)]"
-                  href="/admin/account"
-                  prefetch={false}
-                >
-                  <IconKey />
-                  Gestionar seguridad
-                </Link>
-                <Link
+              {passwordAlert ? (
+                <p className="mt-3 rounded-xl border border-white/12 bg-white/8 px-3 py-2 text-xs leading-5 text-white/82">{passwordAlert}</p>
+              ) : null}
+
+              <form action={changePasswordAction} className="mt-4 grid gap-2.5">
+                <label className="grid gap-1 text-xs font-bold text-white/72">
+                  Contraseña actual
+                  <input autoComplete="current-password" className="min-h-10 rounded-xl border border-white/12 bg-white/8 px-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-[var(--txdx-cyan)]" name="currentPassword" required type="password" />
+                </label>
+                <label className="grid gap-1 text-xs font-bold text-white/72">
+                  Nueva contraseña
+                  <input autoComplete="new-password" className="min-h-10 rounded-xl border border-white/12 bg-white/8 px-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-[var(--txdx-cyan)]" minLength={12} name="newPassword" required type="password" />
+                </label>
+                <label className="grid gap-1 text-xs font-bold text-white/72">
+                  Confirmar contraseña
+                  <input autoComplete="new-password" className="min-h-10 rounded-xl border border-white/12 bg-white/8 px-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-[var(--txdx-cyan)]" minLength={12} name="confirmPassword" required type="password" />
+                </label>
+                <PanelSubmitButton pendingLabel="Actualizando...">Actualizar contraseña</PanelSubmitButton>
+              </form>
+
+              <div className="mt-2.5 grid gap-2">
+                <LogoutButton
                   className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/14 px-3.5 text-[0.82rem] font-bold text-white/78 transition hover:bg-white/8 hover:text-white"
-                  href="/admin/logout"
-                  prefetch={false}
                 >
                   <IconLogout />
-                  Cerrar sesion
-                </Link>
+                </LogoutButton>
               </div>
             </div>
           </section>

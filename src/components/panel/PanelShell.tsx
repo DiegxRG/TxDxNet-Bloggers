@@ -6,11 +6,18 @@ import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { useMemo, useSyncExternalStore, useState } from 'react'
 
+import type { AdminRole } from '@/access'
+import { LogoutButton } from './LogoutButton'
+import { ToastViewport } from './ToastViewport'
+
 type UserSummary = {
   avatarURL?: null | string
   email: string
+  isOwner: boolean
+  mustChangePassword: boolean
   name: string
   publicTitle?: null | string
+  role: AdminRole
 }
 
 type Props = {
@@ -70,6 +77,40 @@ const NAV_ITEMS: NavItem[] = [
   },
 ]
 
+const OWNER_NAV_ITEMS: NavItem[] = [
+  {
+    href: '/panel/metricas',
+    label: 'Métricas',
+    description: 'Visitas y lecturas',
+    icon: (
+      <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24">
+        <path d="M4.75 18.25V12M9.5 18.25V7.75M14.5 18.25V10M19.25 18.25V4.75" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: '/panel/usuarios',
+    label: 'Usuarios',
+    description: 'Roles y cuentas activas',
+    icon: (
+      <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24">
+        <path d="M16 20a4 4 0 0 0-8 0M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7 8a3.5 3.5 0 0 0-2.5-3.35M16.5 6.15a2.75 2.75 0 0 1 0 5.2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: '/panel/auditoria',
+    label: 'Auditoria',
+    description: 'Actividad administrativa',
+    icon: (
+      <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24">
+        <path d="M6.75 4.75h10.5A2.75 2.75 0 0 1 20 7.5v9a2.75 2.75 0 0 1-2.75 2.75H6.75A2.75 2.75 0 0 1 4 16.5v-9a2.75 2.75 0 0 1 2.75-2.75Z" />
+        <path d="M8 9h8M8 12h5M8 15h3" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+]
+
 const VIEW_META = [
   {
     prefix: '/panel/articulos',
@@ -88,6 +129,12 @@ const VIEW_META = [
     kicker: 'Perfil editorial',
     title: 'Tu identidad como escritor',
     description: 'Ajusta tu firma publica y tu acceso.',
+  },
+  {
+    prefix: '/panel/metricas',
+    kicker: 'Analítica privada',
+    title: 'Métricas del sitio',
+    description: 'Visitas, visitantes aproximados y lecturas de artículos.',
   },
   {
     prefix: '/panel',
@@ -127,7 +174,9 @@ export function PanelShell({ children, user }: Props) {
   const sidebarCollapsed = useSyncExternalStore(subscribeToSidebar, getSidebarSnapshot, getSidebarServerSnapshot)
   const currentView = useMemo(() => getViewMeta(pathname), [pathname])
   const firstName = user.name.split(' ')[0] || 'Admin'
-  const role = user.publicTitle || 'Administrador editorial'
+  const publicTitle = user.publicTitle || 'Administrador editorial'
+  const accessRole = user.role === 'owner' ? 'Owner' : 'Editor'
+  const navItems = user.isOwner ? [...NAV_ITEMS, ...OWNER_NAV_ITEMS] : NAV_ITEMS
 
   function toggleSidebar() {
     window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(!sidebarCollapsed))
@@ -136,6 +185,7 @@ export function PanelShell({ children, user }: Props) {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(88,217,255,0.08),transparent_24%),linear-gradient(180deg,#eef3fb_0%,#f8fafc_45%,#eef2f8_100%)] text-[var(--txdx-navy)]">
+      <ToastViewport />
       {navOpen ? (
         <button
           aria-label="Cerrar navegacion"
@@ -151,7 +201,7 @@ export function PanelShell({ children, user }: Props) {
             navOpen ? 'translate-x-0' : '-translate-x-full'
           } ${sidebarCollapsed ? 'md:w-[4.75rem]' : 'md:w-[18.5rem]'}`}
         >
-          <div className={`border-b border-white/10 pb-5 pt-6 ${sidebarCollapsed ? 'px-2 md:px-2' : 'px-5'}`}>
+          <div className={`border-b border-white/10 pb-4 pt-5 ${sidebarCollapsed ? 'px-2 md:px-2' : 'px-4'}`}>
             <Link className={`flex items-center text-white ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`} href="/panel" onClick={() => setNavOpen(false)}>
               <span className="relative block h-[54px] w-[54px] shrink-0">
                 <Image alt="TxDxSecure" fill priority sizes="54px" src="/logotxdx.png" />
@@ -166,49 +216,51 @@ export function PanelShell({ children, user }: Props) {
               </span>
             </Link>
 
-            <div className={`mt-5 rounded-[1.15rem] border border-white/10 bg-white/6 py-3.5 ${sidebarCollapsed ? 'px-2' : 'px-4'}`}>
+            <div className={`mt-4 rounded-[1.05rem] border border-white/10 bg-white/6 py-2.5 ${sidebarCollapsed ? 'px-2' : 'px-3'}`}>
               <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`}>
-                <span className="relative grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-[linear-gradient(135deg,var(--txdx-orange),var(--color-blue-500))] font-display text-base font-extrabold text-white">
+                <span className="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[linear-gradient(135deg,var(--txdx-orange),var(--color-blue-500))] font-display text-base font-extrabold text-white">
                   {user.avatarURL ? (
-                    <Image alt={`Foto de perfil de ${user.name}`} className="object-cover" fill sizes="44px" src={user.avatarURL} />
+                    <Image alt={`Foto de perfil de ${user.name}`} className="object-cover" fill sizes="36px" src={user.avatarURL} />
                   ) : (
                     firstName.slice(0, 1).toUpperCase()
                   )}
                 </span>
                 <span className={`${sidebarCollapsed ? 'md:hidden' : ''} min-w-0`}>
                   <span className="block text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-[var(--txdx-cyan)]">Sesion activa</span>
-                  <span className="mt-2 block text-lg font-bold text-white">{firstName}</span>
-                  <span className="mt-1 block truncate text-sm text-white/72">{role}</span>
-                  <span className="mt-2 block truncate text-xs text-white/52">{user.email}</span>
+                  <span className="mt-1 block text-base font-bold text-white">{firstName}</span>
+                  <span className="mt-0.5 block truncate text-xs text-white/72">{publicTitle}</span>
+                  <span className="mt-1 block text-[0.65rem] font-extrabold uppercase tracking-[0.16em] text-white/48">{accessRole}</span>
+                  <span className="mt-1 block truncate text-[0.68rem] text-white/52">{user.email}</span>
                 </span>
               </div>
             </div>
           </div>
 
-          <nav className={`flex-1 overflow-y-auto py-5 ${sidebarCollapsed ? 'px-2' : 'px-4'}`}>
+          <nav className={`flex-1 overflow-y-auto py-3 ${sidebarCollapsed ? 'px-2' : 'px-3'}`}>
             <p className={`${sidebarCollapsed ? 'md:hidden' : ''} px-3 text-[0.66rem] font-extrabold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.42)]`}>
               Operacion diaria
             </p>
 
-            <ul className="mt-3 space-y-2">
-              {NAV_ITEMS.map((item) => {
+            <ul className="mt-2 space-y-1">
+              {navItems.map((item) => {
                 const active = isItemActive(pathname, item.href)
 
                 return (
                   <li key={item.href}>
                     <Link
                       aria-label={sidebarCollapsed ? item.label : undefined}
-                      className={`group flex items-center rounded-[1rem] border px-3 py-2.5 transition ${sidebarCollapsed ? 'justify-center' : 'gap-3'} ${
+                      className={`group flex items-center rounded-[0.85rem] border px-2.5 py-2 transition ${sidebarCollapsed ? 'justify-center' : 'gap-2.5'} ${
                         active
                           ? 'border-[rgba(88,217,255,0.18)] bg-[linear-gradient(135deg,rgba(18,104,255,0.28),rgba(255,90,24,0.18))] shadow-[0_18px_36px_rgba(2,8,24,0.24)]'
                           : 'border-transparent bg-transparent hover:border-white/8 hover:bg-white/5'
                       }`}
                       href={item.href}
                       onClick={() => setNavOpen(false)}
+                      prefetch={false}
                       title={sidebarCollapsed ? item.label : undefined}
                     >
                       <span
-                        className={`grid h-11 w-11 flex-none place-items-center rounded-2xl border ${
+                          className={`grid h-9 w-9 flex-none place-items-center rounded-xl border ${
                           active
                             ? 'border-white/16 bg-white/10 text-white'
                             : 'border-white/10 bg-white/5 text-white/72 group-hover:text-white'
@@ -226,6 +278,23 @@ export function PanelShell({ children, user }: Props) {
               })}
             </ul>
           </nav>
+
+          <div className={`grid gap-2 border-t border-white/10 py-4 ${sidebarCollapsed ? 'px-2' : 'px-4'}`}>
+            <Link className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-extrabold text-white/75 transition hover:bg-white/10 hover:text-white ${sidebarCollapsed ? 'md:px-0' : ''}`} href="/" prefetch={false} title="Ver sitio público">
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M3.6 9h16.8M3.6 15h16.8" strokeLinecap="round" />
+                <ellipse cx="12" cy="12" rx="4" ry="9" />
+              </svg>
+              <span className={sidebarCollapsed ? 'md:hidden' : ''}>Ver sitio</span>
+            </Link>
+            <LogoutButton aria-label="Cerrar sesión" className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[rgba(255,90,24,0.22)] bg-[rgba(255,90,24,0.11)] px-3 text-xs font-extrabold text-[var(--txdx-orange)] transition hover:bg-[rgba(255,90,24,0.18)] ${sidebarCollapsed ? 'md:px-0' : ''}`} title="Cerrar sesión">
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className={sidebarCollapsed ? 'md:hidden' : ''}>Cerrar sesión</span>
+            </LogoutButton>
+          </div>
 
         </aside>
 
@@ -275,38 +344,10 @@ export function PanelShell({ children, user }: Props) {
               </div>
             </div>
 
-              <div className="hidden items-center gap-2 sm:flex">
-                <Link
-                  aria-label="Ver sitio publico"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-[rgba(18,104,255,0.18)] bg-[rgba(18,104,255,0.08)] px-3 text-sm font-extrabold text-[var(--color-blue-600)] transition hover:-translate-y-0.5 hover:bg-[rgba(18,104,255,0.14)] lg:px-4"
-                  href="/"
-                  prefetch={false}
-                  title="Ver sitio publico"
-                >
-                  <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M3.6 9h16.8M3.6 15h16.8" strokeLinecap="round" />
-                    <ellipse cx="12" cy="12" rx="4" ry="9" />
-                  </svg>
-                  <span className="hidden lg:inline">Ver sitio</span>
-                </Link>
-                <Link
-                  aria-label="Cerrar sesion"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-[rgba(255,90,24,0.22)] bg-[rgba(255,90,24,0.11)] px-3 text-sm font-extrabold text-[var(--txdx-orange)] transition hover:-translate-y-0.5 hover:bg-[rgba(255,90,24,0.18)] lg:px-4"
-                  href="/admin/logout"
-                  prefetch={false}
-                  title="Cerrar sesion"
-                >
-                  <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span className="hidden lg:inline">Salir</span>
-                </Link>
-              </div>
-
               <Link
                 className="group hidden items-center gap-3 rounded-full border border-[rgba(7,20,45,0.08)] bg-white px-3 py-2 shadow-[0_10px_24px_rgba(7,20,45,0.05)] sm:flex"
                 href="/panel/perfil"
+                prefetch={false}
               >
                 <span className="relative grid h-11 w-11 place-items-center overflow-hidden rounded-full bg-[linear-gradient(135deg,var(--txdx-orange),var(--color-blue-500))] font-display text-base font-extrabold text-white">
                   {user.avatarURL ? (
@@ -320,14 +361,24 @@ export function PanelShell({ children, user }: Props) {
                     {user.name}
                   </strong>
                   <span className="mt-0.5 block text-xs text-[var(--theme-elevation-500)]">
-                    {role}
+                     {publicTitle} · {accessRole}
                   </span>
                 </span>
               </Link>
             </div>
           </header>
 
-          <main className="mx-auto max-w-[1600px] px-4 py-6 md:px-8 md:py-8">{children}</main>
+          <main className="mx-auto max-w-[1600px] px-4 py-6 md:px-8 md:py-8">
+            {user.mustChangePassword ? (
+              <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-[rgba(255,90,24,0.24)] bg-[rgba(255,90,24,0.08)] px-4 py-3.5 text-sm text-[var(--txdx-navy)] sm:flex-row sm:items-center sm:justify-between" role="alert">
+                <span><strong className="font-extrabold">Actualiza tu contraseña.</strong> Tu acceso temporal debe reemplazarse antes de continuar.</span>
+                <Link className="inline-flex min-h-9 items-center justify-center rounded-xl bg-[var(--txdx-orange)] px-3.5 text-xs font-extrabold text-white transition hover:-translate-y-0.5" href="/panel/perfil#seguridad">
+                  Ir a seguridad
+                </Link>
+              </div>
+            ) : null}
+            {children}
+          </main>
         </div>
       </div>
     </div>

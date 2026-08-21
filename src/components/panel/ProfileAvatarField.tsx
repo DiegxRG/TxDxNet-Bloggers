@@ -25,6 +25,10 @@ type Props = {
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
 
+function showToast(status: string) {
+  window.dispatchEvent(new CustomEvent('txdx-toast', { detail: { status } }))
+}
+
 function getPreviewURL(media: UploadedMedia) {
   return media.sizes?.avatar?.url || media.sizes?.thumbnail?.url || media.url || null
 }
@@ -101,8 +105,10 @@ export function ProfileAvatarField({ initialId = null, initialURL = null, name }
       setPendingFile(null)
       setSelectionBase({ id: String(media.id), url: getPreviewURL(media) })
       setStatus('Foto lista. Guarda tu perfil para aplicarla.')
+      showToast('guardado')
     } catch {
       setStatus('No se pudo subir la foto. Intenta nuevamente.')
+      showToast('error-guardar')
     } finally {
       setUploading(false)
       if (inputRef.current) inputRef.current.value = ''

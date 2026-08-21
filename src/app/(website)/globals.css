@@ -2471,16 +2471,6 @@ button:focus-visible {
   margin-top: 1rem;
 }
 
-.article-pipeline__track::before {
-  position: absolute;
-  top: 1rem;
-  bottom: 1rem;
-  left: 1rem;
-  width: 1px;
-  background: linear-gradient(var(--color-signal-cyan), rgb(88 217 255 / 0.12) 82%, transparent);
-  content: '';
-}
-
 .article-pipeline__step {
   --pipeline-accent: var(--color-signal-cyan);
   position: relative;
@@ -2529,6 +2519,48 @@ button:focus-visible {
 .article-pipeline__step[data-tone='whatsapp'] { --pipeline-accent: #54df88; }
 .article-pipeline__step[data-tone='email'] { --pipeline-accent: var(--color-signal-orange); }
 .article-pipeline__step[data-tone='instagram'] { --pipeline-accent: #ed6da2; }
+.article-pipeline__step[data-tone='copy'] { --pipeline-accent: #8ef0e2; }
+.article-pipeline__step[data-tone='native'] { --pipeline-accent: #ffd166; }
+
+button.article-pipeline__step {
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: inherit;
+}
+
+.article-pipeline__action {
+  display: grid;
+}
+
+.article-pipeline__manual-copy {
+  margin-top: -0.35rem;
+  border: 1px dashed rgb(142 240 226 / 0.45);
+  border-radius: 0.55rem;
+  background: rgb(7 20 45 / 0.5);
+  padding: 0.55rem 0.65rem;
+}
+
+.article-pipeline__manual-copy label {
+  display: grid;
+  gap: 0.4rem;
+  color: #9eb3d2;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.article-pipeline__manual-copy input {
+  width: 100%;
+  min-height: 2rem;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 0.45rem;
+  background: rgb(255 255 255 / 0.06);
+  padding: 0.3rem 0.55rem;
+  color: #dceaff;
+  font-size: 0.68rem;
+}
 
 .article-pipeline__node {
   position: relative;
@@ -3607,7 +3639,7 @@ button:focus-visible {
 
 /* ==========================================================================
    TORN PAPER CTA — 3D ripped cuadricula with company CTA
-   States: open (full paper) → tab (crumpled mini) → hidden (gone 5s) → tab
+   States: open (full paper) ↔ tab (crumpled mini)
    ========================================================================== */
 
 .torn-paper__filters {
@@ -3618,8 +3650,8 @@ button:focus-visible {
 }
 
 .torn-paper {
-  --paper-w: 14.5rem;
-  --paper-h: 20rem;
+  --paper-w: 12.5rem;
+  --paper-h: 17.25rem;
   position: relative;
   width: var(--paper-w);
   height: var(--paper-h);
@@ -3652,7 +3684,7 @@ button:focus-visible {
 
 .torn-paper--home {
   position: absolute;
-  bottom: 12rem;
+  bottom: 15rem;
   left: 2rem;
 }
 
@@ -3743,10 +3775,6 @@ button:focus-visible {
   pointer-events: auto;
 }
 
-.torn-paper--hidden .torn-paper__tab {
-  animation: torn-tab-disappear 400ms var(--ease-signal) forwards;
-}
-
 /* ==========================================================================
    CLOSE BUTTON — top-right of the open paper
    ========================================================================== */
@@ -3808,6 +3836,7 @@ button:focus-visible {
 /* ---- Open state ---- */
 
 .torn-paper--open .torn-paper__sheet {
+  animation: none;
   opacity: 1;
   transform: scale(1) rotate(0deg);
   pointer-events: auto;
@@ -3817,14 +3846,6 @@ button:focus-visible {
 
 .torn-paper--tab .torn-paper__sheet {
   animation: torn-crumple 650ms cubic-bezier(0.68, -0.15, 0.27, 1.15) forwards;
-  pointer-events: none;
-}
-
-/* ---- Hidden state ---- */
-
-.torn-paper--hidden .torn-paper__sheet {
-  opacity: 0;
-  transform: scale(0);
   pointer-events: none;
 }
 

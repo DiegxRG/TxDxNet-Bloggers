@@ -9,6 +9,7 @@ export function BrandMark({ priority = false }: { priority?: boolean }) {
           alt="TxDxNet"
           className="brand-logo"
           fill
+          loading={priority ? 'eager' : 'lazy'}
           priority={priority}
           src="/logotxdx.png"
           sizes="(max-width: 620px) 44px, 54px"

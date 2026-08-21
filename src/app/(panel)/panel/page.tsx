@@ -129,12 +129,12 @@ export default async function PanelDashboardPage() {
   return (
     <div className="grid content-start gap-6 md:gap-8" id="contenido-panel">
       {/* ── Hero Inmersivo ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-[1.5rem] border border-[rgba(255,255,255,0.12)] bg-[linear-gradient(135deg,#07142d_0%,#0b1d3d_56%,#10254f_100%)] p-6 text-white shadow-[0_24px_60px_rgba(7,20,45,0.22)] md:px-8 md:py-8">
+       <section className="relative overflow-hidden rounded-[1.5rem] border border-[rgba(255,255,255,0.12)] bg-[linear-gradient(135deg,#07142d_0%,#0b1d3d_56%,#10254f_100%)] p-6 text-white shadow-[0_24px_60px_rgba(7,20,45,0.22)] md:px-8 md:py-7">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(88,217,255,0.14),transparent_46%),radial-gradient(circle_at_15%_90%,rgba(255,90,24,0.16),transparent_42%)]" />
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,var(--txdx-orange)_0_20%,transparent_46%_74%,var(--txdx-cyan))]" />
 
-        <div className="relative z-10 flex flex-col justify-between gap-6 md:flex-row md:items-start">
-          <div className="max-w-xl">
+         <div className="relative z-10 grid gap-7 md:grid-cols-[minmax(0,0.9fr)_minmax(18rem,0.7fr)] md:items-center">
+           <div className="max-w-lg">
             <p className="text-[0.72rem] font-extrabold uppercase tracking-[0.2em] text-[var(--txdx-cyan)]">
               Consola editorial TxDx
             </p>
@@ -142,16 +142,23 @@ export default async function PanelDashboardPage() {
               Publica con una <br className="hidden sm:block" />
               <span className="text-[var(--color-blue-300)]">vista mas clara</span>
             </h1>
-            <p className="mt-4 text-[0.95rem] leading-relaxed text-white/70">
-              Bienvenido, {firstName}. Todo lo importante del flujo editorial vive aqui.
-            </p>
-          </div>
+             <p className="mt-3 max-w-md text-[0.88rem] leading-relaxed text-white/70">
+               Bienvenido, {firstName}. Tu flujo editorial, resumido en un solo lugar.
+             </p>
+           </div>
 
-          <div className="flex flex-none items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2 text-sm font-bold text-white/90 backdrop-blur-md">
-            <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_0_2px_rgba(52,211,153,0.3)]" />
-            {user.publicTitle || 'Administrador editorial'}
-          </div>
-        </div>
+           <div className="grid gap-3">
+             <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3">
+               <span className="text-[0.65rem] font-extrabold uppercase tracking-[0.16em] text-white/55">Actividad editorial</span>
+               <span className="flex items-center gap-2 text-xs font-bold text-white/90"><span aria-hidden="true" className="h-2 w-2 rounded-full bg-emerald-400" /> En línea</span>
+             </div>
+             <div className="grid grid-cols-3 gap-2">
+               <div className="rounded-xl bg-white/[0.07] p-3"><span className="block text-[0.6rem] uppercase tracking-[0.12em] text-white/50">Total</span><strong className="mt-1 block font-display text-xl">{allPosts.totalDocs}</strong></div>
+               <div className="rounded-xl bg-white/[0.07] p-3"><span className="block text-[0.6rem] uppercase tracking-[0.12em] text-white/50">Borradores</span><strong className="mt-1 block font-display text-xl text-[var(--txdx-orange)]">{draftPosts.totalDocs}</strong></div>
+               <div className="rounded-xl bg-white/[0.07] p-3"><span className="block text-[0.6rem] uppercase tracking-[0.12em] text-white/50">Publicados</span><strong className="mt-1 block font-display text-xl text-[var(--txdx-cyan)]">{publishedPosts.totalDocs}</strong></div>
+             </div>
+           </div>
+         </div>
       </section>
 
       {/* ── Bento Box Acciones ─────────────────────────────────────────── */}

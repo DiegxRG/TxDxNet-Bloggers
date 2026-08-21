@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import { anyone, authenticated } from '@/access'
+import { anyone, authenticated, isActiveAdmin } from '@/access'
+import { recordAuditEvent } from '@/modules/audit/server/record-audit'
 import { isMediaReferenced } from '@/modules/panel/server/media-references'
 
 export const Media: CollectionConfig = {
@@ -25,7 +26,7 @@ export const Media: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: async ({ id, req }) => {
-      if (!req.user || !id) return false
+      if (!isActiveAdmin(req.user) || !id) return false
 
       try {
         return !(await isMediaReferenced(req.payload, req.user, String(id)))
@@ -33,6 +34,21 @@ export const Media: CollectionConfig = {
         return false
       }
     },
+  },
+  hooks: {
+    afterDelete: [
+      async ({ doc, req }) => {
+        if (!isActiveAdmin(req.user)) return
+        await recordAuditEvent({
+          action: 'media.deleted',
+          collection: 'media',
+          documentID: String(doc.id),
+          payload: req.payload,
+          summary: `Eliminó el archivo ${doc.filename || doc.id}.`,
+          user: req.user,
+        })
+      },
+    ],
   },
   fields: [
     {

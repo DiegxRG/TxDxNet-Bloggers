@@ -6,6 +6,9 @@ import '@payloadcms/next/css'
 import type { ServerFunctionClient } from 'payload'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import type { ReactNode } from 'react'
+import { Suspense } from 'react'
+
+export const instant = false
 
 import { importMap } from './admin/importMap.js'
 import '../(website)/globals.css'
@@ -25,7 +28,9 @@ const serverFunction: ServerFunctionClient = async (args) => {
 export default function PayloadLayout({ children }: { children: ReactNode }) {
   return (
     <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
-      <ThemeAndLayoutWrapper>{children}</ThemeAndLayoutWrapper>
+      <Suspense fallback={null}>
+        <ThemeAndLayoutWrapper>{children}</ThemeAndLayoutWrapper>
+      </Suspense>
     </RootLayout>
   )
 }

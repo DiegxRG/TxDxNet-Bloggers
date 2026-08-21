@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import type { CSSProperties } from 'react'
+import Image from 'next/image'
 
 import { TeamMemberCard } from '@/components/site/TeamMemberCard'
 import { domains } from '@/data/domains'
@@ -21,14 +22,34 @@ export default async function TeamPage() {
       <section className={styles.hero}>
         <div aria-hidden="true" className={styles.heroGrid} />
         <div className={styles.container}>
-          <span className={styles.eyebrow}>Equipo editorial · TxDxSecure</span>
-          <h1>Las personas detrás de la lectura.</h1>
-          <p>
-            Perfiles que convierten experiencia en contexto, contexto en criterio y criterio en artículos para operar mejor.
-          </p>
-          <div className={styles.heroMeta}>
-            <span>{String(members.length).padStart(2, '0')} perfiles públicos</span>
-            <span>11 dominios XOC</span>
+          <div className={styles.heroLayout}>
+            <div className={styles.heroCopy}>
+              <span className={styles.eyebrow}>Equipo editorial · TxDxSecure</span>
+              <h1>Las personas detrás de la lectura.</h1>
+              <p>
+                Perfiles que convierten experiencia en contexto, contexto en criterio y criterio en artículos para operar mejor.
+              </p>
+              <div className={styles.heroMeta}>
+                <span>{String(members.length).padStart(2, '0')} perfiles públicos</span>
+                <span>11 dominios XOC</span>
+              </div>
+            </div>
+
+            <figure className={styles.heroVisual}>
+              <div className={styles.heroVisualFrame}>
+                <Image
+                  alt="Equipo editorial de TxDxSecure"
+                  className={styles.heroVisualImage}
+                  fill
+                  priority
+                  sizes="(max-width: 980px) 100vw, 46vw"
+                  src="/equipotxdxsecure.png"
+                />
+                <span aria-hidden="true" className={styles.heroVisualShade} />
+                <span className={styles.heroVisualLabel}>EQUIPO / TXDXSECURE</span>
+                <figcaption>Experiencia compartida. Lectura operable.</figcaption>
+              </div>
+            </figure>
           </div>
         </div>
       </section>
@@ -59,27 +80,43 @@ export default async function TeamPage() {
 
       <section className={styles.domainsSection} aria-labelledby="team-domains-heading">
         <div className={styles.container}>
-          <div className={styles.sectionHeading}>
+          <div className={styles.domainsIntro}>
             <div>
               <span className={styles.sectionCode}>Mapa de especialidad</span>
               <h2 id="team-domains-heading">Once dominios. Una conversación completa.</h2>
             </div>
-            <p>La experiencia del equipo se conecta con las once superficies que XOC observa, protege y ayuda a mejorar.</p>
+            <div className={styles.domainsIntroAside}>
+              <p>La experiencia del equipo se conecta con las once superficies que XOC observa, protege y ayuda a mejorar.</p>
+              <a className={styles.domainsJump} href="#team-domains-grid">Ver todos los dominios <span aria-hidden="true">↓</span></a>
+            </div>
           </div>
-          <div className={styles.domainGrid}>
-            {domains.map((domain) => (
-              <div className={styles.domainItem} key={domain.id}>
-                <span>{domain.id}</span>
-                <div>
-                  <h3>{domain.name}</h3>
-                  <p>{domain.description}</p>
-                </div>
+          <div className={styles.domainMatrix} id="team-domains-grid">
+            <div className={styles.domainMatrixHead}>
+              <div>
+                <span>TXDX / XOC</span>
+                <h3>Una lectura que no deja superficies fuera.</h3>
               </div>
-            ))}
+              <p>11 dominios conectados para leer contexto, exposición y continuidad con el mismo criterio.</p>
+            </div>
+            <div className={styles.domainGrid}>
+              {domains.map((domain) => (
+                <article className={styles.domainItem} key={domain.id} style={{ '--domain-delay': `${(Number(domain.id) - 1) * 45}ms` } as CSSProperties}>
+                  <div className={styles.domainItemMedia}>
+                    {domain.image ? (
+                      <Image alt={`Superficie XOC ${domain.id}: ${domain.name}`} fill sizes="(max-width: 720px) 100vw, (max-width: 980px) 50vw, 30vw" src={domain.image} />
+                    ) : null}
+                    <span aria-hidden="true" />
+                    <strong>{domain.id}</strong>
+                  </div>
+                  <div className={styles.domainItemCopy}>
+                    <span>{domain.shortName}</span>
+                    <h3>{domain.name}</h3>
+                    <p>{domain.description}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
-          <Link className={styles.domainCta} href="/dominios">
-            Explorar los cuatro dominios destacados <span aria-hidden="true">↗</span>
-          </Link>
         </div>
       </section>
     </main>

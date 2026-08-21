@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { BrandMark } from './BrandMark'
+import { getMessages, type Locale } from '@/lib/locale'
 import styles from './SiteFooter.module.css'
 
 const socialLinks = [
@@ -36,34 +37,36 @@ const socialLinks = [
   },
 ]
 
-export function SiteFooter() {
+export function SiteFooter({ locale }: { locale: Locale }) {
+  const copy = getMessages(locale)
+
   return (
     <footer className={styles.footer}>
       <div className={styles.grid}>
         <div>
           <BrandMark />
           <p className={styles.tagline}>
-            Artículos, análisis y guías para operar experiencias digitales con más claridad.
+             {copy.tagline}
           </p>
         </div>
 
         <nav aria-label="Explorar">
-          <p className="footer-label">Explorar</p>
+           <p className="footer-label">{copy.explore}</p>
           <div className={styles.links}>
             <Link className={styles.link} href="/dominios">
-              11 dominios
+               {copy.domains}
             </Link>
             <Link className={styles.link} href="/equipo">
               Equipo
             </Link>
             <Link className={styles.link} href="/articulos">
-              Artículos
+               {copy.articles}
             </Link>
           </div>
         </nav>
 
         <nav aria-label="Empresa">
-          <p className="footer-label">Empresa</p>
+           <p className="footer-label">{copy.company}</p>
           <div className={styles.links}>
             <a className={styles.link} href="https://www.txdxsecure.com/" rel="noreferrer" target="_blank">
               TxDxSecure <span className={styles.external}>↗</span>
@@ -78,7 +81,7 @@ export function SiteFooter() {
         </nav>
 
         <div>
-          <p className="footer-label">Síguenos</p>
+           <p className="footer-label">{copy.followUs}</p>
           <div className={styles.socialList}>
             {socialLinks.map((item) => (
               <div className={styles.socialItem} key={item.social}>
@@ -100,7 +103,7 @@ export function SiteFooter() {
               </div>
             ))}
           </div>
-          <p className={styles.socialNote}>Análisis y guías, también en tus redes.</p>
+           <p className={styles.socialNote}>{copy.socialNote}</p>
         </div>
       </div>
 

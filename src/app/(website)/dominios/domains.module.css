@@ -103,6 +103,31 @@
   transition: border-color 220ms ease, background 220ms ease, color 220ms ease, transform 220ms var(--ease-signal);
 }
 
+.footerActions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 2rem;
+}
+
+.footerActions .footerAction {
+  width: auto;
+  margin-top: 0;
+}
+
+.footerActions .footerAction:last-child {
+  border-color: var(--color-signal-orange);
+  background: var(--color-signal-orange);
+  box-shadow: 0 10px 24px rgb(255 90 24 / 0.22);
+}
+
+.footerActions .footerAction:last-child:hover {
+  border-color: #ff7a3d;
+  background: #ff7a3d;
+}
+
 .primaryAction {
   background: var(--color-ink-950);
   color: #fff;
@@ -506,6 +531,118 @@
   background: linear-gradient(90deg, transparent, var(--color-signal-orange));
 }
 
+.domainCardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: clamp(2rem, 4vw, 4rem);
+}
+
+.domainCard {
+  --domain-card-accent: var(--color-signal-orange);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(7 20 45 / 0.13);
+  border-radius: 1rem 0.3rem 1rem 0.3rem;
+  background: #fff;
+  box-shadow: 0 16px 42px rgb(7 20 45 / 0.07);
+  animation: domain-card-enter 700ms var(--domain-card-delay, 0ms) var(--ease-signal) both;
+  transition: border-color 280ms ease, box-shadow 420ms var(--ease-signal), transform 420ms var(--ease-signal);
+}
+
+.domainCard::before {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 100%;
+  left: -35%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--domain-card-accent), var(--color-signal-cyan), var(--color-signal-blue));
+  content: '';
+  transition: right 650ms var(--ease-signal), left 650ms var(--ease-signal);
+}
+
+.domainCard:hover,
+.domainCard:focus-within {
+  border-color: rgb(18 104 255 / 0.3);
+  box-shadow: 0 26px 58px rgb(7 20 45 / 0.13);
+  transform: translateY(-0.35rem);
+}
+
+.domainCard:hover::before,
+.domainCard:focus-within::before {
+  right: -35%;
+  left: 0;
+}
+
+.domainCardMedia {
+  position: relative;
+  height: clamp(10rem, 15vw, 13rem);
+  overflow: hidden;
+  background: var(--color-ink-950);
+}
+
+.domainCardMedia img {
+  object-fit: cover;
+  transition: transform 700ms var(--ease-signal), filter 500ms ease;
+}
+
+.domainCardMedia > span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(7 20 45 / 0.02), rgb(7 20 45 / 0.64));
+}
+
+.domainCardMedia strong {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.8rem;
+  color: white;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  letter-spacing: -0.08em;
+}
+
+.domainCard:hover .domainCardMedia img,
+.domainCard:focus-within .domainCardMedia img {
+  filter: saturate(1.12) contrast(1.05);
+  transform: scale(1.06);
+}
+
+.domainCardCopy {
+  padding: 1.2rem 1.25rem 1.35rem;
+}
+
+.domainCardCopy > span {
+  color: var(--color-signal-orange);
+  font-size: 0.6rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.domainCardCopy h3 {
+  margin-top: 0.55rem;
+  color: var(--color-ink-950);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.domainCardCopy p {
+  margin-top: 0.75rem;
+  color: var(--color-ink-500);
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+@keyframes domain-card-enter {
+  from { opacity: 0; transform: translateY(1rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .domainFeatureList {
   display: grid;
   gap: clamp(1.5rem, 3vw, 3rem);
@@ -514,6 +651,7 @@
 
 .domainFeature {
   --feature-accent: var(--color-signal-orange);
+  position: relative;
   display: grid;
   grid-template-columns: minmax(16rem, 0.78fr) minmax(0, 1fr);
   align-items: stretch;
@@ -523,6 +661,32 @@
   border-radius: 1rem 0.3rem 1rem 0.3rem;
   background: #fff;
   box-shadow: 0 16px 42px rgb(7 20 45 / 0.07);
+  transition: border-color 280ms ease, box-shadow 420ms var(--ease-signal), transform 420ms var(--ease-signal);
+}
+
+.domainFeature::before {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  right: 100%;
+  left: -35%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--feature-accent), var(--color-signal-cyan), var(--color-signal-blue));
+  content: '';
+  transition: right 650ms var(--ease-signal), left 650ms var(--ease-signal);
+}
+
+.domainFeature:hover,
+.domainFeature:focus-within {
+  border-color: rgb(18 104 255 / 0.3);
+  box-shadow: 0 26px 58px rgb(7 20 45 / 0.13);
+  transform: translateY(-0.35rem);
+}
+
+.domainFeature:hover::before,
+.domainFeature:focus-within::before {
+  right: -35%;
+  left: 0;
 }
 
 .domainFeatureReverse {
@@ -566,8 +730,10 @@
 .domainFeatureImage {
   z-index: -2;
   object-fit: cover;
+  object-position: center top;
   opacity: 0.9;
-  transform: scale(1.08);
+  transform: scale(1.2);
+  transform-origin: center top;
   transition: opacity 900ms ease, transform 1100ms var(--ease-signal), filter 900ms ease;
   filter: saturate(0.82) contrast(1.05) brightness(0.72);
 }
@@ -613,7 +779,7 @@
 
 .domainFeatureCopy {
   max-width: none;
-  padding: clamp(1.5rem, 3vw, 2.75rem);
+  padding: clamp(1.25rem, 2.4vw, 2rem) clamp(1.25rem, 3vw, 2.75rem);
 }
 
 .domainFeatureEyebrow {
@@ -625,10 +791,10 @@
 }
 
 .domainFeatureTitle {
-  margin-top: 1rem;
+  margin-top: 0.7rem;
   color: var(--color-ink-950);
   font-family: var(--font-display);
-  font-size: clamp(3rem, 5.5vw, 6.2rem);
+  font-size: clamp(2.5rem, 4.5vw, 4.8rem);
   font-weight: 620;
   letter-spacing: -0.075em;
   line-height: 0.9;
@@ -637,23 +803,23 @@
 
 .domainFeatureIntro {
   max-width: 31rem;
-  margin-top: 1.6rem;
+  margin-top: 1rem;
   color: var(--color-ink-600);
   font-size: clamp(0.98rem, 1.35vw, 1.12rem);
-  line-height: 1.8;
+  line-height: 1.6;
 }
 
 .domainFeatureRule {
   width: min(100%, 20rem);
   height: 1px;
-  margin-top: 2rem;
+  margin-top: 1.25rem;
   background: linear-gradient(90deg, var(--feature-accent), transparent);
 }
 
 .domainFeatureFocus {
   display: grid;
-  gap: 0.65rem;
-  margin-top: 1.4rem;
+  gap: 0.5rem;
+  margin-top: 1rem;
   color: var(--color-ink-700);
   font-size: 0.78rem;
   line-height: 1.5;
@@ -711,7 +877,7 @@
 .domainFeature.isVisible .domainFeatureImage {
   opacity: 0.9;
   filter: saturate(0.82) contrast(1.05) brightness(0.72);
-  transform: scale(1);
+  transform: scale(1.2);
 }
 
 .domainFeature.isVisible .domainFeatureCopy {
@@ -734,6 +900,34 @@
   opacity: 1;
   transform: translateY(21rem);
   transition: opacity 300ms ease, transform 1300ms var(--ease-signal);
+}
+
+.domainFeature.isVisible:hover .domainFeatureImage,
+.domainFeature.isVisible:focus-within .domainFeatureImage {
+  filter: saturate(1) contrast(1.08) brightness(0.8);
+  transform: scale(1.26);
+}
+
+.domainFeature:hover .domainFeatureRule,
+.domainFeature:focus-within .domainFeatureRule {
+  width: min(100%, 25rem);
+  background: linear-gradient(90deg, var(--feature-accent), var(--color-signal-cyan), transparent);
+  background-size: 180% 100%;
+  animation: domain-rule-flow 1.6s linear infinite;
+}
+
+.domainFeature:hover .domainFeatureFocus li,
+.domainFeature:focus-within .domainFeatureFocus li {
+  transform: translateX(0.25rem);
+}
+
+.domainFeatureFocus li {
+  transition: color 220ms ease, transform 280ms var(--ease-signal);
+}
+
+@keyframes domain-rule-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 180% 50%; }
 }
 
 @keyframes domain-feature-copy-enter {
@@ -911,6 +1105,7 @@
   .sectionHeading { display: grid; align-items: start; gap: 1rem; }
   .sectionHeadingAside { width: 100%; text-align: left; }
   .sectionHeadingAside p { text-align: left; }
+  .domainCardGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .domainFeature,
   .domainFeatureReverse {
     grid-template-columns: 1fr;
@@ -939,14 +1134,25 @@
   }
 }
 
+@media (max-width: 480px) {
+  .domainCardGrid { grid-template-columns: 1fr; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .orbitRingOuter,
   .orbitRingMiddle,
   .orbitRingInner,
   .orbitParticleTrack,
   .domainFeatureImage,
-  .domainFeatureCopy {
+  .domainFeatureCopy,
+  .domainCard {
     opacity: 1;
+    animation: none;
+    transition: none;
+  }
+
+  .domainCardMedia img,
+  .domainCard {
     animation: none;
     transition: none;
   }
@@ -983,7 +1189,23 @@
     transition: none;
   }
 
+  .domainFeature.isVisible .domainFeatureImage {
+    transform: scale(1.2);
+  }
+
   .domainFeatureScanline {
     display: none;
+  }
+
+  .domainFeature,
+  .domainFeature:hover,
+  .domainFeature:focus-within {
+    transform: none;
+    transition: none;
+  }
+
+  .domainFeature:hover .domainFeatureRule,
+  .domainFeature:focus-within .domainFeatureRule {
+    animation: none;
   }
 }

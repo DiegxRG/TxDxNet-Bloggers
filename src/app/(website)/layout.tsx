@@ -4,9 +4,12 @@ import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import { Suspense } from 'react'
 
+import { LocalizedSiteFooter } from '@/components/site/LocalizedSiteFooter'
+import { LocalizedSiteHeader } from '@/components/site/LocalizedSiteHeader'
 import { SiteFooter } from '@/components/site/SiteFooter'
-import { SiteHeader } from '@/components/site/SiteHeader'
 import { TornPaperCTA } from '@/components/site/TornPaperCTA'
+import { AnalyticsTracker } from '@/components/site/AnalyticsTracker'
+import { LocaleBootstrap } from '@/components/site/LocaleBootstrap'
 
 import './globals.css'
 
@@ -42,19 +45,27 @@ export const viewport: Viewport = {
   themeColor: '#f8f8f4',
 }
 
-export default function WebsiteLayout({ children }: { children: ReactNode }) {
+export default async function WebsiteLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es" data-scroll-behavior="smooth">
+    <html data-scroll-behavior="smooth" lang="es">
       <body>
         <a className="skip-link" href="#contenido">
           Saltar al contenido
         </a>
-        <Suspense>
-          <SiteHeader />
+         <Suspense fallback={null}>
+           <LocalizedSiteHeader />
         </Suspense>
-        <TornPaperCTA />
+        <Suspense fallback={null}>
+          <TornPaperCTA />
+        </Suspense>
         {children}
-        <SiteFooter />
+        <Suspense fallback={<SiteFooter locale="es" />}>
+          <LocalizedSiteFooter />
+        </Suspense>
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
+        <LocaleBootstrap />
       </body>
     </html>
   )

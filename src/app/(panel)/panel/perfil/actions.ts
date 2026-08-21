@@ -13,6 +13,8 @@ type PanelPayload = PanelSession['payload']
 type PanelUser = PanelSession['user']
 
 const MAX_AVATAR_FILE_SIZE = 5 * 1024 * 1024
+const MAX_PUBLIC_BIO_LENGTH = 320
+const MAX_EXPERTISE_DOMAINS = 3
 
 function asString(formData: FormData, key: string) {
   return formData.get(key)?.toString().trim() || ''
@@ -96,6 +98,10 @@ export async function updateProfileAction(formData: FormData) {
   const publicTitle = asString(formData, 'publicTitle')
   const publicBio = asString(formData, 'publicBio')
   const expertiseDomains = asDomainIDs(formData)
+
+  if (publicBio.length > MAX_PUBLIC_BIO_LENGTH || expertiseDomains.length > MAX_EXPERTISE_DOMAINS) {
+    redirect('/panel/perfil?estado=perfil-limite#perfil-publico')
+  }
   const showOnTeam = formData.get('showOnTeam') === 'on'
   const avatarID = asString(formData, 'avatar')
 
@@ -159,4 +165,35 @@ export async function updateProfileAction(formData: FormData) {
   revalidatePath('/equipo')
   revalidateTag('team-members', 'hours')
   redirect('/panel/perfil?estado=guardado')
+}
+
+export async function changePasswordAction(formData: FormData) {
+  const { payload, user } = await getPanelSession()
+  const currentPassword = asString(formData, 'currentPassword')
+  const newPassword = asString(formData, 'newPassword')
+  const confirmation = asString(formData, 'confirmPassword')
+
+  if (!currentPassword || newPassword.length < 12 || newPassword !== confirmation) {
+    redirect('/panel/perfil?estado=password-invalido#seguridad')
+  }
+
+  try {
+    await payload.login({
+      collection: 'admins',
+      data: { email: user.email, password: currentPassword },
+    })
+    await payload.update({
+      collection: 'admins',
+      data: { password: newPassword },
+      id: user.id,
+      overrideAccess: false,
+      user,
+    })
+  } catch {
+    redirect('/panel/perfil?estado=password-error#seguridad')
+  }
+
+  revalidatePath('/panel')
+  revalidatePath('/panel/perfil')
+  redirect('/panel/perfil?estado=password-guardado#seguridad')
 }

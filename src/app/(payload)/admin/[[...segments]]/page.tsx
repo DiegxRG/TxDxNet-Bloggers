@@ -5,6 +5,8 @@ import type { Metadata } from 'next'
 
 import { importMap } from '../importMap'
 
+export const instant = false
+
 type Args = {
   params: Promise<{ segments: string[] }>
   searchParams: Promise<Record<string, string | string[]>>

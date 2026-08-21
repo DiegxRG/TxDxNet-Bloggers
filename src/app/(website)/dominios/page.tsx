@@ -178,9 +178,14 @@ export default function DomainsPage() {
               El modelo XOC ayuda a pasar de una lista de equipos y riesgos a una lectura compartida de lo que la
               operación necesita proteger, observar y mejorar.
             </p>
-            <Link className={styles.footerAction} href="/articulos">
-              Leer el conocimiento TxDxSecure <span aria-hidden="true">↗</span>
-            </Link>
+            <div className={styles.footerActions}>
+              <Link className={styles.footerAction} href="/articulos">
+                Leer el conocimiento TxDxSecure <span aria-hidden="true">↗</span>
+              </Link>
+              <Link className={styles.footerAction} href="/equipo#team-domains-grid">
+                Ver los 11 dominios <span aria-hidden="true">↗</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

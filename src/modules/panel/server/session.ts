@@ -4,27 +4,28 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { connection } from 'next/server'
 import { cache } from 'react'
 
 import type { Admin } from '@/payload-types'
+import { isActiveAdmin } from '@/access'
 
 import { startPanelMeasure } from './perf'
 
 export const getPanelPayload = cache(async () => getPayload({ config: configPromise }))
 
 async function getAuthHeaders() {
-  const [headerList, cookieStore] = await Promise.all([headers(), cookies()])
+  const cookieStore = await cookies()
+  const headerList = await headers()
   const authHeaders = new Headers(headerList)
 
-  if (!authHeaders.get('cookie')) {
-    const cookieHeader = cookieStore
-      .getAll()
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join('; ')
+  const requestCookies = cookieStore.getAll()
+  const cookieHeader = requestCookies
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join('; ')
 
-    if (cookieHeader) {
-      authHeaders.set('cookie', cookieHeader)
-    }
+  if (cookieHeader) {
+    authHeaders.set('cookie', cookieHeader)
   }
 
   return authHeaders
@@ -32,17 +33,23 @@ async function getAuthHeaders() {
 
 export const getPanelSession = cache(async () => {
   const measure = startPanelMeasure('auth')
+  await connection()
   const payload = await getPanelPayload()
   const authHeaders = await getAuthHeaders()
   const authResult = await payload.auth({
     headers: authHeaders,
   })
-  const adminCollection = payload.config.admin.user
   const user = authResult.user as Admin | null
 
-  if (!user || user.collection !== adminCollection) {
-    measure.end({ authenticated: false })
-    redirect(`/admin/login?redirect=${encodeURIComponent('/panel')}`)
+  if (!user || !isActiveAdmin(user)) {
+    const cookieHeader = authHeaders.get('cookie') || ''
+    measure.end({
+      authenticated: false,
+      reason: !user ? 'no-user' : 'inactive-or-not-allowlisted',
+      hasCookie: Boolean(cookieHeader),
+      hasPayloadCookie: /(?:^|;\s)[^=]+-token=/.test(cookieHeader),
+    })
+    redirect(`/panel/login?redirect=${encodeURIComponent('/panel')}`)
   }
 
   measure.end({ authenticated: true, userID: user.id })

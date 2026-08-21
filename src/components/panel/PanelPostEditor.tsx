@@ -9,7 +9,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Media, Post } from '@/payload-types'
 
 import { PanelArticlePreview } from './PanelArticlePreview'
-import { PanelDeletePostButton } from './PanelDeletePostButton'
 import { PanelSubmitButton } from './PanelSubmitButton'
 
 const PanelLexicalEditor = dynamic(
@@ -178,7 +177,6 @@ export function PanelPostEditor({
   article,
   authorDefaults,
   contentLexicalValue,
-  deleteAction,
   formAction,
   mediaItems,
   mode,
@@ -188,7 +186,6 @@ export function PanelPostEditor({
   const alert = getStatusAlert(status)
   const currentCoverID = getImageID(article?.coverImage)
   const currentSocialID = getImageID(article?.socialImage)
-  const isPublished = article?._status === 'published'
   const [previewTab, setPreviewTab] = useState<PreviewTab>('card')
   const [dismissedStatus, setDismissedStatus] = useState<null | string>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -283,35 +280,6 @@ export function PanelPostEditor({
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            {article?.id ? (
-              <Link
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--txdx-orange)] px-5 text-sm font-extrabold text-[var(--txdx-orange)] transition hover:bg-[var(--txdx-orange)] hover:text-white"
-                href={`/articulos/preview/${article.id}`}
-                prefetch={false}
-                target="_blank"
-              >
-                Vista pública
-              </Link>
-            ) : null}
-            <Link
-              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--theme-elevation-200)] px-5 text-sm font-bold text-[var(--theme-elevation-700)] transition hover:border-[var(--color-blue-150)] hover:text-[var(--color-blue-600)]"
-              href="/panel/articulos"
-            >
-              Volver a articulos
-            </Link>
-            {isPublished && article?.slug ? (
-              <Link
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--txdx-orange)] px-5 text-sm font-extrabold text-white transition hover:-translate-y-0.5"
-                href={`/articulos/${article.slug}`}
-                prefetch={false}
-                target="_blank"
-              >
-                Ver publicacion
-              </Link>
-            ) : null}
-            {mode === 'edit' && deleteAction ? <PanelDeletePostButton action={deleteAction} /> : null}
-          </div>
         </div>
 
         {alert && status !== dismissedStatus ? (
@@ -579,10 +547,11 @@ export function PanelPostEditor({
             </div>
           </section>
 
-          <section className="rounded-[1.7rem] border border-[var(--theme-elevation-150)] bg-white p-6 shadow-[0_18px_44px_rgba(7,20,45,0.05)]">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--color-blue-500)]">
-              SEO y control (opcional)
-            </p>
+          <section className="rounded-[1.7rem] border border-dashed border-[rgba(18,104,255,0.28)] bg-[linear-gradient(135deg,rgba(18,104,255,0.04),rgba(88,217,255,0.025))] p-6 shadow-[0_12px_32px_rgba(7,20,45,0.03)]">
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--color-blue-600)]">SEO y control</p>
+              <span className="rounded-full border border-[rgba(18,104,255,0.18)] bg-white/75 px-2.5 py-1 text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--color-blue-600)]">Opcional</span>
+            </div>
             <p className="mt-2 max-w-2xl text-xs leading-6 text-[var(--theme-elevation-500)]">
               Puedes dejar toda esta sección vacía. El artículo usará automáticamente su título, resumen, portada y URL pública.
             </p>

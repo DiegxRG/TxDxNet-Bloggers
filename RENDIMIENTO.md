@@ -318,10 +318,14 @@ No son errores introducidos por esta optimización.
 
 ### Esquema de datos
 
-Supabase confirmó 11 tablas en el esquema `cms`:
+Supabase confirmó 15 tablas en el esquema `cms`:
 
 - `admins`.
 - `admins_sessions`.
+- `admins_expertise_domains`.
+- `audit_logs`.
+- `analytics_events`.
+- `analytics_visitors`.
 - `media`.
 - `posts`.
 - `_posts_v`.
@@ -341,7 +345,8 @@ La metadata de imágenes está en `cms.media` y los archivos binarios en Supabas
 `media`.
 
 El historial local de `cms.payload_migrations` quedó reconciliado con el esquema creado originalmente por
-Payload push y las seis migraciones aparecen como ejecutadas.
+Payload push y las ocho migraciones aparecen como ejecutadas. Las migraciones recientes agregan roles y estado
+de cuenta para admins, auditoría administrativa y métricas públicas agregadas con retención limitada.
 
 ## 4. Pendientes por validar
 

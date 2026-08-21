@@ -38,4 +38,23 @@ Payload, usa `npm run seed:team -- <correo-ciberseguridad> <correo-electronica> 
 El script conserva nombres, credenciales y avatares; solo establece cargo, biografía,
 dominios XOC y visibilidad pública.
 
+### Acceso editorial
+
+El acceso administrativo está limitado a la allowlist corporativa definida en
+`src/access/index.ts`. Diego Ramos y Rolando Ricapa son `owner`; los otros siete
+correos autorizados son `editor`. Los owners administran usuarios y auditoría; ambos
+roles pueden crear, editar y publicar artículos.
+
+Después de aplicar las migraciones, prepara las cuentas con:
+
+```powershell
+npm run seed:admins -- --reset-existing
+```
+
+El comando genera una contraseña temporal única por cuenta, exige cambiarla en el
+primer acceso y escribe las credenciales en un archivo fuera del repositorio. No las
+imprime en consola ni deben compartirse por chat. El panel de métricas está en
+`/panel/metricas` y solo es visible para owners; usa datos agregados sin IP, correo ni
+información personal.
+
 La web pública vive en `/` y el panel editorial en `/admin`.

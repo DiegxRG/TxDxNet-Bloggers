@@ -26,6 +26,10 @@
   left: 0;
 }
 
+.card:hover::before {
+  animation: article-accent-flow 1.4s linear infinite;
+}
+
 .card:hover {
   box-shadow: 0 24px 55px rgb(7 20 45 / 0.13);
   transform: translateY(-0.35rem);
@@ -139,6 +143,11 @@
   line-height: 1.8;
 }
 
+@keyframes article-accent-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 180% 50%; }
+}
+
 @media (min-width: 960px) {
   .featured .link {
     grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
@@ -154,5 +163,14 @@
 
   .footer span:first-child {
     max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card::before,
+  .footer span:last-child {
+    animation: none;
+    transition: none;
   }
 }

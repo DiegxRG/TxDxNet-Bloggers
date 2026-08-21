@@ -3,7 +3,7 @@
 import { gsap } from 'gsap'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useLayoutEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 
 import styles from './EditorialOpening.module.css'
 
@@ -117,7 +117,7 @@ function StoryVolume({ story, index }: { story: OpeningStory; index: number }) {
 export function EditorialLibraryStage({ stories }: { stories: OpeningStory[] }) {
   const rootRef = useRef<HTMLElement>(null)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const root = rootRef.current
 
     if (!root) return

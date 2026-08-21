@@ -22,6 +22,7 @@ const nextConfig: NextConfig = {
     },
   },
   poweredByHeader: false,
+  serverExternalPackages: ['sharp'],
   images: {
     minimumCacheTTL: 60 * 60 * 24 * 30,
     localPatterns: [
@@ -34,6 +35,7 @@ const nextConfig: NextConfig = {
       { pathname: '/domains/**' },
       { pathname: '/prompt*.png' },
       { pathname: '/service*.png' },
+      { pathname: '/equipotxdxsecure.png' },
       { pathname: '/Designer__19_-removebg-preview.png' },
     ],
     remotePatterns: [

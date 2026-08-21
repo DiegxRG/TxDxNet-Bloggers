@@ -1,8 +1,11 @@
 import type { CSSProperties, ReactNode } from 'react'
 
+import { PipelineActionButton } from './PipelineActionButton'
+
 export type ArticlePipelineStep = {
+  action?: 'copy' | 'share'
   detail: string
-  href: string
+  href?: string
   icon: ReactNode
   label: string
   tone?: string
@@ -14,12 +17,14 @@ type Props = {
   eyebrow: string
   result: string
   resultLabel: string
+  shareText?: string
+  shareURL?: string
   steps: ArticlePipelineStep[]
   title: string
   variant: 'ecosystem' | 'share'
 }
 
-export function ArticlePipeline({ description, eyebrow, result, resultLabel, steps, title, variant }: Props) {
+export function ArticlePipeline({ description, eyebrow, result, resultLabel, shareText, shareURL, steps, title, variant }: Props) {
   return (
     <aside aria-label={title} className={`article-pipeline article-pipeline--${variant}`}>
       <div className="article-pipeline__header">
@@ -33,7 +38,27 @@ export function ArticlePipeline({ description, eyebrow, result, resultLabel, ste
 
       <div className="article-pipeline__track">
         {steps.map((step, index) => {
-          const external = /^(https?:|mailto:)/i.test(step.href)
+          const style = { '--pipeline-index': index } as CSSProperties
+
+          if (step.action && shareURL) {
+            return (
+              <PipelineActionButton
+                action={step.action}
+                className="article-pipeline__step"
+                detail={step.detail}
+                icon={step.icon}
+                key={step.label}
+                label={step.label}
+                shareText={shareText}
+                style={style}
+                tone={step.tone}
+                track={step.track}
+                url={shareURL}
+              />
+            )
+          }
+
+          const external = /^(https?:|mailto:)/i.test(step.href ?? '')
 
           return (
             <a
@@ -42,8 +67,8 @@ export function ArticlePipeline({ description, eyebrow, result, resultLabel, ste
               href={step.href}
               key={step.label}
               rel={external ? 'noreferrer' : undefined}
-              style={{ '--pipeline-index': index } as CSSProperties}
-              target={external && !step.href.startsWith('mailto:') ? '_blank' : undefined}
+              style={style}
+              target={external && !step.href?.startsWith('mailto:') ? '_blank' : undefined}
             >
               <span className="article-pipeline__node">{step.icon}</span>
               <span className="article-pipeline__step-copy">

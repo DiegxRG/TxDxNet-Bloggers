@@ -68,6 +68,9 @@ export interface Config {
   blocks: {};
   collections: {
     admins: Admin;
+    'analytics-events': AnalyticsEvent;
+    'analytics-visitors': AnalyticsVisitor;
+    'audit-logs': AuditLog;
     media: Media;
     posts: Post;
     'payload-kv': PayloadKv;
@@ -78,6 +81,9 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     admins: AdminsSelect<false> | AdminsSelect<true>;
+    'analytics-events': AnalyticsEventsSelect<false> | AnalyticsEventsSelect<true>;
+    'analytics-visitors': AnalyticsVisitorsSelect<false> | AnalyticsVisitorsSelect<true>;
+    'audit-logs': AuditLogsSelect<false> | AuditLogsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -131,6 +137,18 @@ export interface Admin {
    */
   publicTitle?: string | null;
   /**
+   * Solo un owner puede cambiar este rol.
+   */
+  role?: ('owner' | 'editor') | null;
+  /**
+   * Las cuentas inactivas no pueden iniciar sesión.
+   */
+  isActive?: boolean | null;
+  /**
+   * Redirige al usuario a la gestión de seguridad al entrar.
+   */
+  mustChangePassword?: boolean | null;
+  /**
    * Contexto breve para la ficha pública del equipo.
    */
   publicBio?: string | null;
@@ -175,6 +193,7 @@ export interface Media {
   alt?: string | null;
   caption?: string | null;
   credit?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -220,6 +239,67 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-events".
+ */
+export interface AnalyticsEvent {
+  id: string;
+  type: 'page_view' | 'article_read';
+  path: string;
+  day: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-visitors".
+ */
+export interface AnalyticsVisitor {
+  id: string;
+  key: string;
+  day: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-logs".
+ */
+export interface AuditLog {
+  id: string;
+  action:
+    | 'auth.login'
+    | 'auth.login_failed'
+    | 'admin.created'
+    | 'admin.updated'
+    | 'admin.deleted'
+    | 'post.created'
+    | 'post.updated'
+    | 'post.published'
+    | 'post.unpublished'
+    | 'post.deleted'
+    | 'media.deleted';
+  actor?: (string | null) | Admin;
+  actorEmail: string;
+  targetCollection?: string | null;
+  targetID?: string | null;
+  summary: string;
+  /**
+   * Contexto técnico mínimo. Nunca guardar contraseñas, tokens o contenido completo.
+   */
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -332,6 +412,18 @@ export interface PayloadLockedDocument {
         value: string | Admin;
       } | null)
     | ({
+        relationTo: 'analytics-events';
+        value: string | AnalyticsEvent;
+      } | null)
+    | ({
+        relationTo: 'analytics-visitors';
+        value: string | AnalyticsVisitor;
+      } | null)
+    | ({
+        relationTo: 'audit-logs';
+        value: string | AuditLog;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
@@ -388,6 +480,9 @@ export interface PayloadMigration {
 export interface AdminsSelect<T extends boolean = true> {
   name?: T;
   publicTitle?: T;
+  role?: T;
+  isActive?: T;
+  mustChangePassword?: T;
   publicBio?: T;
   expertiseDomains?: T;
   showOnTeam?: T;
@@ -411,6 +506,42 @@ export interface AdminsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-events_select".
+ */
+export interface AnalyticsEventsSelect<T extends boolean = true> {
+  type?: T;
+  path?: T;
+  day?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-visitors_select".
+ */
+export interface AnalyticsVisitorsSelect<T extends boolean = true> {
+  key?: T;
+  day?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-logs_select".
+ */
+export interface AuditLogsSelect<T extends boolean = true> {
+  action?: T;
+  actor?: T;
+  actorEmail?: T;
+  targetCollection?: T;
+  targetID?: T;
+  summary?: T;
+  metadata?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -418,6 +549,7 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   credit?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

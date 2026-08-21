@@ -2,16 +2,14 @@
 
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 
-type PanelState = 'open' | 'tab' | 'hidden'
+type PanelState = 'open' | 'tab'
 
 export function TornPaperCTA() {
   const pathname = usePathname()
   const isHome = pathname === '/'
   const [state, setState] = useState<PanelState>('open')
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
   const close = useCallback(() => setState('tab'), [])
 
   const handleTab = useCallback(() => {
@@ -20,25 +18,11 @@ export function TornPaperCTA() {
     }
   }, [state])
 
-  const dismiss = useCallback(() => {
-    setState('hidden')
-    timerRef.current = setTimeout(() => {
-      setState('tab')
-    }, 5000)
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [])
-
   const rootClass = [
     'torn-paper',
     isHome ? 'torn-paper--home' : 'torn-paper--interior',
     state === 'open' ? 'torn-paper--open' : '',
     state === 'tab' ? 'torn-paper--tab' : '',
-    state === 'hidden' ? 'torn-paper--hidden' : '',
   ]
     .filter(Boolean)
     .join(' ')
@@ -76,6 +60,7 @@ export function TornPaperCTA() {
           alt=""
           className="torn-paper__tab-logo"
           height={22}
+          loading="eager"
           src="/logotxdx.png"
           width={22}
         />
@@ -117,6 +102,7 @@ export function TornPaperCTA() {
             alt="TxDxSecure"
             className="torn-paper__logo"
             height={44}
+            loading="eager"
             priority={false}
             src="/logotxdx.png"
             width={44}
@@ -147,9 +133,6 @@ export function TornPaperCTA() {
             </svg>
           </a>
 
-          <span className="torn-paper__tagline">
-            Operaciones seguras, observables y centradas en la experiencia.
-          </span>
         </div>
       </div>
     </div>

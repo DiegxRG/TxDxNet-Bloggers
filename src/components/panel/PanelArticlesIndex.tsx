@@ -89,7 +89,7 @@ export function PanelArticlesIndex({ deleteAction, initialFilter, items }: Props
   return (
     <div className="txdx-my">
       <div className="rounded-[1.4rem] border border-[var(--theme-elevation-150)] bg-white p-4 shadow-[0_14px_40px_rgba(7,20,45,0.05)] sm:p-5">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             {FILTERS.map((entry) => {
               const active = filter === entry.key
@@ -134,12 +134,9 @@ export function PanelArticlesIndex({ deleteAction, initialFilter, items }: Props
           </div>
         </div>
 
-        <div className="mt-4 flex items-center gap-2 text-sm text-[var(--theme-elevation-600)]">
-          <span className="inline-flex min-w-8 items-center justify-center rounded-full bg-[var(--color-blue-50)] px-2 py-1 text-xs font-extrabold text-[var(--color-blue-600)]">
-            {filtered.length}
-          </span>
-          <span>{filtered.length === 1 ? 'resultado visible' : 'resultados visibles'}</span>
-        </div>
+          <p className="mt-3 text-xs text-[var(--theme-elevation-500)]">
+            Mostrando <strong className="text-[var(--theme-elevation-700)]">{filtered.length}</strong> {filtered.length === 1 ? 'artículo' : 'artículos'}
+          </p>
       </div>
 
       {filtered.length === 0 ? (

@@ -3,6 +3,7 @@ import '@fontsource-variable/manrope'
 import type { ReactNode } from 'react'
 
 import { PanelShell } from '@/components/panel/PanelShell'
+import { isOwner } from '@/access'
 import { getMediaURL } from '@/modules/content/infrastructure/payload/posts'
 import { getPanelSession } from '@/modules/panel/server/session'
 
@@ -31,8 +32,11 @@ export default async function PanelRootLayout({ children }: { children: ReactNod
         <PanelShell
           user={{
             email: user.email,
+            isOwner: isOwner(user),
+            mustChangePassword: user.mustChangePassword === true,
             name: user.name,
             publicTitle: user.publicTitle,
+            role: user.role || 'editor',
             avatarURL: getMediaURL(profile.avatar, 'avatar'),
           }}
         >

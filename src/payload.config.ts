@@ -6,6 +6,9 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { Admins } from './collections/Admins'
+import { AnalyticsEvents } from './collections/AnalyticsEvents'
+import { AnalyticsVisitors } from './collections/AnalyticsVisitors'
+import { AuditLogs } from './collections/AuditLogs'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
 import { editorialEditor } from './editor'
@@ -66,7 +69,7 @@ export default buildConfig({
       titleSuffix: '— TxDxSecure',
     },
   },
-  collections: [Admins, Media, Posts],
+  collections: [Admins, AnalyticsEvents, AnalyticsVisitors, AuditLogs, Media, Posts],
   cors: [siteURL, 'http://localhost:3000'],
   csrf: [siteURL, 'http://localhost:3000'],
   i18n: {

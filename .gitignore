@@ -16,6 +16,7 @@
 
 # logs and tooling
 *.log
+txdxnet-admin-credentials-*.json
 .eslintcache
 *.tsbuildinfo
 /.codex

@@ -5,19 +5,21 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { LibraryIcon } from '@/components/icons/LibraryIcon'
+import { LocaleSwitcher } from '@/components/site/LocaleSwitcher'
+import { getMessages, type Locale } from '@/lib/locale'
 
 import { BrandMark } from './BrandMark'
 import styles from './SiteHeader.module.css'
 
-const navigation = [
-  { href: '/articulos', label: 'Artículos' },
-  { href: '/dominios', label: 'Dominios XOC' },
-  { href: '/equipo', label: 'Equipo' },
-]
-
-export function SiteHeader() {
+export function SiteHeader({ locale }: { locale: Locale }) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const copy = getMessages(locale)
+  const navigation = [
+    { href: '/articulos', label: copy.articles },
+    { href: '/dominios', label: copy.domains },
+    { href: '/equipo', label: copy.team },
+  ]
 
   useEffect(() => {
     const closeMenuTimeout = window.setTimeout(() => setMobileOpen(false), 0)
@@ -43,7 +45,7 @@ export function SiteHeader() {
     >
       <div className={styles.inner}>
         <BrandMark priority />
-        <nav aria-label="Navegación principal" className={styles.navigation}>
+         <nav aria-label={copy.articles} className={styles.navigation}>
           {navigation.map((item) => (
             <Link
               aria-current={pathname === item.href || pathname.startsWith(`${item.href}/`) ? 'page' : undefined}
@@ -54,16 +56,17 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className={styles.actions}>
-          <Link className={styles.library} href="/articulos">
+         <div className={styles.actions}>
+           <LocaleSwitcher label={copy.switchTo} locale={locale} />
+           <Link className={styles.library} href="/articulos">
             <LibraryIcon className={styles.libraryIcon} />
-            <span>Biblioteca</span>
+             <span>{copy.library}</span>
             <span aria-hidden="true" className={styles.arrow}>→</span>
           </Link>
           <button
             aria-controls="site-mobile-nav"
             aria-expanded={mobileOpen}
-            aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
+             aria-label={mobileOpen ? copy.closeMenu : copy.openMenu}
             className={styles.menuToggle}
             onClick={() => setMobileOpen((open) => !open)}
             type="button"
@@ -76,7 +79,7 @@ export function SiteHeader() {
       </div>
       {mobileOpen ? (
         <div className={styles.mobileMenu} id="site-mobile-nav">
-          <nav aria-label="Navegación móvil" className={styles.mobileNavigation}>
+           <nav aria-label={copy.articles} className={styles.mobileNavigation}>
             {navigation.map((item) => (
               <Link
                 aria-current={pathname === item.href || pathname.startsWith(`${item.href}/`) ? 'page' : undefined}

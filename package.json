@@ -15,6 +15,7 @@
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "db:baseline": "node ./scripts/baseline-payload-migrations.mjs",
+    "seed:admins": "node ./scripts/seed-admins.mjs",
     "seed:team": "node ./scripts/seed-team-profiles.mjs",
     "setup:env": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/setup-local-env.ps1",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
@@ -40,6 +41,7 @@
     "payload": "3.88.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "recharts": "^3.10.1",
     "sharp": "0.35.3"
   },
   "devDependencies": {

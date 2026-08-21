@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated, publishedOrAuthenticated } from '@/access'
+import { authenticated, isActiveAdmin, postOwnerOrOwner, publishedOrAuthenticated } from '@/access'
+import { recordAuditEvent } from '@/modules/audit/server/record-audit'
 import { slugify } from '@/modules/content/domain/slugify'
 
 export const Posts: CollectionConfig = {
@@ -22,8 +23,8 @@ export const Posts: CollectionConfig = {
   access: {
     read: publishedOrAuthenticated,
     create: authenticated,
-    update: authenticated,
-    delete: authenticated,
+    update: postOwnerOrOwner,
+    delete: postOwnerOrOwner,
   },
   hooks: {
     beforeChange: [
@@ -43,6 +44,44 @@ export const Posts: CollectionConfig = {
           data.authorAvatar = typeof user.avatar === 'string' ? user.avatar : user.avatar.id || null
         }
         return data
+      },
+    ],
+    afterChange: [
+      async ({ context, doc, operation, previousDoc, req }) => {
+        if (context.autosave === true) return
+        if (!isActiveAdmin(req.user)) return
+
+        const action =
+          operation === 'create'
+            ? 'post.created'
+            : previousDoc?._status !== doc._status && doc._status === 'published'
+              ? 'post.published'
+              : previousDoc?._status !== doc._status && previousDoc?._status === 'published'
+                ? 'post.unpublished'
+                : 'post.updated'
+
+        await recordAuditEvent({
+          action,
+          collection: 'posts',
+          documentID: String(doc.id),
+          metadata: { status: doc._status || null },
+          payload: req.payload,
+          summary: `${action === 'post.published' ? 'Publicó' : action === 'post.unpublished' ? 'Retiró' : operation === 'create' ? 'Creó' : 'Actualizó'} el artículo ${doc.title}.`,
+          user: req.user,
+        })
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        if (!isActiveAdmin(req.user)) return
+        await recordAuditEvent({
+          action: 'post.deleted',
+          collection: 'posts',
+          documentID: String(doc.id),
+          payload: req.payload,
+          summary: `Eliminó el artículo ${doc.title || doc.id}.`,
+          user: req.user,
+        })
       },
     ],
   },
@@ -221,7 +260,7 @@ export const Posts: CollectionConfig = {
         hidden: true,
       },
       access: {
-        read: ({ req }) => Boolean(req.user),
+        read: ({ req }) => isActiveAdmin(req.user),
       },
     },
   ],

@@ -22,13 +22,27 @@ type ArticlePageProps = {
   params: Promise<{ slug: string }>
 }
 
+const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com'
+const FALLBACK_SOCIAL_IMAGE = '/logotxdx.png'
+
+function buildSocialImage(post: Awaited<ReturnType<typeof getPublishedPostBySlug>>) {
+  const media = post?.socialImage || post?.coverImage
+  const relativeImage = getMediaURL(media, 'hero')
+  const heroSize = media && typeof media === 'object' ? media.sizes?.hero : undefined
+
+  return {
+    url: new URL(relativeImage || FALLBACK_SOCIAL_IMAGE, siteURL).toString(),
+    ...(heroSize?.width && heroSize?.height ? { width: heroSize.width, height: heroSize.height } : {}),
+  }
+}
+
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params
   const post = await getPublishedPostBySlug(slug)
 
   if (!post) return { title: 'Artículo no encontrado' }
 
-  const socialImage = getMediaURL(post.socialImage || post.coverImage, 'hero')
+  const socialImage = buildSocialImage(post)
   const title = post.seoTitle || post.title
   const description = post.seoDescription || post.excerpt
 
@@ -43,13 +57,13 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       description,
       publishedTime: post.publishedAt || post.createdAt,
       authors: [post.authorName],
-      images: socialImage ? [{ url: socialImage }] : undefined,
+      images: [{ ...socialImage, alt: title }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: socialImage ? [socialImage] : undefined,
+      images: [socialImage.url],
     },
   }
 }
@@ -64,6 +78,22 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const heroImage = getMediaURL(post.coverImage, 'hero')
   const articleURL = new URL(`/articulos/${post.slug}`, process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com').toString()
   const shareSteps: ArticlePipelineStep[] = [
+    {
+      action: 'share',
+      detail: 'Compartir con tu red en un toque.',
+      icon: <IconShareNodes />,
+      label: 'Compartir',
+      tone: 'native',
+      track: 'AMPLIFICAR',
+    },
+    {
+      action: 'copy',
+      detail: 'Lleva este análisis a cualquier lado.',
+      icon: <IconLink />,
+      label: 'Copiar enlace',
+      tone: 'copy',
+      track: 'ENLAZAR',
+    },
     {
       detail: 'Amplificar este análisis.',
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleURL)}`,
@@ -212,6 +242,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             eyebrow="Compartir esta señal"
             result="Señal distribuida"
             resultLabel="CONOCIMIENTO EN MOVIMIENTO"
+            shareText={post.excerpt ? `${post.title} — ${post.excerpt}` : post.title}
+            shareURL={articleURL}
             steps={shareSteps}
             title="Amplifica el insight."
             variant="share"
@@ -297,5 +329,25 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </section>
       ) : null}
     </main>
+  )
+}
+
+function IconLink() {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
+  )
+}
+
+function IconShareNodes() {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98" />
+    </svg>
   )
 }
