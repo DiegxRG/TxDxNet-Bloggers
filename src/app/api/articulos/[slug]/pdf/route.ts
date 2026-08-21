@@ -1,21 +1,15 @@
 import PDFDocument from 'pdfkit'
 
-import { getPublishedPostBySlug } from '@/modules/content/infrastructure/payload/posts'
+import {
+  embedCoverImage,
+  renderArticleContent,
+} from '@/modules/content/infrastructure/pdf/render-article-pdf'
+import {
+  formatArticleDate,
+  getPublishedPostBySlug,
+} from '@/modules/content/infrastructure/payload/posts'
 
-function collectText(value: unknown): string[] {
-  if (!value || typeof value !== 'object') return []
-  if (Array.isArray(value)) return value.flatMap(collectText)
-
-  const record = value as Record<string, unknown>
-  const ownText = typeof record.text === 'string' ? [record.text] : []
-  return [...ownText, ...Object.values(record).flatMap(collectText)]
-}
-
-function getArticleText(content: unknown) {
-  return collectText(content).join(' ').replace(/\s+/g, ' ').trim()
-}
-
-export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const post = await getPublishedPostBySlug(slug)
 
@@ -28,6 +22,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
       Title: post.title,
     },
     margin: 54,
+    size: 'A4',
   })
   const chunks: Buffer[] = []
   const output = new Promise<Buffer>((resolve) => {
@@ -41,11 +36,18 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   document.moveDown(0.8)
   document.fillColor('#415574').fontSize(11).font('Helvetica').text(post.excerpt)
   document.moveDown(1)
-  document.fillColor('#61718a').fontSize(9).text(`Por ${post.authorName} · Publicado ${post.publishedAt || post.createdAt}`)
+  document
+    .fillColor('#61718a')
+    .fontSize(9)
+    .text(`Por ${post.authorName} · Publicado ${formatArticleDate(post)}`)
   document.moveDown(2)
   document.strokeColor('#ff5a18').moveTo(54, document.y).lineTo(250, document.y).stroke()
   document.moveDown(1.5)
-  document.fillColor('#07142d').fontSize(11).font('Helvetica').text(getArticleText(post.content), { align: 'left', lineGap: 5 })
+
+  const origin = new URL(request.url).origin
+  await embedCoverImage(document, post.coverImage, origin)
+  await renderArticleContent(document, post.content, origin)
+
   document.end()
 
   const buffer = await output
