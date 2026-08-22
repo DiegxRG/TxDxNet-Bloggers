@@ -1,6 +1,9 @@
 'use client'
 
+import Image from 'next/image'
+
 import { ContactModal } from './ContactModal'
+import type { Dictionary } from '@/lib/locale'
 import styles from '../../app/(website)/home.module.css'
 
 function ArrowIcon() {
@@ -17,21 +20,25 @@ function ArrowIcon() {
   )
 }
 
-export function ClosingCTA() {
+export function ClosingCTA({ copy }: { copy: Dictionary }) {
   return (
-    <ContactModal>
+    <ContactModal copy={copy}>
       {(openModal) => (
         <div className={styles.closingCopy}>
-          <p>
-            TxDxSecure conecta experiencia técnica, contexto empresarial y decisiones prácticas para
-            que cada publicación sea útil más allá de la lectura.
-          </p>
+          <Image
+            alt="TxDxSecure"
+            className={styles.closingLogo}
+            height={500}
+            src="/logo_blanco.png"
+            width={500}
+          />
+          <p>{copy.closingCtaCopy}</p>
           <button
             className={styles.closingCta}
             onClick={openModal}
             type="button"
           >
-            Conversar con nuestro equipo
+            {copy.closingCtaButton}
             <ArrowIcon />
           </button>
         </div>

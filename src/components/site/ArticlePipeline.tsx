@@ -13,10 +13,13 @@ export type ArticlePipelineStep = {
 }
 
 type Props = {
+  copiedMessage: string
+  copyManuallyMessage: string
   description: string
   eyebrow: string
   result: string
   resultLabel: string
+  sharedMessage: string
   shareText?: string
   shareURL?: string
   steps: ArticlePipelineStep[]
@@ -24,7 +27,7 @@ type Props = {
   variant: 'ecosystem' | 'share'
 }
 
-export function ArticlePipeline({ description, eyebrow, result, resultLabel, shareText, shareURL, steps, title, variant }: Props) {
+export function ArticlePipeline({ copiedMessage, copyManuallyMessage, description, eyebrow, result, resultLabel, sharedMessage, shareText, shareURL, steps, title, variant }: Props) {
   return (
     <aside aria-label={title} className={`article-pipeline article-pipeline--${variant}`}>
       <div className="article-pipeline__header">
@@ -45,10 +48,13 @@ export function ArticlePipeline({ description, eyebrow, result, resultLabel, sha
               <PipelineActionButton
                 action={step.action}
                 className="article-pipeline__step"
+                copiedMessage={copiedMessage}
+                copyManuallyMessage={copyManuallyMessage}
                 detail={step.detail}
                 icon={step.icon}
                 key={step.label}
                 label={step.label}
+                sharedMessage={sharedMessage}
                 shareText={shareText}
                 style={style}
                 tone={step.tone}

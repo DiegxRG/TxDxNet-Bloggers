@@ -5,6 +5,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, type ReactNode } from 'react'
 
+import type { Dictionary } from '@/lib/locale'
+
 import styles from './EditorialOpening.module.css'
 
 export type OpeningStory = {
@@ -35,14 +37,22 @@ function ArrowIcon() {
 function RevealLine({ children, accent = false }: { children: string; accent?: boolean }) {
   return (
     <span className={accent ? styles.accentLine : styles.headlineLine}>
-      {Array.from(children).map((character, index) => (
+      {children.split(' ').map((word, wordIndex) => (
         <span
           aria-hidden="true"
-          className={styles.revealCharacter}
-          data-reveal-character
-          key={`${character}-${index}`}
+          className={styles.revealWord}
+          key={`${word}-${wordIndex}`}
         >
-          {character === ' ' ? '\u00A0' : character}
+          {Array.from(word).map((character, index) => (
+            <span
+              aria-hidden="true"
+              className={styles.revealCharacter}
+              data-reveal-character
+              key={`${character}-${index}`}
+            >
+              {character}
+            </span>
+          ))}
         </span>
       ))}
       <span className={styles.screenReaderText}>{children}</span>
@@ -50,7 +60,7 @@ function RevealLine({ children, accent = false }: { children: string; accent?: b
   )
 }
 
-function StoryVolume({ story, index }: { story: OpeningStory; index: number }) {
+function StoryVolume({ copy, story, index }: { copy: Dictionary; story: OpeningStory; index: number }) {
   const volume: ReactNode = (
     <div className={styles.volumeMotion} data-ambient-volume>
       <div className={styles.volumeBook}>
@@ -85,10 +95,10 @@ function StoryVolume({ story, index }: { story: OpeningStory; index: number }) {
           <h2>{story.title}</h2>
           <div className={styles.volumeFooter}>
             <span>{story.author}</span>
-            <span>{story.href ? story.detail : 'Próximamente'}</span>
+            <span>{story.href ? story.detail : copy.openingSoon}</span>
           </div>
           <span className={styles.volumeAction}>
-            {story.href ? 'Abrir lectura' : story.detail}
+            {story.href ? copy.openReading : story.detail}
             {story.href ? <ArrowIcon /> : <i aria-hidden="true" />}
           </span>
         </div>
@@ -100,7 +110,7 @@ function StoryVolume({ story, index }: { story: OpeningStory; index: number }) {
 
   return story.href ? (
     <Link
-      aria-label={`Abrir artículo: ${story.title}`}
+      aria-label={`${copy.openArticleAriaPrefix} ${story.title}`}
       className={className}
       data-story-volume
       href={story.href}
@@ -114,7 +124,7 @@ function StoryVolume({ story, index }: { story: OpeningStory; index: number }) {
   )
 }
 
-export function EditorialLibraryStage({ stories }: { stories: OpeningStory[] }) {
+export function EditorialLibraryStage({ copy, stories }: { copy: Dictionary; stories: OpeningStory[] }) {
   const rootRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -296,8 +306,8 @@ export function EditorialLibraryStage({ stories }: { stories: OpeningStory[] }) 
       <div className={styles.inner}>
         <header className={styles.heading}>
           <h1>
-            <RevealLine>ABRE UNA IDEA.</RevealLine>
-            <RevealLine accent>MUEVE LA OPERACIÓN.</RevealLine>
+            <RevealLine>{copy.heroLinePrimary}</RevealLine>
+            <RevealLine accent>{copy.heroLineAccent}</RevealLine>
           </h1>
 
         </header>
@@ -311,7 +321,7 @@ export function EditorialLibraryStage({ stories }: { stories: OpeningStory[] }) 
 
           <div className={styles.volumeShelf}>
             {stories.map((story, index) => (
-              <StoryVolume index={index} key={story.key} story={story} />
+              <StoryVolume copy={copy} index={index} key={story.key} story={story} />
             ))}
           </div>
           <span aria-hidden="true" className={styles.shelfEdge} />
@@ -319,14 +329,14 @@ export function EditorialLibraryStage({ stories }: { stories: OpeningStory[] }) 
 
         <div className={styles.heroFooter} data-intro-copy="support">
           <div className={styles.footerTopics}>
-            <span>Dominios XOC</span>
+            <span>{copy.domains}</span>
             <i aria-hidden="true" />
-            <span>Equipo editorial</span>
+            <span>{copy.team}</span>
             <i aria-hidden="true" />
-            <span>Análisis y guías</span>
+            <span>{copy.heroTopicInsights}</span>
           </div>
           <Link className={styles.libraryAction} href="/articulos">
-            Entrar a la biblioteca <ArrowIcon />
+            {copy.enterLibrary} <ArrowIcon />
           </Link>
         </div>
       </div>

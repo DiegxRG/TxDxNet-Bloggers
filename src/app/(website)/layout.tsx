@@ -6,8 +6,8 @@ import { Suspense } from 'react'
 
 import { LocalizedSiteFooter } from '@/components/site/LocalizedSiteFooter'
 import { LocalizedSiteHeader } from '@/components/site/LocalizedSiteHeader'
+import { LocalizedTornPaperCTA } from '@/components/site/LocalizedTornPaperCTA'
 import { SiteFooter } from '@/components/site/SiteFooter'
-import { TornPaperCTA } from '@/components/site/TornPaperCTA'
 import { AnalyticsTracker } from '@/components/site/AnalyticsTracker'
 import { LocaleBootstrap } from '@/components/site/LocaleBootstrap'
 
@@ -24,6 +24,13 @@ export const metadata: Metadata = {
   description:
     'Insights de TxDxSecure sobre ciberseguridad, redes, observabilidad, experiencia digital y los 11 dominios XOC.',
   applicationName: 'TxDxSecure',
+  manifest: '/site.webmanifest',
+  icons: {
+    icon: [
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+    ],
+  },
   alternates: {
     canonical: '/',
   },
@@ -45,7 +52,7 @@ export const viewport: Viewport = {
   themeColor: '#f8f8f4',
 }
 
-export default async function WebsiteLayout({ children }: { children: ReactNode }) {
+export default function WebsiteLayout({ children }: { children: ReactNode }) {
   return (
     <html data-scroll-behavior="smooth" lang="es">
       <body>
@@ -56,7 +63,7 @@ export default async function WebsiteLayout({ children }: { children: ReactNode 
            <LocalizedSiteHeader />
         </Suspense>
         <Suspense fallback={null}>
-          <TornPaperCTA />
+          <LocalizedTornPaperCTA />
         </Suspense>
         {children}
         <Suspense fallback={<SiteFooter locale="es" />}>

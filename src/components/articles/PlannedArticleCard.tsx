@@ -1,10 +1,11 @@
 import type { plannedArticles } from '@/data/editorial'
+import type { Dictionary } from '@/lib/locale'
 
 import styles from './PlannedArticleCard.module.css'
 
 type PlannedArticle = (typeof plannedArticles)[number]
 
-export function PlannedArticleCard({ article, index }: { article: PlannedArticle; index: number }) {
+export function PlannedArticleCard({ article, copy, index }: { article: PlannedArticle; copy: Dictionary; index: number }) {
   return (
     <article className={styles.card}>
       <div aria-hidden="true" className={`${styles.cover} ${styles[`cover${index + 1}`]}`}>
@@ -15,13 +16,13 @@ export function PlannedArticleCard({ article, index }: { article: PlannedArticle
       <div className={styles.copy}>
         <div className={styles.meta}>
           <span>{article.category}</span>
-          <span>Próximamente</span>
+          <span>{copy.openingSoon}</span>
         </div>
         <h3>{article.title}</h3>
         <p>{article.description}</p>
         <footer>
-          <span>Equipo TxDxSecure</span>
-          <span aria-hidden="true">En preparación</span>
+          <span>{copy.byTxTeam}</span>
+          <span aria-hidden="true">{copy.inPreparation}</span>
         </footer>
       </div>
     </article>

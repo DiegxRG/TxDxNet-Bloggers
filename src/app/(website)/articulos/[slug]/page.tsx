@@ -9,6 +9,7 @@ import { ArticlePipeline, type ArticlePipelineStep } from '@/components/site/Art
 import { ResourceIcon } from '@/components/icons/ResourceIcon'
 import { AuthorAvatar } from '@/components/site/AuthorAvatar'
 import { ShareIcon } from '@/components/site/ShareIcon'
+import { getMessages, resolveLocale } from '@/lib/i18n'
 import {
   estimateReadingMinutes,
   formatArticleDate,
@@ -21,6 +22,8 @@ import {
 type ArticlePageProps = {
   params: Promise<{ slug: string }>
 }
+
+export const instant = false
 
 const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com'
 const FALLBACK_SOCIAL_IMAGE = '/logotxdx.png'
@@ -40,7 +43,10 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   const { slug } = await params
   const post = await getPublishedPostBySlug(slug)
 
-  if (!post) return { title: 'Artículo no encontrado' }
+  if (!post) {
+    const locale = await resolveLocale()
+    return { title: getMessages(locale).articleNotFoundTitle }
+  }
 
   const socialImage = buildSocialImage(post)
   const title = post.seoTitle || post.title
@@ -74,117 +80,120 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   if (!post) notFound()
 
+  const locale = await resolveLocale()
+  const copy = getMessages(locale)
+
   const relatedPosts = await getRelatedPosts(post)
   const heroImage = getMediaURL(post.coverImage, 'hero')
   const articleURL = new URL(`/articulos/${post.slug}`, process.env.NEXT_PUBLIC_SITE_URL || 'https://txdxnet.com').toString()
   const shareSteps: ArticlePipelineStep[] = [
     {
       action: 'share',
-      detail: 'Compartir con tu red en un toque.',
+      detail: copy.stepShareDetail,
       icon: <IconShareNodes />,
-      label: 'Compartir',
+      label: copy.stepShareLabel,
       tone: 'native',
-      track: 'AMPLIFICAR',
+      track: copy.trackAmplify,
     },
     {
       action: 'copy',
-      detail: 'Lleva este análisis a cualquier lado.',
+      detail: copy.stepCopyDetail,
       icon: <IconLink />,
-      label: 'Copiar enlace',
+      label: copy.stepCopyLabel,
       tone: 'copy',
-      track: 'ENLAZAR',
+      track: copy.trackLink,
     },
     {
-      detail: 'Amplificar este análisis.',
+      detail: copy.stepLinkedinDetail,
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleURL)}`,
       icon: <ShareIcon network="linkedin" />,
       label: 'LinkedIn',
       tone: 'linkedin',
-      track: 'AMPLIFICAR',
+      track: copy.trackAmplify,
     },
     {
-      detail: 'Llevar la señal a tu red.',
+      detail: copy.stepFacebookDetail,
       href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleURL)}`,
       icon: <ShareIcon network="facebook" />,
       label: 'Facebook',
       tone: 'facebook',
-      track: 'COMPARTIR',
+      track: copy.trackConnect,
     },
     {
-      detail: 'Publicar una perspectiva.',
+      detail: copy.stepXDetail,
       href: `https://x.com/intent/post?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(articleURL)}`,
       icon: <ShareIcon network="x" />,
-      label: 'En X',
+      label: copy.labelOnX,
       tone: 'x',
-      track: 'SEÑALAR',
+      track: copy.trackSignal,
     },
     {
-      detail: 'Enviar por WhatsApp.',
+      detail: copy.stepWhatsappDetail,
       href: `https://wa.me/?text=${encodeURIComponent(`${post.title} ${articleURL}`)}`,
       icon: <ShareIcon network="whatsapp" />,
       label: 'WhatsApp',
       tone: 'whatsapp',
-      track: 'CONECTAR',
+      track: copy.trackConnect,
     },
     {
-      detail: 'Compartir directamente.',
+      detail: copy.stepEmailDetail,
       href: `mailto:?subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(articleURL)}`,
       icon: <ShareIcon network="email" />,
-      label: 'Correo',
+      label: copy.labelEmail,
       tone: 'email',
-      track: 'ENVIAR',
+      track: copy.trackSend,
     },
     {
-      detail: 'Seguir la señal TxDxSecure.',
+      detail: copy.stepInstagramDetail,
       href: 'https://www.instagram.com/txdxsecure/',
       icon: <ShareIcon network="instagram" />,
       label: 'Instagram',
       tone: 'instagram',
-      track: 'SEGUIR',
+      track: copy.trackFollow,
     },
   ]
   const ecosystemSteps: ArticlePipelineStep[] = [
     {
-      detail: 'Operación digital segura.',
+      detail: copy.stepXocAppDetail,
       href: 'https://xoc.app/',
       icon: <Image alt="" height={40} src="/Logo_XOC_Vectorial.png" width={40} />,
       label: 'XOC App',
-      track: 'PLATAFORMA',
+      track: copy.trackPlatform,
     },
     {
-      detail: 'Descargar XOC App.',
+      detail: copy.stepPlayStoreDetail,
       href: 'https://play.google.com/store/apps/details?id=com.vibecode.xocapp&hl=es_PE',
       icon: <Image alt="" height={40} src="/Google_Play_2022_icon.svg.webp" width={40} />,
       label: 'Play Store',
-      track: 'ANDROID',
+      track: copy.trackAndroid,
     },
     {
-      detail: 'Descargar XOC App.',
+      detail: copy.stepAppStoreDetail,
       href: 'https://apps.apple.com/uy/app/xoc/id6759814234',
       icon: <Image alt="" height={40} src="/App_Store_(iOS).svg.webp" width={40} />,
       label: 'App Store',
-      track: 'IOS',
+      track: copy.trackIos,
     },
     {
-      detail: 'Información de la aplicación.',
+      detail: copy.stepPoliciesDetail,
       href: 'https://xoc.app/xoc-policies/index.html',
       icon: <ResourceIcon type="support" />,
-      label: 'Políticas y soporte',
-      track: 'RECURSOS XOC',
+      label: copy.labelPolicies,
+      track: copy.trackXocResources,
     },
     {
-      detail: 'Conoce nuestro trabajo.',
+      detail: copy.stepCompanyDetail,
       href: 'https://www.txdxsecure.com/',
       icon: <Image alt="" height={40} src="/logotxdx.png" width={70} />,
       label: 'TxDxSecure',
-      track: 'EMPRESA',
+      track: copy.trackCompany,
     },
     {
-      detail: 'Explorar capacidades.',
+      detail: copy.stepCapabilitiesDetail,
       href: '/dominios',
       icon: <ResourceIcon type="domains" />,
-      label: '11 dominios XOC',
-      track: 'MAPA TXDX',
+      label: copy.xocDomainCount,
+      track: copy.trackTxMap,
     },
   ]
 
@@ -195,13 +204,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <div className="article-hero-grid" />
           <div className="relative mx-auto max-w-[1440px] px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
             <Link className="article-back-link" href="/articulos">
-              ← Todos los insights
+              {copy.backToInsights}
             </Link>
             <div className={`article-hero-layout${heroImage ? '' : ' article-hero-layout--no-image'}`}>
               <div className="article-hero-copy">
                 <div className="article-kicker">
-                  <span>INSIGHT</span>
-                  {post.featured ? <span>SELECCIÓN EDITORIAL</span> : null}
+                  <span>{copy.kickerInsight}</span>
+                  {post.featured ? <span>{copy.kickerFeatured}</span> : null}
                 </div>
                 <h1>{post.title}</h1>
                 <p className="article-deck">{post.excerpt}</p>
@@ -221,18 +230,18 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 <div className="article-byline-author">
                   <AuthorAvatar media={post.authorAvatar} name={post.authorName} size="large" />
                   <div>
-                    <span>Por</span>
+                    <span>{copy.byPrefix}</span>
                     <strong>{post.authorName}</strong>
                     {post.authorRole ? <small>{post.authorRole}</small> : null}
                   </div>
                 </div>
                 <div>
-                  <span>Publicado</span>
-                  <strong>{formatArticleDate(post)}</strong>
-                  <small>{estimateReadingMinutes(post)} min de lectura</small>
+                  <span>{copy.publishedLabel}</span>
+                  <strong>{formatArticleDate(post, locale)}</strong>
+                  <small>{estimateReadingMinutes(post)} {copy.minRead}</small>
                 </div>
                 <a className="article-pdf-link" download href={`/api/articulos/${post.slug}/pdf`}>
-                  Descargar PDF <span aria-hidden="true">↓</span>
+                  {copy.downloadPdf} <span aria-hidden="true">↓</span>
                 </a>
               </div>
             </div>
@@ -241,24 +250,30 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
         <div className="article-body-shell">
           <ArticlePipeline
-            description="Pasa la señal a tu red para que una buena perspectiva no termine en una sola pantalla."
-            eyebrow="Compartir esta señal"
-            result="Señal distribuida"
-            resultLabel="CONOCIMIENTO EN MOVIMIENTO"
+            copiedMessage={copy.linkCopiedMessage}
+            copyManuallyMessage={copy.copyManuallyMessage}
+            description={copy.sharePipelineDescription}
+            eyebrow={copy.sharePipelineEyebrow}
+            result={copy.sharePipelineResult}
+            resultLabel={copy.sharePipelineResultLabel}
+            sharedMessage={copy.sharedMessage}
             shareText={post.excerpt ? `${post.title} — ${post.excerpt}` : post.title}
             shareURL={articleURL}
             steps={shareSteps}
-            title="Amplifica el insight."
+            title={copy.sharePipelineTitle}
             variant="share"
           />
           <ArticleRichText data={post.content} />
           <ArticlePipeline
-            description="Explora las plataformas, productos y capacidades que forman el ecosistema TxDx."
-            eyebrow="Ecosistema TxDx"
-            result="Operación conectada"
-            resultLabel="ECOSISTEMA TXDX EN MARCHA"
+            copiedMessage={copy.linkCopiedMessage}
+            copyManuallyMessage={copy.copyManuallyMessage}
+            description={copy.ecosystemPipelineDescription}
+            eyebrow={copy.ecosystemPipelineEyebrow}
+            result={copy.ecosystemPipelineResult}
+            resultLabel={copy.ecosystemPipelineResultLabel}
+            sharedMessage={copy.sharedMessage}
             steps={ecosystemSteps}
-            title="Más allá de este insight."
+            title={copy.ecosystemPipelineTitle}
             variant="ecosystem"
           />
         </div>
@@ -272,11 +287,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </div>
           <div className="article-author-layout">
             <div>
-              <span className="article-section-kicker">AUTORÍA / TXDXSECURE</span>
-              <h2 id="article-author-title">La señal detrás del análisis.</h2>
+              <span className="article-section-kicker">{copy.authorSectionKicker}</span>
+              <h2 id="article-author-title">{copy.authorSectionTitle}</h2>
               <p>
-                Conoce a la persona que comparte esta perspectiva y al sello que convierte experiencia
-                técnica en conocimiento aplicable.
+                {copy.authorSectionIntro}
               </p>
             </div>
             <div className="article-author-cards">
@@ -284,10 +298,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 <div aria-hidden="true" className="article-author-outline" />
                 <AuthorAvatar media={post.authorAvatar} name={post.authorName} size="large" />
                 <div>
-                  <span className="article-card-kicker">AUTOR DEL INSIGHT</span>
+                  <span className="article-card-kicker">{copy.insightAuthorKicker}</span>
                   <h3>{post.authorName}</h3>
                   {post.authorRole ? <p>{post.authorRole}</p> : null}
-                  <Link href="/articulos">Ver más insights <span aria-hidden="true">↗</span></Link>
+                  <Link href="/articulos">{copy.moreInsights} <span aria-hidden="true">↗</span></Link>
                 </div>
               </div>
               <div className="article-company-card">
@@ -295,12 +309,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   <Image alt="" fill sizes="72px" src="/logotxdx.png" />
                 </div>
                 <div>
-                  <span className="article-card-kicker">SELLO EDITORIAL</span>
+                  <span className="article-card-kicker">{copy.sealKicker}</span>
                   <h3>TxDxSecure</h3>
-                  <p>El conocimiento publicado aquí forma parte de la voz y experiencia de la empresa.</p>
-                  <small>© TxDxSecure · Derechos reservados</small>
+                  <p>{copy.sealNote}</p>
+                  <small>{copy.rightsReserved}</small>
                   <a href="https://txdxsecure.com/" rel="noreferrer" target="_blank">
-                    Conocer la empresa <span aria-hidden="true">↗</span>
+                    {copy.knowTheCompany} <span aria-hidden="true">↗</span>
                   </a>
                 </div>
               </div>
@@ -314,18 +328,18 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <div className="mx-auto max-w-[1440px]">
             <div className="flex items-end justify-between gap-8">
               <div>
-                <span className="section-code">CONTINUAR / 01</span>
+                <span className="section-code">{copy.relatedSignalsCode}</span>
                 <h2 className="mt-3 font-display text-4xl font-semibold tracking-[-0.05em] sm:text-6xl">
-                  Señales relacionadas
+                  {copy.relatedSignalsTitle}
                 </h2>
               </div>
               <Link className="hidden text-xs font-extrabold uppercase md:block" href="/articulos">
-                Ver biblioteca ↗
+                {copy.viewLibrary} ↗
               </Link>
             </div>
             <div className="mt-12 grid gap-5 lg:grid-cols-3">
               {relatedPosts.map((relatedPost) => (
-                <ArticleCard key={relatedPost.id} post={relatedPost} />
+                <ArticleCard copy={copy} key={relatedPost.id} locale={locale} post={relatedPost} />
               ))}
             </div>
           </div>

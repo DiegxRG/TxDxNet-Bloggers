@@ -1,8 +1,9 @@
 import Link from 'next/link'
 
-import { domains } from '@/data/domains'
+import { domains, getDomainCopy } from '@/data/domains'
+import type { Locale } from '@/lib/locale'
 
-export function DomainIndex({ compact = false }: { compact?: boolean }) {
+export function DomainIndex({ compact = false, locale = 'es' }: { compact?: boolean; locale?: Locale }) {
   return (
     <div className="border-t border-ink-950/15">
       {domains.map((domain) => (
@@ -14,9 +15,9 @@ export function DomainIndex({ compact = false }: { compact?: boolean }) {
         >
           <span className="font-display text-sm font-bold text-signal-orange">{domain.id}</span>
           <span className="font-display text-xl font-semibold tracking-[-0.03em] text-ink-950 sm:text-2xl">
-            {domain.name}
+            {getDomainCopy(domain, locale).name}
           </span>
-          <span className="max-w-lg text-sm leading-6 text-ink-500">{domain.description}</span>
+          <span className="max-w-lg text-sm leading-6 text-ink-500">{getDomainCopy(domain, locale).description}</span>
           <span
             aria-hidden="true"
             className="hidden size-8 place-items-center rounded-full border border-ink-950/15 text-sm transition group-hover:rotate-45 group-hover:border-blue-600 group-hover:bg-blue-600 group-hover:text-white md:grid"

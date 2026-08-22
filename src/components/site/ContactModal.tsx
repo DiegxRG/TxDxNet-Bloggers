@@ -8,6 +8,8 @@ import {
   useState,
 } from 'react'
 
+import type { Dictionary } from '@/lib/locale'
+
 import styles from './ContactModal.module.css'
 
 /* ─── SVG helpers ────────────────────────────────────────────── */
@@ -70,9 +72,10 @@ const EMAIL_DEST = 'info@txdxsecure.com'
 
 interface ContactModalProps {
   children: (openModal: () => void) => ReactNode
+  copy: Dictionary
 }
 
-export function ContactModal({ children }: ContactModalProps) {
+export function ContactModal({ children, copy }: ContactModalProps) {
   const [open, setOpen] = useState(false)
   const [channel, setChannel] = useState<Channel>('email')
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -107,8 +110,9 @@ export function ContactModal({ children }: ContactModalProps) {
   )
 
   /* Links */
-  const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola equipo TxDxSecure, me interesa conversar sobre sus servicios.')}`
+  const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(copy.whatsappPrefill)}`
   const emailLink = `mailto:${EMAIL_DEST}`
+  const [emailDescriptionBefore, emailDescriptionAfter] = copy.contactEmailDescription.split('{email}')
 
   const openModal = useCallback(() => {
     setOpen(true)
@@ -134,7 +138,7 @@ export function ContactModal({ children }: ContactModalProps) {
 
           {/* Close button */}
           <button
-            aria-label="Cerrar"
+            aria-label={copy.contactClose}
             className={styles.close}
             onClick={() => setOpen(false)}
             ref={firstFocusRef}
@@ -149,14 +153,13 @@ export function ContactModal({ children }: ContactModalProps) {
               <div className={styles.leftHeader}>
                 <span className={styles.leftBadge}>
                   <BookOpenIcon />
-                  Conversemos
+                  {copy.contactBadge}
                 </span>
                 <h2 className={styles.leftTitle} id="contact-modal-title">
-                  Abre este libro y cuéntanos qué necesitas
+                  {copy.contactTitle}
                 </h2>
                 <p className={styles.leftDescription}>
-                  Elige tu canal preferido para ponerte en contacto con nuestro equipo.
-                  Responderemos lo antes posible.
+                  {copy.contactDescription}
                 </p>
               </div>
 
@@ -169,7 +172,7 @@ export function ContactModal({ children }: ContactModalProps) {
                   type="button"
                 >
                   <MailIcon />
-                  Correo electrónico
+                  {copy.contactChannelEmail}
                 </button>
                 <button
                   className={styles.channelBtn}
@@ -197,17 +200,19 @@ export function ContactModal({ children }: ContactModalProps) {
                   <div className={styles.emailIconWrap}>
                     <MailIcon />
                   </div>
-                  <p className={styles.waTitle}>Envíanos un correo</p>
+                  <p className={styles.waTitle}>{copy.contactEmailTitle}</p>
                   <p className={styles.waDesc}>
-                    Haz clic para abrir tu aplicación de correo y escríbenos a{' '}
-                    <strong>{EMAIL_DEST}</strong>.
+                    {emailDescriptionBefore}
+                    {' '}
+                    <strong>{EMAIL_DEST}</strong>
+                    {emailDescriptionAfter}
                   </p>
                   <a
                     className={styles.emailButton}
                     href={emailLink}
                   >
                     <MailIcon />
-                    <span>Abrir correo</span>
+                    <span>{copy.contactEmailButton}</span>
                     <div aria-hidden="true" className={styles.buttonFill} />
                   </a>
                 </div>
@@ -218,10 +223,9 @@ export function ContactModal({ children }: ContactModalProps) {
                   <div className={styles.waIconWrap}>
                     <WhatsAppIcon />
                   </div>
-                  <p className={styles.waTitle}>Chatea con nosotros</p>
+                  <p className={styles.waTitle}>{copy.contactWhatsappTitle}</p>
                   <p className={styles.waDesc}>
-                    Inicia una conversación directa con nuestro equipo por WhatsApp. Respuesta
-                    rápida en horario laboral.
+                    {copy.contactWhatsappDescription}
                   </p>
                   <a
                     className={styles.waButton}
@@ -230,7 +234,7 @@ export function ContactModal({ children }: ContactModalProps) {
                     target="_blank"
                   >
                     <WhatsAppIcon />
-                    <span>Abrir WhatsApp</span>
+                    <span>{copy.contactWhatsappButton}</span>
                     <div aria-hidden="true" className={styles.buttonFill} />
                   </a>
                 </div>

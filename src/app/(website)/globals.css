@@ -3704,11 +3704,11 @@ button.article-pipeline__step {
   animation: torn-paper-float 7s ease-in-out 1.8s infinite;
 }
 
-/* ---- Homepage: positioned near bottom of main ---- */
+/* ---- Homepage: docked floating note, bottom-left ---- */
 
 .torn-paper--home {
-  position: absolute;
-  bottom: 15rem;
+  position: fixed;
+  bottom: 2rem;
   left: 2rem;
 }
 
@@ -4289,12 +4289,6 @@ button.article-pipeline__step {
   100% {
     box-shadow: 0 0 0 0 rgb(255 90 24 / 0);
   }
-}
-
-/* ---- Homepage extra bottom padding ---- */
-
-.home-main--torn-space {
-  padding-bottom: 22rem;
 }
 
 @media (max-width: 767px) {

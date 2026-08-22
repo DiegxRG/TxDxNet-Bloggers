@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import { BrandMark } from './BrandMark'
-import { getMessages, type Locale } from '@/lib/locale'
+import { getMessages, interpolate, type Locale } from '@/lib/locale'
 import styles from './SiteFooter.module.css'
 
 const socialLinks = [
@@ -37,6 +37,8 @@ const socialLinks = [
   },
 ]
 
+const CURRENT_YEAR = new Date().getFullYear()
+
 export function SiteFooter({ locale }: { locale: Locale }) {
   const copy = getMessages(locale)
 
@@ -50,14 +52,14 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           </p>
         </div>
 
-        <nav aria-label="Explorar">
+        <nav aria-label={copy.explore}>
            <p className="footer-label">{copy.explore}</p>
           <div className={styles.links}>
             <Link className={styles.link} href="/dominios">
                {copy.domains}
             </Link>
             <Link className={styles.link} href="/equipo">
-              Equipo
+              {copy.team}
             </Link>
             <Link className={styles.link} href="/articulos">
                {copy.articles}
@@ -65,7 +67,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           </div>
         </nav>
 
-        <nav aria-label="Empresa">
+        <nav aria-label={copy.company}>
            <p className="footer-label">{copy.company}</p>
           <div className={styles.links}>
             <a className={styles.link} href="https://www.txdxsecure.com/" rel="noreferrer" target="_blank">
@@ -75,7 +77,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
               XOC Platform <span className={styles.external}>↗</span>
             </a>
             <a className={styles.link} href="mailto:info@txdxsecure.com">
-              Contacto
+              {copy.contact}
             </a>
           </div>
         </nav>
@@ -86,7 +88,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
             {socialLinks.map((item) => (
               <div className={styles.socialItem} key={item.social}>
                 <a
-                  aria-label={`TxDxSecure en ${item.label}`}
+                  aria-label={interpolate(copy.socialAria, { network: item.label })}
                   className={`${styles.socialLink} ${styles[item.social]}`}
                   href={item.href}
                   rel="noreferrer"
@@ -108,7 +110,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
       </div>
 
       <div className={styles.bottomBar}>
-        <p>© 2026 TxDxSecure · Transformaciones digitales seguras</p>
+        <p>{`© ${CURRENT_YEAR} TxDxSecure · ${copy.bottomTagline}`}</p>
       </div>
     </footer>
   )

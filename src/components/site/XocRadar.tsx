@@ -7,7 +7,8 @@ import Link from 'next/link'
 
 import { DomainIcon } from '@/components/icons/DomainIcon'
 import { LibraryIcon } from '@/components/icons/LibraryIcon'
-import { domains } from '@/data/domains'
+import { domains, getDomainCopy } from '@/data/domains'
+import type { Locale } from '@/lib/locale'
 
 type RadarPosition = {
   angle: number
@@ -31,7 +32,7 @@ const radarPositions: RadarPosition[] = [
 const radarCycleMilliseconds = 9000
 const detectionWindowDegrees = 15
 
-export function XocRadar() {
+export function XocRadar({ locale = 'es' }: { locale?: Locale }) {
   const radarRef = useRef<HTMLElement>(null)
   const scanRef = useRef<HTMLDivElement>(null)
   const statusRef = useRef<HTMLDivElement>(null)
@@ -174,7 +175,7 @@ export function XocRadar() {
 
           return (
             <Link
-              aria-label={`${domain.id}. ${domain.name}`}
+              aria-label={`${domain.id}. ${getDomainCopy(domain, locale).name}`}
               className={`radar-domain-node radar-domain-node--${side}`}
               data-radar-angle={radarAngle}
               href={`/dominios#dominio-${domain.id}`}
@@ -186,7 +187,7 @@ export function XocRadar() {
                 <DomainIcon className="radar-node-icon" domainId={domain.id} />
                 <span className="radar-node-code">{domain.id}</span>
               </span>
-              <span className="radar-node-label">{domain.name}</span>
+              <span className="radar-node-label">{getDomainCopy(domain, locale).name}</span>
             </Link>
           )
         })}
@@ -214,7 +215,7 @@ export function XocRadar() {
         {domains.map((domain) => (
           <Link href={`/dominios#dominio-${domain.id}`} key={domain.id}>
             <DomainIcon domainId={domain.id} />
-            <span>{domain.shortName}</span>
+            <span>{getDomainCopy(domain, locale).shortName}</span>
           </Link>
         ))}
       </div>

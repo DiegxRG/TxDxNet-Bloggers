@@ -4,9 +4,11 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useCallback, useState } from 'react'
 
+import type { Dictionary } from '@/lib/locale'
+
 type PanelState = 'open' | 'tab'
 
-export function TornPaperCTA() {
+export function TornPaperCTA({ copy }: { copy: Dictionary }) {
   const pathname = usePathname()
   const isHome = pathname === '/'
   const [state, setState] = useState<PanelState>('open')
@@ -53,7 +55,7 @@ export function TornPaperCTA() {
       <button
         className="torn-paper__tab"
         onClick={handleTab}
-        aria-label="Abrir panel TxDxSecure"
+        aria-label={copy.tornOpenLabel}
         type="button"
       >
         <Image
@@ -72,7 +74,7 @@ export function TornPaperCTA() {
         <button
           className="torn-paper__close"
           onClick={close}
-          aria-label="Cerrar panel"
+          aria-label={copy.tornCloseLabel}
           type="button"
         >
           <svg fill="none" viewBox="0 0 24 24">
@@ -97,7 +99,7 @@ export function TornPaperCTA() {
         <div className="torn-paper__shine" />
 
         <div className="torn-paper__content">
-          <span className="torn-paper__label">Plataforma de seguridad</span>
+          <span className="torn-paper__label">{copy.tornPlatformBadge}</span>
           <Image
             alt="TxDxSecure"
             className="torn-paper__logo"
@@ -116,7 +118,7 @@ export function TornPaperCTA() {
             target="_blank"
           >
             <span className="torn-paper__btn-pulse" />
-            <span className="torn-paper__btn-label">Explorar plataforma</span>
+            <span className="torn-paper__btn-label">{copy.tornExploreButton}</span>
             <svg
               aria-hidden="true"
               className="torn-paper__btn-arrow"

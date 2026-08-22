@@ -36,11 +36,23 @@
 }
 
 .closingCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   align-self: end;
+  text-align: center;
+}
+
+.closingLogo {
+  display: block;
+  width: clamp(9rem, 11vw, 11.5rem);
+  height: auto;
+  margin-inline: auto;
 }
 
 .closingCopy p {
   max-width: 34rem;
+  margin-top: 2.75rem;
   color: #b8c7da;
   font-size: 1rem;
   line-height: 1.8;
@@ -50,7 +62,7 @@
   display: inline-flex;
   align-items: center;
   gap: 1.5rem;
-  margin-top: 2rem;
+  margin-top: 3rem;
   border: 0;
   border-radius: 999px;
   background: var(--color-signal-orange);

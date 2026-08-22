@@ -5,7 +5,7 @@ import { PanelSubmitButton } from '@/components/panel/PanelSubmitButton'
 import { LogoutButton } from '@/components/panel/LogoutButton'
 import { BioCharacterCount } from '@/components/panel/BioCharacterCount'
 import { ExpertiseDomainField } from '@/components/panel/ExpertiseDomainField'
-import { domains } from '@/data/domains'
+import { domains, getDomainCopy } from '@/data/domains'
 import { getMediaURL } from '@/modules/content/infrastructure/payload/posts'
 import { getPanelSession } from '@/modules/panel/server/session'
 import type { Admin, Media } from '@/payload-types'
@@ -303,7 +303,10 @@ export default async function PanelProfilePage({ searchParams }: Props) {
 
             <fieldset className="rounded-xl border border-[var(--theme-elevation-200)] p-3.5">
               <legend className="px-1 text-[0.82rem] font-bold text-[var(--txdx-navy)]">Dominios XOC que dominas</legend>
-              <ExpertiseDomainField domains={domains} selected={expertiseDomains} />
+              <ExpertiseDomainField
+                domains={domains.map((domain) => ({ id: domain.id, name: getDomainCopy(domain, 'es').name }))}
+                selected={expertiseDomains}
+              />
             </fieldset>
 
             <label className="flex items-start gap-2 rounded-xl border border-[rgba(18,104,255,0.12)] bg-[rgba(18,104,255,0.04)] px-3.5 py-3 text-[0.8rem] text-[var(--theme-elevation-700)]">

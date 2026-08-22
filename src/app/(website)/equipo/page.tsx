@@ -3,18 +3,28 @@ import type { CSSProperties } from 'react'
 import Image from 'next/image'
 
 import { TeamMemberCard } from '@/components/site/TeamMemberCard'
-import { domains } from '@/data/domains'
+import { domains, getDomainCopy } from '@/data/domains'
+import { getMessages, interpolate, resolveLocale } from '@/lib/i18n'
 import { getPublicTeamMembers } from '@/modules/content/infrastructure/payload/team'
 
 import styles from './team.module.css'
 
-export const metadata: Metadata = {
-  title: 'Equipo',
-  description: 'Conoce al equipo editorial de TxDxSecure y las superficies operacionales que domina.',
-  alternates: { canonical: '/equipo' },
+export const instant = false
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await resolveLocale()
+  const copy = getMessages(locale)
+
+  return {
+    title: copy.team,
+    description: copy.teamHeroLead,
+    alternates: { canonical: '/equipo' },
+  }
 }
 
 export default async function TeamPage() {
+  const locale = await resolveLocale()
+  const copy = getMessages(locale)
   const members = await getPublicTeamMembers()
 
   return (
@@ -24,21 +34,21 @@ export default async function TeamPage() {
         <div className={styles.container}>
           <div className={styles.heroLayout}>
             <div className={styles.heroCopy}>
-              <span className={styles.eyebrow}>Equipo editorial · TxDxSecure</span>
-              <h1>Las personas detrás de la lectura.</h1>
+              <span className={styles.eyebrow}>{copy.teamEyebrow}</span>
+              <h1>{copy.teamHeroTitle}</h1>
               <p>
-                Perfiles que convierten experiencia en contexto, contexto en criterio y criterio en artículos para operar mejor.
+                {copy.teamHeroLead}
               </p>
               <div className={styles.heroMeta}>
-                <span>{String(members.length).padStart(2, '0')} perfiles públicos</span>
-                <span>11 dominios XOC</span>
+                <span>{interpolate(copy.profilesCount, { count: members.length })}</span>
+                <span>{copy.xocDomainCount}</span>
               </div>
             </div>
 
             <figure className={styles.heroVisual}>
               <div className={styles.heroVisualFrame}>
                 <Image
-                  alt="Equipo editorial de TxDxSecure"
+                  alt={copy.teamVisualAlt}
                   className={styles.heroVisualImage}
                   fill
                   priority
@@ -46,8 +56,8 @@ export default async function TeamPage() {
                   src="/equipotxdxsecure.png"
                 />
                 <span aria-hidden="true" className={styles.heroVisualShade} />
-                <span className={styles.heroVisualLabel}>EQUIPO / TXDXSECURE</span>
-                <figcaption>Experiencia compartida. Lectura operable.</figcaption>
+                <span className={styles.heroVisualLabel}>{copy.teamVisualLabel}</span>
+                <figcaption>{copy.teamFigcaption}</figcaption>
               </div>
             </figure>
           </div>
@@ -58,21 +68,23 @@ export default async function TeamPage() {
         <div className={styles.container}>
           <div className={styles.sectionHeading}>
             <div>
-              <span className={styles.sectionCode}>Quién publica</span>
-              <h2 id="equipo-heading">Un equipo con superficies distintas.</h2>
+              <span className={styles.sectionCode}>{copy.whoPublishes}</span>
+              <h2 id="equipo-heading">{copy.teamSurfacesTitle}</h2>
             </div>
-            <p>Los perfiles se gestionan desde el panel editorial. Cada persona decide qué información y dominios quiere mostrar públicamente.</p>
+            <p>{copy.teamSurfacesNote}</p>
           </div>
 
           {members.length ? (
             <div className={styles.teamGrid}>
-              {members.map((member, index) => <TeamMemberCard index={index} key={member.id} member={member} />)}
+              {members.map((member, index) => (
+                <TeamMemberCard copy={copy} index={index} key={member.id} locale={locale} member={member} />
+              ))}
             </div>
           ) : (
             <div className={styles.emptyState}>
-              <span>Equipo editorial en configuración</span>
-              <h3>Pronto conocerás a las personas detrás de cada publicación.</h3>
-              <p>Los administradores pueden completar su perfil y activar su presencia pública desde `/panel/perfil`.</p>
+              <span>{copy.teamEmptyBadge}</span>
+              <h3>{copy.teamEmptyTitle}</h3>
+              <p>{copy.teamEmptyNote}</p>
             </div>
           )}
         </div>
@@ -82,39 +94,51 @@ export default async function TeamPage() {
         <div className={styles.container}>
           <div className={styles.domainsIntro}>
             <div>
-              <span className={styles.sectionCode}>Mapa de especialidad</span>
-              <h2 id="team-domains-heading">Once dominios. Una conversación completa.</h2>
+              <span className={styles.sectionCode}>{copy.specialtyMap}</span>
+              <h2 id="team-domains-heading">{copy.elevenDomainsTitle}</h2>
             </div>
             <div className={styles.domainsIntroAside}>
-              <p>La experiencia del equipo se conecta con las once superficies que XOC observa, protege y ayuda a mejorar.</p>
-              <a className={styles.domainsJump} href="#team-domains-grid">Ver todos los dominios <span aria-hidden="true">↓</span></a>
+              <p>{copy.elevenDomainsAside}</p>
+              <a className={styles.domainsJump} href="#team-domains-grid">{copy.viewAllDomains} <span aria-hidden="true">↓</span></a>
             </div>
           </div>
           <div className={styles.domainMatrix} id="team-domains-grid">
             <div className={styles.domainMatrixHead}>
               <div>
-                <span>TXDX / XOC</span>
-                <h3>Una lectura que no deja superficies fuera.</h3>
+                <span>{copy.domainMatrixTag}</span>
+                <h3>{copy.domainMatrixTitle}</h3>
               </div>
-              <p>11 dominios conectados para leer contexto, exposición y continuidad con el mismo criterio.</p>
+              <p>{copy.domainMatrixIntro}</p>
             </div>
             <div className={styles.domainGrid}>
-              {domains.map((domain) => (
-                <article className={styles.domainItem} key={domain.id} style={{ '--domain-delay': `${(Number(domain.id) - 1) * 45}ms` } as CSSProperties}>
-                  <div className={styles.domainItemMedia}>
-                    {domain.image ? (
-                      <Image alt={`Superficie XOC ${domain.id}: ${domain.name}`} fill sizes="(max-width: 720px) 100vw, (max-width: 980px) 50vw, 30vw" src={domain.image} />
-                    ) : null}
-                    <span aria-hidden="true" />
-                    <strong>{domain.id}</strong>
-                  </div>
-                  <div className={styles.domainItemCopy}>
-                    <span>{domain.shortName}</span>
-                    <h3>{domain.name}</h3>
-                    <p>{domain.description}</p>
-                  </div>
-                </article>
-              ))}
+              {domains.map((domain) => {
+                const domainCopy = getDomainCopy(domain, locale)
+                return (
+                  <article
+                    className={styles.domainItem}
+                    key={domain.id}
+                    style={{ '--domain-delay': `${(Number(domain.id) - 1) * 45}ms` } as CSSProperties}
+                  >
+                    <div className={styles.domainItemMedia}>
+                      {domain.image ? (
+                        <Image
+                          alt={`${copy.surfaceAltPrefix} ${domain.id}: ${domainCopy.name}`}
+                          fill
+                          sizes="(max-width: 720px) 100vw, (max-width: 980px) 50vw, 30vw"
+                          src={domain.image}
+                        />
+                      ) : null}
+                      <span aria-hidden="true" />
+                      <strong>{domain.id}</strong>
+                    </div>
+                    <div className={styles.domainItemCopy}>
+                      <span>{domainCopy.shortName}</span>
+                      <h3>{domainCopy.name}</h3>
+                      <p>{domainCopy.description}</p>
+                    </div>
+                  </article>
+                )
+              })}
             </div>
           </div>
         </div>

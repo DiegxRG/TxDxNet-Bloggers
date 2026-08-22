@@ -6,9 +6,12 @@ import type { CSSProperties, ReactNode } from 'react'
 type Props = {
   action: 'copy' | 'share'
   className?: string
+  copiedMessage: string
+  copyManuallyMessage: string
   detail: string
   icon: ReactNode
   label: string
+  sharedMessage: string
   shareText?: string
   style?: CSSProperties
   tone?: string
@@ -44,7 +47,7 @@ async function writeClipboard(url: string) {
   }
 }
 
-export function PipelineActionButton({ action, className, detail, icon, label, shareText, style, tone, track, url }: Props) {
+export function PipelineActionButton({ action, className, copiedMessage, copyManuallyMessage, detail, icon, label, sharedMessage, shareText, style, tone, track, url }: Props) {
   const [feedback, setFeedback] = useState<Feedback>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const timerRef = useRef<number | undefined>(undefined)
@@ -60,10 +63,10 @@ export function PipelineActionButton({ action, className, detail, icon, label, s
   async function copyLink() {
     const copied = await writeClipboard(url)
     if (copied) {
-      showSuccess('¡Enlace copiado!')
+      showSuccess(copiedMessage)
       return
     }
-    setFeedback({ kind: 'manual', text: 'Copia el enlace manualmente:' })
+    setFeedback({ kind: 'manual', text: copyManuallyMessage })
     requestAnimationFrame(() => {
       inputRef.current?.focus()
       inputRef.current?.select()
@@ -79,7 +82,7 @@ export function PipelineActionButton({ action, className, detail, icon, label, s
     if (navigator.share) {
       try {
         await navigator.share({ text: shareText || label, title: label, url })
-        showSuccess('¡Compartido!')
+        showSuccess(sharedMessage)
         return
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') return

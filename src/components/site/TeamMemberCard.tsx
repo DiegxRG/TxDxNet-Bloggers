@@ -2,16 +2,27 @@
 
 import { AuthorAvatar } from './AuthorAvatar'
 import type { PublicTeamMember } from '@/modules/content/infrastructure/payload/team'
-import { domains } from '@/data/domains'
+import { domains, getDomainCopy } from '@/data/domains'
+import type { Dictionary, Locale } from '@/lib/locale'
 import { useLayoutEffect, useRef, type CSSProperties } from 'react'
 
 import styles from './TeamMemberCard.module.css'
 
-export function TeamMemberCard({ index, member }: { index: number; member: PublicTeamMember }) {
+export function TeamMemberCard({
+  copy,
+  index,
+  locale,
+  member,
+}: {
+  copy: Dictionary
+  index: number
+  locale: Locale
+  member: PublicTeamMember
+}) {
   const cardRef = useRef<HTMLElement>(null)
   const expertise = new Set<string>(member.expertiseDomains || [])
   const memberDomains = domains.filter((domain) => expertise.has(domain.id)).slice(0, 3)
-  const bio = member.publicBio || 'Lectura técnica y editorial para convertir señales complejas en decisiones operables.'
+  const bio = member.publicBio || copy.teamFallbackBio
   const visibleBio = bio.length > 320 ? `${bio.slice(0, 317).trimEnd()}...` : bio
 
   useLayoutEffect(() => {
@@ -41,31 +52,38 @@ export function TeamMemberCard({ index, member }: { index: number; member: Publi
   return (
     <article className={styles.card} ref={cardRef} style={{ '--member-delay': `${index * 90}ms` } as CSSProperties}>
       <div className={styles.cardTopline}>
-        <span>EDITORIAL / {String(index + 1).padStart(2, '0')}</span>
+        <span>{copy.teamCardBadge} / {String(index + 1).padStart(2, '0')}</span>
         <span className={styles.signal} aria-hidden="true" />
       </div>
       <div className={styles.identity}>
         <AuthorAvatar media={member.avatar} name={member.name} size="large" />
         <div>
           <h2>{member.name}</h2>
-          <p>{member.publicTitle || 'Equipo editorial TxDxSecure'}</p>
+          <p>{member.publicTitle || copy.teamFallbackRole}</p>
         </div>
       </div>
       <p className={styles.bio}>
           {visibleBio}
       </p>
       <div className={styles.domains}>
-        <span className={styles.domainsLabel}>Dominios que domina</span>
+        <span className={styles.domainsLabel}>{copy.teamDomainsLabel}</span>
         {memberDomains.length ? (
           <div className={styles.domainList}>
-            {memberDomains.map((domain, domainIndex) => (
-              <span key={domain.id} style={{ '--domain-delay': `${domainIndex * 70}ms` } as CSSProperties} title={domain.name}>
-                {domain.id} · {domain.shortName}
-              </span>
-            ))}
+            {memberDomains.map((domain, domainIndex) => {
+              const domainCopy = getDomainCopy(domain, locale)
+              return (
+                <span
+                  key={domain.id}
+                  style={{ '--domain-delay': `${domainIndex * 70}ms` } as CSSProperties}
+                  title={domainCopy.name}
+                >
+                  {domain.id} · {domainCopy.shortName}
+                </span>
+              )
+            })}
           </div>
         ) : (
-          <span className={styles.emptyDomains}>Perfil transversal en construcción</span>
+          <span className={styles.emptyDomains}>{copy.teamTransversalEmpty}</span>
         )}
       </div>
     </article>

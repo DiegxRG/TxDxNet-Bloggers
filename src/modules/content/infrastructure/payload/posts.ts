@@ -3,6 +3,7 @@ import type { Where } from 'payload'
 import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
 
+import type { Locale } from '@/lib/locale'
 import type { Media, Post } from '@/payload-types'
 
 export { getMediaURL } from '@/modules/content/domain/media-url'
@@ -201,8 +202,8 @@ export async function getPublishedPostPaths(limit = 100) {
   return getPublishedPostPathsCached(limit)
 }
 
-export function formatArticleDate(post: Post): string {
-  return new Intl.DateTimeFormat('es-PE', {
+export function formatArticleDate(post: Post, locale: Locale = 'es'): string {
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es-PE', {
     day: '2-digit',
     month: 'short',
     timeZone: 'America/Lima',
