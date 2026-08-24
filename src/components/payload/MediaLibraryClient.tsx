@@ -45,6 +45,15 @@ function formatBytes(bytes: number) {
   return `${value.toFixed(value >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`
 }
 
+function formatMediaDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return '—'
+
+  return [date.getUTCDate(), date.getUTCMonth() + 1, date.getUTCFullYear()]
+    .map((part) => String(part).padStart(2, '0'))
+    .join('/')
+}
+
 function toItem(doc: UploadDoc): MediaItem {
   const thumbnail = doc.thumbnailURL ?? doc.sizes?.thumbnail?.url ?? doc.url
   return {
@@ -233,7 +242,7 @@ export function MediaLibraryClient({
                   {file.width && file.height ? ` · ${file.width}×${file.height}` : ''}
                 </p>
                 <p className="txdx-media__info">
-                  {formatBytes(file.filesize)} · {new Date(file.updatedAt).toLocaleDateString('es')}
+                  {formatBytes(file.filesize)} · {formatMediaDate(file.updatedAt)}
                 </p>
                 <div className="txdx-media__actions">
                   <Link href={`${editBasePath}/${file.id}`} prefetch={false}>
