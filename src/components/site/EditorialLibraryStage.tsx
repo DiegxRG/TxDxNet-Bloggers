@@ -293,21 +293,23 @@ export function EditorialLibraryStage({ copy, stories }: { copy: Dictionary; sto
 
         const handlePointerMove = (event: PointerEvent) => {
           const bounds = root.getBoundingClientRect()
+          const target = event.target instanceof Element
+            ? event.target.closest<HTMLElement>('[data-story-volume]')
+            : null
           const relativeX = (event.clientX - bounds.left) / bounds.width - 0.5
           const relativeY = (event.clientY - bounds.top) / bounds.height - 0.5
-          rotateY(relativeX * 4.5)
-          rotateX(relativeY * -3)
+          const nextRotationX = target ? 0 : relativeY * -3
+          const nextRotationY = target ? 0 : relativeX * 4.5
+
+          rotateY(nextRotationY)
+          rotateX(nextRotationX)
 
           const now = performance.now()
           if (now - lastPointerLogAt >= 250) {
-            const target = event.target instanceof Element
-              ? event.target.closest<HTMLElement>('[data-story-volume]')
-              : null
-
             console.info('[TxDx hero] escena pointermove', {
               hoveredStory: target?.dataset.storyKey || null,
-              rotationX: Number((relativeY * -3).toFixed(2)),
-              rotationY: Number((relativeX * 4.5).toFixed(2)),
+              rotationX: Number(nextRotationX.toFixed(2)),
+              rotationY: Number(nextRotationY.toFixed(2)),
             })
             lastPointerLogAt = now
           }

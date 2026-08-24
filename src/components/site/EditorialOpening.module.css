@@ -263,7 +263,6 @@
 .storySlot:focus-visible .volumeBook,
 .storySlot:focus-within .volumeBook {
   filter: drop-shadow(0 32px 28px rgb(7 20 45 / 0.23));
-  transform: translateY(-1.15rem) rotateX(2deg) rotateY(-4deg) rotateZ(0deg) scale(1.025);
 }
 
 .storySlot:focus-visible {
