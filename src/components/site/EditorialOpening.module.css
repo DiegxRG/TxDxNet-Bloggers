@@ -219,7 +219,7 @@
   position: relative;
   display: block;
   width: clamp(13.25rem, 18.6vw, 19.5rem);
-  height: clamp(18.7rem, 25.4vw, 26.4rem);
+  height: clamp(20.3rem, 27vw, 28rem);
   flex: 0 1 19.5rem;
   color: var(--cover-ink);
   perspective: 80rem;
@@ -440,6 +440,7 @@
   position: relative;
   display: -webkit-box;
   overflow: hidden;
+  min-height: calc(3 * 0.98em);
   margin-top: 0.65rem;
   color: var(--cover-ink);
   font-family: var(--font-display);
