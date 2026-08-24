@@ -11,10 +11,14 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
 
+const configuredBuildCpus = Number.parseInt(process.env.NEXT_BUILD_CPUS || '', 10)
+const buildCpus = Number.isInteger(configuredBuildCpus) && configuredBuildCpus > 0 ? configuredBuildCpus : 4
+
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {
+    cpus: buildCpus,
     // Payload-backed routes are intentionally dynamic; validate Instant UI only
     // on segments that explicitly opt in with `instant`.
     instantInsights: {
