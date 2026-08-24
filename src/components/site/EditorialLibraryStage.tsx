@@ -3,7 +3,7 @@
 import { gsap } from 'gsap'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useRef, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 
 import type { Dictionary } from '@/lib/locale'
 
@@ -61,15 +61,6 @@ function RevealLine({ children, accent = false }: { children: string; accent?: b
 }
 
 function StoryVolume({ copy, story, index }: { copy: Dictionary; story: OpeningStory; index: number }) {
-  function logStoryPointer(phase: 'enter' | 'leave', event: ReactPointerEvent<HTMLElement>) {
-    console.info('[TxDx hero] libro', {
-      phase,
-      pointerType: event.pointerType,
-      story: story.key,
-      title: story.title,
-    })
-  }
-
   const volume: ReactNode = (
     <div className={styles.volumeMotion} data-ambient-volume>
       <div className={styles.volumeBook}>
@@ -122,20 +113,14 @@ function StoryVolume({ copy, story, index }: { copy: Dictionary; story: OpeningS
       aria-label={`${copy.openArticleAriaPrefix} ${story.title}`}
       className={className}
       data-story-volume
-      data-story-key={story.key}
       href={story.href}
-      onPointerEnter={(event) => logStoryPointer('enter', event)}
-      onPointerLeave={(event) => logStoryPointer('leave', event)}
     >
       {volume}
     </Link>
   ) : (
     <article
       className={className}
-      data-story-key={story.key}
       data-story-volume
-      onPointerEnter={(event) => logStoryPointer('enter', event)}
-      onPointerLeave={(event) => logStoryPointer('leave', event)}
       tabIndex={0}
     >
       {volume}
@@ -289,7 +274,6 @@ export function EditorialLibraryStage({ copy, stories }: { copy: Dictionary; sto
       if (finePointer && scene) {
         const rotateX = gsap.quickTo(scene, 'rotationX', { duration: 0.7, ease: 'power3.out' })
         const rotateY = gsap.quickTo(scene, 'rotationY', { duration: 0.7, ease: 'power3.out' })
-        let lastPointerLogAt = 0
 
         const handlePointerMove = (event: PointerEvent) => {
           const bounds = root.getBoundingClientRect()
@@ -303,16 +287,6 @@ export function EditorialLibraryStage({ copy, stories }: { copy: Dictionary; sto
 
           rotateY(nextRotationY)
           rotateX(nextRotationX)
-
-          const now = performance.now()
-          if (now - lastPointerLogAt >= 250) {
-            console.info('[TxDx hero] escena pointermove', {
-              hoveredStory: target?.dataset.storyKey || null,
-              rotationX: Number(nextRotationX.toFixed(2)),
-              rotationY: Number(nextRotationY.toFixed(2)),
-            })
-            lastPointerLogAt = now
-          }
         }
 
         const resetScene = () => {
