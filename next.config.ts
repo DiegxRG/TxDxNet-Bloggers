@@ -13,12 +13,17 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const configuredBuildCpus = Number.parseInt(process.env.NEXT_BUILD_CPUS || '', 10)
 const buildCpus = Number.isInteger(configuredBuildCpus) && configuredBuildCpus > 0 ? configuredBuildCpus : 4
+const configuredStaticGenerationConcurrency = Number.parseInt(process.env.NEXT_BUILD_PAGE_CONCURRENCY || '', 10)
+const staticGenerationConcurrency = Number.isInteger(configuredStaticGenerationConcurrency) && configuredStaticGenerationConcurrency > 0
+  ? configuredStaticGenerationConcurrency
+  : 2
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {
     cpus: buildCpus,
+    staticGenerationMaxConcurrency: staticGenerationConcurrency,
     // Payload-backed routes are intentionally dynamic; validate Instant UI only
     // on segments that explicitly opt in with `instant`.
     instantInsights: {
