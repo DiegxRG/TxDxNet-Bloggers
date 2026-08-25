@@ -376,8 +376,16 @@
   border-radius: 0.85rem 0.2rem 0.85rem 0.2rem;
   background: #fff;
   box-shadow: 0 14px 32px rgb(7 20 45 / 0.07);
-  animation: domain-item-enter 700ms var(--domain-delay, 0ms) var(--ease-signal) both;
   transition: border-color 280ms ease, background 280ms ease, transform 350ms var(--ease-signal), box-shadow 350ms ease;
+}
+
+.domainItem.motionReady:not(.isVisible) {
+  opacity: 0;
+  transform: translateY(1.5rem);
+}
+
+.domainItem.isVisible {
+  animation: domain-item-enter 700ms var(--domain-delay, 0ms) var(--ease-signal) both;
 }
 
 .domainItem::before {
@@ -530,5 +538,10 @@
   .domainItem {
     animation: none;
     transition: none;
+  }
+
+  .domainItem.motionReady:not(.isVisible) {
+    opacity: 1;
+    transform: none;
   }
 }

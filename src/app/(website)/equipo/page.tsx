@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
-import type { CSSProperties } from 'react'
 import Image from 'next/image'
 
+import { DomainGrid } from '@/components/site/DomainGrid'
 import { TeamMemberCard } from '@/components/site/TeamMemberCard'
-import { domains, getDomainCopy } from '@/data/domains'
 import { getMessages, interpolate, resolveLocale } from '@/lib/i18n'
 import { getPublicTeamMembers } from '@/modules/content/infrastructure/payload/team'
 
@@ -110,36 +109,7 @@ export default async function TeamPage() {
               </div>
               <p>{copy.domainMatrixIntro}</p>
             </div>
-            <div className={styles.domainGrid}>
-              {domains.map((domain) => {
-                const domainCopy = getDomainCopy(domain, locale)
-                return (
-                  <article
-                    className={styles.domainItem}
-                    key={domain.id}
-                    style={{ '--domain-delay': `${(Number(domain.id) - 1) * 45}ms` } as CSSProperties}
-                  >
-                    <div className={styles.domainItemMedia}>
-                      {domain.image ? (
-                        <Image
-                          alt={`${copy.surfaceAltPrefix} ${domain.id}: ${domainCopy.name}`}
-                          fill
-                          sizes="(max-width: 720px) 100vw, (max-width: 980px) 50vw, 30vw"
-                          src={domain.image}
-                        />
-                      ) : null}
-                      <span aria-hidden="true" />
-                      <strong>{domain.id}</strong>
-                    </div>
-                    <div className={styles.domainItemCopy}>
-                      <span>{domainCopy.shortName}</span>
-                      <h3>{domainCopy.name}</h3>
-                      <p>{domainCopy.description}</p>
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
+            <DomainGrid copy={copy} locale={locale} />
           </div>
         </div>
       </section>
