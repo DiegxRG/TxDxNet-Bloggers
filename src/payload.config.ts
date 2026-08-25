@@ -32,42 +32,6 @@ const hasS3Config = Boolean(
 export default buildConfig({
   admin: {
     user: Admins.slug,
-    dateFormat: 'd MMM yyyy, HH:mm',
-    theme: 'light',
-    components: {
-      beforeLogin: ['./components/payload/BeforeLogin'],
-      afterLogin: ['./components/payload/AfterLogin'],
-      afterNavLinks: ['./components/payload/NavMyArticles'],
-      graphics: {
-        Icon: {
-          exportName: 'TxDxAdminIcon',
-          path: './components/payload/TxDxGraphics',
-        },
-        Logo: {
-          exportName: 'TxDxAdminLogo',
-          path: './components/payload/TxDxGraphics',
-        },
-      },
-      views: {
-        dashboard: {
-          Component: {
-            path: './components/payload/PublicationHub',
-          },
-        },
-        'mis-articulos': {
-          Component: {
-            path: './components/payload/MyArticles',
-            exportName: 'default',
-          },
-        },
-      },
-    },
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
-    meta: {
-      titleSuffix: '— TxDxSecure',
-    },
   },
   collections: [Admins, AnalyticsEvents, AnalyticsVisitors, AuditLogs, Media, Posts],
   graphQL: {

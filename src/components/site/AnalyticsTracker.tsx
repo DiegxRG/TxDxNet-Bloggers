@@ -7,7 +7,7 @@ export function AnalyticsTracker() {
   const pathname = usePathname()
 
   useEffect(() => {
-    if (!pathname || pathname.startsWith('/admin') || pathname.startsWith('/panel') || pathname.startsWith('/articulos/preview/')) return
+    if (!pathname || pathname.startsWith('/panel') || pathname.startsWith('/articulos/preview/')) return
     if (navigator.doNotTrack === '1') return
 
     const storageKey = `txdx-analytics:${pathname}`

@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     ) {
       return new NextResponse(null, { status: 400 })
     }
-    if (path.startsWith('/admin') || path.startsWith('/panel') || path.startsWith('/articulos/preview/')) {
+    if (path.startsWith('/panel') || path.startsWith('/articulos/preview/')) {
       return new NextResponse(null, { status: 204 })
     }
 

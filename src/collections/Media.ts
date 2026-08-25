@@ -11,15 +11,7 @@ export const Media: CollectionConfig = {
     plural: 'Biblioteca multimedia',
   },
   admin: {
-    group: 'Contenido',
     useAsTitle: 'filename',
-    components: {
-      views: {
-        list: {
-          Component: './components/payload/MediaLibrary',
-        },
-      },
-    },
   },
   access: {
     read: anyone,

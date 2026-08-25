@@ -1,7 +1,7 @@
- @import '../../(payload)/styles/_tokens.css';
- @import '../../(payload)/styles/_dashboard.css';
- @import '../../(payload)/styles/_my-articles.css';
- @import '../../(payload)/styles/_media-library.css';
+ @import './styles/_tokens.css';
+ @import './styles/_dashboard.css';
+ @import './styles/_my-articles.css';
+ @import './styles/_media-library.css';
 
  :root {
    --base: 1rem;
