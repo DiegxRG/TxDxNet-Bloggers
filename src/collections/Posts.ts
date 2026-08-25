@@ -270,6 +270,6 @@ export const Posts: CollectionConfig = {
         interval: 1500,
       },
     },
-    maxPerDoc: 30,
+    maxPerDoc: 10,
   },
 }

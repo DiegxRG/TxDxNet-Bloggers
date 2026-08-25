@@ -4,12 +4,6 @@ type PanelSession = Awaited<ReturnType<typeof getPanelSession>>
 type PanelPayload = PanelSession['payload']
 type PanelUser = PanelSession['user']
 
-function relationID(value: unknown) {
-  if (typeof value === 'string') return value
-  if (value && typeof value === 'object' && 'id' in value) return String(value.id)
-  return null
-}
-
 function containsMediaReference(value: unknown, mediaID: string): boolean {
   if (!value) return false
   if (typeof value === 'string') return value === mediaID
@@ -21,46 +15,78 @@ function containsMediaReference(value: unknown, mediaID: string): boolean {
   return Object.values(record).some((item) => containsMediaReference(item, mediaID))
 }
 
+function hasMediaInLexical(content: unknown, mediaID: string): boolean {
+  if (!content || typeof content !== 'object') return false
+  const root = content as Record<string, unknown>
+  const nodes = (root.root as Record<string, unknown>)?.children ?? root.children
+  return containsMediaReference(nodes, mediaID)
+}
+
 export async function isMediaReferenced(payload: PanelPayload, user: PanelUser, mediaID: string) {
-  const [admins, posts, versions] = await Promise.all([
+  const [adminHit, coverHit, avatarHit, socialHit] = await Promise.all([
     payload.find({
       collection: 'admins',
       depth: 0,
-      limit: 1000,
+      limit: 1,
       overrideAccess: true,
       pagination: false,
       user,
+      where: { avatar: { equals: mediaID } },
     }),
     payload.find({
       collection: 'posts',
       depth: 0,
-      limit: 1000,
+      limit: 1,
       overrideAccess: true,
       pagination: false,
       user,
+      where: { coverImage: { equals: mediaID } },
     }),
-    payload.findVersions({
+    payload.find({
       collection: 'posts',
       depth: 0,
-      limit: 1000,
+      limit: 1,
       overrideAccess: true,
       pagination: false,
       user,
+      where: { authorAvatar: { equals: mediaID } },
+    }),
+    payload.find({
+      collection: 'posts',
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+      pagination: false,
+      user,
+      where: { socialImage: { equals: mediaID } },
     }),
   ])
 
-  const isPostReference = (post: { authorAvatar?: unknown; content?: unknown; coverImage?: unknown; socialImage?: unknown }) =>
-    containsMediaReference(
-      {
-        authorAvatar: post.authorAvatar,
-        content: post.content,
-        coverImage: post.coverImage,
-        socialImage: post.socialImage,
-      },
-      mediaID,
-    )
+  if (adminHit.totalDocs > 0 || coverHit.totalDocs > 0 || avatarHit.totalDocs > 0 || socialHit.totalDocs > 0) {
+    return true
+  }
 
-  return admins.docs.some((admin) => relationID(admin.avatar) === mediaID) ||
-    posts.docs.some(isPostReference) ||
-    versions.docs.some((version) => isPostReference(version.version))
+  const posts = await payload.find({
+    collection: 'posts',
+    depth: 0,
+    limit: 500,
+    overrideAccess: true,
+    pagination: false,
+    user,
+  })
+
+  if (posts.docs.some((post) => hasMediaInLexical(post.content, mediaID))) {
+    return true
+  }
+
+  const versions = await payload.findVersions({
+    collection: 'posts',
+    depth: 0,
+    limit: 500,
+    overrideAccess: true,
+    pagination: false,
+    user,
+  })
+
+  return versions.docs.some((v) => hasMediaInLexical((v.version as unknown as Record<string, unknown>)?.content, mediaID))
 }

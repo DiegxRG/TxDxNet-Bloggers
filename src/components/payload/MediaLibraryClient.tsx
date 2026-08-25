@@ -87,6 +87,7 @@ export function MediaLibraryClient({
   const [uploadNames, setUploadNames] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
+  const [deleting, setDeleting] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const visible = useMemo(() => {
@@ -128,14 +129,23 @@ export function MediaLibraryClient({
   }
 
   async function removeItem(id: string, filename: string) {
+    if (!window.confirm(`¿Eliminar «${filename}»? Esta acción no se puede deshacer.`)) return
+
     setError(null)
-    const res = await fetch(`/api/panel/media/${id}`, { method: 'DELETE' })
-    if (res.ok) {
-      setFiles((prev) => prev.filter((file) => file.id !== id))
-    } else if (res.status === 409) {
-      setError(`No se puede eliminar «${filename}»: todavía se usa en contenido editorial.`)
-    } else {
+    setDeleting(id)
+    try {
+      const res = await fetch(`/api/panel/media/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        setFiles((prev) => prev.filter((file) => file.id !== id))
+      } else if (res.status === 409) {
+        setError(`No se puede eliminar «${filename}»: todavía se usa en contenido editorial.`)
+      } else {
+        setError(`No se pudo eliminar «${filename}».`)
+      }
+    } catch {
       setError(`No se pudo eliminar «${filename}».`)
+    } finally {
+      setDeleting(null)
     }
   }
 
@@ -248,8 +258,12 @@ export function MediaLibraryClient({
                   <Link href={`${editBasePath}/${file.id}`} prefetch={false}>
                     {editLabel}
                   </Link>
-                  <button type="button" onClick={() => void removeItem(file.id, file.filename)}>
-                    Eliminar
+                  <button
+                    type="button"
+                    disabled={deleting === file.id}
+                    onClick={() => void removeItem(file.id, file.filename)}
+                  >
+                    {deleting === file.id ? 'Eliminando…' : 'Eliminar'}
                   </button>
                 </div>
               </div>
