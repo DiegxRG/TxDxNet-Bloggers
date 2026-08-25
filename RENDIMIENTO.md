@@ -60,7 +60,7 @@ de validación pendiente.
 | Tipografía editorial | Restaurada en código | Tiempos largos recuperados para títulos y copias. |
 | Transiciones del panel | Conservadas | No se eliminaron las transiciones internas de los componentes cliente. |
 | Desarrollo local | Mejorado | `npm run dev` usa Turbopack; webpack queda en `dev:webpack`. |
-| Bundle analyzer | Configurado | Todavía no se ha ejecutado. |
+| Bundle analyzer | Ejecutado | Analizador nativo de Turbopack generado en `.next/diagnostics/analyze`. |
 | Índices PostgreSQL | Aplicados en entorno configurado | Migración corregida, registrada y verificada con `migrate:status`. |
 | Core Web Vitals | Pendiente | No existe medición RUM, Lighthouse ni prueba automatizada. |
 
@@ -298,7 +298,7 @@ dentro de una transacción y PostgreSQL no permite `CREATE INDEX CONCURRENTLY` d
 | `npm run typecheck` | Correcto, 0 errores. |
 | `npm run build` | Correcto. Next 16.3.0 con Turbopack; la migración de perfiles ya fue aplicada en el entorno local configurado. |
 | `git diff --check` | Correcto; solo avisos de conversión LF/CRLF de Git. |
-| `npm run lint` | Falla por errores preexistentes fuera de esta optimización. |
+| `npm run lint` | Correcto. |
 
 Último build exitoso:
 
@@ -308,13 +308,8 @@ dentro de una transacción y PostgreSQL no permite `CREATE INDEX CONCURRENTLY` d
 - `cacheComponents`: habilitado.
 - `partialPrefetching`: habilitado.
 
-Los errores actuales de lint son:
-
-- `delete-user.cjs:1-2`: imports `require` prohibidos.
-- `fix-db.cjs:1-2`: imports `require` prohibidos.
-- `src/components/payload/ThemeAndLayoutWrapper.tsx:14`: warning por `any`.
-
-No son errores introducidos por esta optimización.
+Los scripts destructivos aislados `delete-user.cjs` y `fix-db.cjs` fueron retirados; las operaciones
+de esquema deben permanecer en migraciones revisadas.
 
 ### Esquema de datos
 
@@ -421,15 +416,16 @@ Confirmar además que:
 - `prefers-reduced-motion: reduce` elimine desplazamientos, rotaciones, pulsos y stagger.
 - La restauración visual no cambie TTFB, duración de consultas, autenticación ni carga de imágenes.
 
-### P1 — Ejecutar bundle analyzer
+### P1 — Revisar bundle analyzer
 
-En Windows:
+Con Next 16 y Turbopack:
 
 ```powershell
-npx cross-env ANALYZE=true npm run build
+npx next experimental-analyze -o
 ```
 
-Revisar `.next/analyze/` y documentar el peso real de:
+Revisar `.next/diagnostics/analyze/` de forma interactiva con `npx next experimental-analyze` y
+documentar el peso real de:
 
 - `@payloadcms/richtext-lexical`.
 - `gsap`.

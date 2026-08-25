@@ -70,6 +70,9 @@ export default buildConfig({
     },
   },
   collections: [Admins, AnalyticsEvents, AnalyticsVisitors, AuditLogs, Media, Posts],
+  graphQL: {
+    disable: true,
+  },
   cors: [siteURL, 'http://localhost:3000'],
   csrf: [siteURL, 'http://localhost:3000'],
   i18n: {

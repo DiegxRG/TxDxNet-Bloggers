@@ -9,7 +9,6 @@ import type {
   ComparisonTableBlock,
   Media,
   MediaFeatureBlock,
-  Post,
 } from '@/payload-types'
 
 function safeHref(value: string) {
@@ -203,7 +202,3 @@ export function createArticleConverters(resolveUploadURL?: UploadURLResolver): J
 }
 
 export const articleConverters: JSXConvertersFunction = createArticleConverters()
-
-export function getArticleRichTextData(data: Post['content']) {
-  return data
-}

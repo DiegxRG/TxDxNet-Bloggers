@@ -18,7 +18,8 @@ export function LogoutButton({ 'aria-label': ariaLabel, children, className, tit
   async function handleLogout() {
     setPending(true)
     await fetch('/api/admins/logout', { method: 'POST', credentials: 'include' })
-    window.location.assign('/panel/login')
+    router.replace('/panel/login')
+    router.refresh()
   }
 
   return (

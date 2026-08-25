@@ -3,7 +3,6 @@
 import {
   DecoratorNode,
   $getNodeByKey,
-  type LexicalNode,
   type NodeKey,
   type SerializedLexicalNode,
   type Spread,
@@ -113,12 +112,6 @@ export function $createCustomUploadNode(data: {
   })
 }
 
-export function $isCustomUploadNode(
-  node: LexicalNode | null | undefined,
-): node is CustomUploadNode {
-  return node instanceof CustomUploadNode
-}
-
 type SerializedBlockNode = Spread<
   {
     type: 'block'
@@ -190,12 +183,6 @@ export function $createCustomBlockNode(fields: Record<string, unknown>): CustomB
     ...fields,
     id: fields.id ?? crypto.randomUUID().replace(/-/g, '').slice(0, 24),
   })
-}
-
-export function $isCustomBlockNode(
-  node: LexicalNode | null | undefined,
-): node is CustomBlockNode {
-  return node instanceof CustomBlockNode
 }
 
 function UploadPreview({ data, nodeKey }: { data: UploadNodeData; nodeKey: NodeKey }) {

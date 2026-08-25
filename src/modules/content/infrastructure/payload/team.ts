@@ -4,7 +4,6 @@ import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 
-import { getMediaURL } from '@/modules/content/domain/media-url'
 import type { Admin } from '@/payload-types'
 
 export type PublicTeamMember = Pick<Admin, 'avatar' | 'expertiseDomains' | 'id' | 'name' | 'publicBio' | 'publicTitle'>
@@ -46,11 +45,4 @@ const getPublicTeamMembersCached = unstable_cache(
 
 export async function getPublicTeamMembers() {
   return getPublicTeamMembersCached()
-}
-
-export function getTeamAvatar(member: PublicTeamMember): string | null {
-  const avatar = member.avatar
-  if (!avatar || typeof avatar === 'string') return null
-
-  return getMediaURL(avatar, 'avatar')
 }

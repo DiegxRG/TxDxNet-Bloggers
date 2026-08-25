@@ -1,8 +1,6 @@
 import Link from 'next/link'
-import type { Payload } from 'payload'
-
 type Props = {
-  payload: Payload
+  payload: { config: { serverURL?: string | null } }
 }
 
 const POINTS = [
@@ -34,7 +32,7 @@ const POINTS = [
 ]
 
 export default function BeforeLogin({ payload }: Props) {
-  const siteURL = payload.config.serverURL
+  const siteURL = payload.config.serverURL || '/'
 
   return (
     <div className="txdx-login-panel">

@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-export function BrandMark({ priority = false }: { priority?: boolean }) {
+export function BrandMark() {
   return (
     <Link aria-label="TxDxNet — Inicio" className="brand-mark group" href="/">
       <span className="brand-logo-wrap">
@@ -9,8 +9,7 @@ export function BrandMark({ priority = false }: { priority?: boolean }) {
           alt="TxDxNet"
           className="brand-logo"
           fill
-          loading={priority ? 'eager' : 'lazy'}
-          priority={priority}
+          loading="eager"
           src="/logotxdx.png"
           sizes="(max-width: 620px) 44px, 54px"
         />

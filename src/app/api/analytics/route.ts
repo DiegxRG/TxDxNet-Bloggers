@@ -2,7 +2,7 @@ import crypto from 'node:crypto'
 
 import configPromise from '@payload-config'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 
 const VISITOR_COOKIE = 'txdx_visitor'
@@ -55,29 +55,28 @@ export async function POST(request: Request) {
     const visitorCookie = cookieStore.get(VISITOR_COOKIE)?.value || crypto.randomUUID()
     const visitorHash = crypto.createHash('sha256').update(visitorCookie).digest('hex')
     const day = getLimaDay()
-    const payload = await getPayload({ config: configPromise })
-
-    void cleanupExpiredMetrics(payload).catch((error) => {
-      console.error('[analytics] No se pudo aplicar la retención.', error instanceof Error ? error.message : String(error))
+    after(async () => {
+      try {
+        const payload = await getPayload({ config: configPromise })
+        await Promise.all([
+          cleanupExpiredMetrics(payload),
+          ...types.map((type) => payload.create({
+            collection: 'analytics-events',
+            data: { day, path, type },
+            overrideAccess: true,
+          })),
+          payload.create({
+            collection: 'analytics-visitors',
+            data: { day, key: `${day}:${visitorHash}` },
+            overrideAccess: true,
+          }).catch(() => {
+            // A duplicate visitor key is expected on subsequent page views that day.
+          }),
+        ])
+      } catch (error) {
+        console.error('[analytics] No se pudo registrar el evento.', error instanceof Error ? error.message : String(error))
+      }
     })
-
-    for (const type of types) {
-      await payload.create({
-        collection: 'analytics-events',
-        data: { day, path, type },
-        overrideAccess: true,
-      })
-    }
-
-    try {
-      await payload.create({
-        collection: 'analytics-visitors',
-        data: { day, key: `${day}:${visitorHash}` },
-        overrideAccess: true,
-      })
-    } catch {
-      // A duplicate visitor key is expected on subsequent page views that day.
-    }
 
     const response = new NextResponse(null, { status: 204 })
     if (!cookieStore.get(VISITOR_COOKIE)) {

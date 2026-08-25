@@ -44,7 +44,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
       data-site-header
     >
       <div className={styles.inner}>
-        <BrandMark priority />
+        <BrandMark />
          <nav aria-label={copy.articles} className={styles.navigation}>
           {navigation.map((item) => (
             <Link

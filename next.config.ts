@@ -12,13 +12,14 @@ const withBundleAnalyzer = bundleAnalyzer({
 })
 
 const configuredBuildCpus = Number.parseInt(process.env.NEXT_BUILD_CPUS || '', 10)
-const buildCpus = Number.isInteger(configuredBuildCpus) && configuredBuildCpus > 0 ? configuredBuildCpus : 4
+const buildCpus = Number.isInteger(configuredBuildCpus) && configuredBuildCpus > 0 ? configuredBuildCpus : 2
 const configuredStaticGenerationConcurrency = Number.parseInt(process.env.NEXT_BUILD_PAGE_CONCURRENCY || '', 10)
 const staticGenerationConcurrency = Number.isInteger(configuredStaticGenerationConcurrency) && configuredStaticGenerationConcurrency > 0
   ? configuredStaticGenerationConcurrency
-  : 2
+  : 1
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {
@@ -43,7 +44,6 @@ const nextConfig: NextConfig = {
       { pathname: '/App_Store_*.svg.webp' },
       { pathname: '/domains/**' },
       { pathname: '/prompt*.png' },
-      { pathname: '/service*.png' },
       { pathname: '/equipotxdxsecure.png' },
       { pathname: '/Designer__19_-removebg-preview.png' },
     ],

@@ -152,7 +152,7 @@ export function EditorialLibraryStage({ copy, stories }: { copy: Dictionary; sto
 
       gsap.set(root, { autoAlpha: 1 })
 
-      if (reduceMotion) return
+      if (reduceMotion || storyVolumes.length === 0) return
 
       gsap.set(selector('[data-intro-copy]'), { autoAlpha: 0, y: 18 })
       if (siteHeader) {

@@ -11,7 +11,7 @@ export default function ThemeAndLayoutWrapper({ children }: { children: React.Re
     return (
       <div className="custom-create-first-user-layout">
         {/* Renderizamos el panel directamente dentro del flujo para que CSS lo atrape */}
-        <BeforeLogin payload={{ config: { serverURL: '/' } } as any} />
+        <BeforeLogin payload={{ config: { serverURL: '/' } }} />
         <div className="custom-create-first-user-right">
           {children}
         </div>
