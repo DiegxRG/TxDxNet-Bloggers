@@ -7,7 +7,6 @@
  * Reads DATABASE_URL and S3_* from .env.local.
  */
 
-import { createRequire } from 'node:module'
 import { readFileSync } from 'node:fs'
 import { S3Client, ListObjectsV2Command, HeadObjectCommand } from '@aws-sdk/client-s3'
 import pg from 'pg'

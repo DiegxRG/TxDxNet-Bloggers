@@ -113,6 +113,7 @@ export default async function PanelArticleDetailPage({ params, searchParams }: P
       formAction={updatePanelPostAction.bind(null, article.id)}
       mediaItems={mediaItems}
       mode="edit"
+      postStatus={article._status}
       previewCoverURL={previewCoverURL}
       status={status}
     />

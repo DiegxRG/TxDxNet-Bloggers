@@ -47,6 +47,7 @@ type Props = {
   formAction: (formData: FormData) => void | Promise<void>
   mediaItems: PanelEditorMediaItem[]
   mode: 'create' | 'edit'
+  postStatus?: 'draft' | 'published' | null
   previewCoverURL: null | string
   status: null | string
 }
@@ -180,6 +181,7 @@ export function PanelPostEditor({
   formAction,
   mediaItems,
   mode,
+  postStatus,
   previewCoverURL,
   status,
 }: Props) {
@@ -410,8 +412,8 @@ export function PanelPostEditor({
                     <PanelSubmitButton name="intent" pendingLabel="Guardando..." value="draft" variant="dark">
                       Guardar borrador
                     </PanelSubmitButton>
-                    <PanelSubmitButton name="intent" pendingLabel="Publicando..." value="publish">
-                      Publicar
+                    <PanelSubmitButton name="intent" pendingLabel={postStatus === 'published' ? 'Actualizando...' : 'Publicando...'} value="publish">
+                      {postStatus === 'published' ? 'Actualizar' : 'Publicar'}
                     </PanelSubmitButton>
                   </>
                 )}

@@ -369,7 +369,7 @@ export async function updatePanelPostAction(postID: string, formData: FormData) 
   if (intent === 'publish' || current._status === 'published') {
     revalidatePublicArticle(String(payloadData.slug || current.slug || ''))
   }
-  redirect(`/panel/articulos/${postID}?estado=${intent === 'publish' ? 'publicado' : 'guardado'}`)
+  redirect(intent === 'publish' ? '/panel/articulos?estado=publicado' : `/panel/articulos/${postID}?estado=guardado`)
 }
 
 export async function deletePanelPostAction(postID: string) {
