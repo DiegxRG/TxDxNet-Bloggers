@@ -12,6 +12,7 @@ import { AuditLogs } from './collections/AuditLogs'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
 import { editorialEditor } from './editor'
+import { EDITORIAL_STORAGE_PREFIX, getMediaStorageConfig } from './modules/content/infrastructure/media-storage-config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,12 +23,7 @@ const databasePoolMax = Number.isInteger(configuredPoolMax) && configuredPoolMax
   : process.env.NODE_ENV === 'development'
     ? 3
     : 5
-const hasS3Config = Boolean(
-  process.env.S3_ENDPOINT &&
-    process.env.S3_ACCESS_KEY_ID &&
-    process.env.S3_SECRET_ACCESS_KEY &&
-    process.env.S3_BUCKET,
-)
+const mediaStorage = getMediaStorageConfig()
 
 export default buildConfig({
   admin: {
@@ -55,23 +51,15 @@ export default buildConfig({
   editor: editorialEditor,
   plugins: [
     s3Storage({
-      enabled: hasS3Config,
-      bucket: process.env.S3_BUCKET || 'media',
+      enabled: Boolean(mediaStorage),
+      bucket: mediaStorage?.bucket || 'media',
       clientUploads: true,
       collections: {
         media: {
-          prefix: 'editorial',
+          prefix: EDITORIAL_STORAGE_PREFIX,
         },
       },
-      config: {
-        endpoint: process.env.S3_ENDPOINT,
-        forcePathStyle: true,
-        region: process.env.S3_REGION || 'ca-central-1',
-        credentials: {
-          accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
-        },
-      },
+      config: mediaStorage?.config || {},
     }),
   ],
   secret: process.env.PAYLOAD_SECRET || 'development-only-secret-change-before-deploy',

@@ -1,7 +1,7 @@
 import type PDFKit from 'pdfkit'
 
-import { getMediaURL } from '@/modules/content/domain/media-url'
 import type { Media, Post } from '@/payload-types'
+import type { ArticleImages } from './article-images'
 
 const INK = '#07142d'
 const MUTED = '#415574'
@@ -51,10 +51,6 @@ function asString(value: unknown): string {
 
 function safeHref(value: string) {
   return /^(https?:\/\/|mailto:|\/)/i.test(value) ? value : ''
-}
-
-function absolutize(origin: string, url: string) {
-  return /^(https?:)?\/\//i.test(url) ? url : new URL(url, origin).toString()
 }
 
 function contentWidthOf(doc: PDFKit.PDFDocument) {
@@ -167,28 +163,6 @@ function writeInlineLines(
   flush()
 }
 
-function isEmbeddableRaster(buffer: Buffer) {
-  if (buffer.length < 12) return false
-  const isPNG =
-    buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47
-  const isJPEG = buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff
-  const isTIFF =
-    (buffer[0] === 0x49 && buffer[1] === 0x49 && buffer[2] === 0x2a) ||
-    (buffer[0] === 0x4d && buffer[1] === 0x4d && buffer[2] === 0x00)
-  return isPNG || isJPEG || isTIFF
-}
-
-async function fetchImageBuffer(url: string): Promise<Buffer | null> {
-  try {
-    const response = await fetch(url, { signal: AbortSignal.timeout(15000) })
-    if (!response.ok) return null
-    const bytes = Buffer.from(await response.arrayBuffer())
-    return isEmbeddableRaster(bytes) ? bytes : null
-  } catch {
-    return null
-  }
-}
-
 type OpenedImage = { width: number; height: number }
 
 type DocumentWithOpenImage = PDFKit.PDFDocument & {
@@ -227,39 +201,16 @@ async function embedImageBuffer(
   }
 }
 
-async function embedImageFromURL(
+async function embedMediaImage(
   doc: PDFKit.PDFDocument,
-  url: string | null,
-  origin: string,
+  reference: unknown,
+  images: ArticleImages,
   options: { widthFactor: number; maxHeight: number; caption?: string },
+  size: 'hero' | 'original' = 'original',
 ): Promise<boolean> {
-  if (!url) return false
-  const buffer = await fetchImageBuffer(absolutize(origin, url))
+  const buffer = await images.load(reference, size)
   if (!buffer) return false
   return embedImageBuffer(doc, buffer, options)
-}
-
-function uploadImageSource(node: Record<string, unknown>): string | null {
-  const fields = asRecord(node.fields)
-
-  const direct = [fields?.url, fields?.thumbnailURL].find(
-    (value): value is string => typeof value === 'string' && value.length > 0,
-  )
-  if (direct) return direct
-
-  const value = asRecord(node.value)
-  if (value) {
-    const fromMedia = getMediaURL(value as unknown as Media, 'original')
-    if (fromMedia) return fromMedia
-
-    const filename = asString(value.filename)
-    if (filename) return `/api/media/file/${encodeURIComponent(filename)}?prefix=editorial`
-  }
-
-  const fieldsFilename = asString(fields?.filename)
-  if (fieldsFilename) return `/api/media/file/${encodeURIComponent(fieldsFilename)}?prefix=editorial`
-
-  return null
 }
 
 function drawCalloutBox(
@@ -474,7 +425,7 @@ function drawComparisonTable(doc: PDFKit.PDFDocument, fields: Record<string, unk
 async function renderList(
   doc: PDFKit.PDFDocument,
   node: Record<string, unknown>,
-  origin: string,
+  images: ArticleImages,
   depth: number,
 ) {
   const listType = asString(node.listType) || (node.tag === 'ol' ? 'number' : 'bullet')
@@ -483,6 +434,7 @@ async function renderList(
   const baseOffset = Math.min(depth, 3) * 18
 
   for (const item of items) {
+    images.check()
     const itemRecord = asRecord(item)
     if (!itemRecord) continue
 
@@ -515,7 +467,7 @@ async function renderList(
 
     for (const nested of nestedLists) {
       const nestedRecord = asRecord(nested)
-      if (nestedRecord) await renderList(doc, nestedRecord, origin, depth + 1)
+      if (nestedRecord) await renderList(doc, nestedRecord, images, depth + 1)
     }
   }
 
@@ -525,9 +477,10 @@ async function renderList(
 async function renderNode(
   doc: PDFKit.PDFDocument,
   node: unknown,
-  origin: string,
+  images: ArticleImages,
   depth: number,
 ): Promise<void> {
+  images.check()
   const record = asRecord(node)
   if (!record) return
 
@@ -577,13 +530,17 @@ async function renderNode(
       return
     }
     case 'list':
-      await renderList(doc, record, origin, depth)
+      await renderList(doc, record, images, depth)
       return
     case 'upload': {
-      const source = uploadImageSource(record)
       const fields = asRecord(record.fields)
       const caption = asString(fields?.caption) || asString(fields?.alt) || undefined
-      await embedImageFromURL(doc, source, origin, { widthFactor: 1, maxHeight: 400, caption })
+      if (record.relationTo !== 'media') return
+      const value = asRecord(record.value)
+      const reference = typeof record.value === 'string' || value?.id
+        ? record.value
+        : { filename: value?.filename || fields?.filename }
+      await embedMediaImage(doc, reference, images, { widthFactor: 1, maxHeight: 400, caption })
       return
     }
     case 'horizontal-rule': {
@@ -605,7 +562,7 @@ async function renderNode(
       else if (blockType === 'mediaFeature') {
         const media = (fields?.media ?? null) as string | Media | null
         const layout = asString(fields?.layout)
-        await embedImageFromURL(doc, getMediaURL(media, 'original'), origin, {
+        await embedMediaImage(doc, media ?? '', images, {
           widthFactor: layout === 'content' ? 0.78 : 1,
           maxHeight: 420,
           caption: asString(fields?.caption) || undefined,
@@ -615,7 +572,7 @@ async function renderNode(
     }
     default:
       if (Array.isArray(record.children)) {
-        for (const child of record.children) await renderNode(doc, child, origin, depth)
+        for (const child of record.children) await renderNode(doc, child, images, depth)
       }
   }
 }
@@ -623,14 +580,14 @@ async function renderNode(
 export async function renderArticleContent(
   doc: PDFKit.PDFDocument,
   content: Post['content'] | null | undefined,
-  origin: string,
+  images: ArticleImages,
 ): Promise<void> {
   const root = asRecord(asRecord(content)?.root)
   if (!root) return
 
   doc.x = doc.page.margins.left
   for (const child of arrayOf(root.children)) {
-    await renderNode(doc, child, origin, 0)
+    await renderNode(doc, child, images, 0)
   }
   doc.x = doc.page.margins.left
 }
@@ -638,8 +595,7 @@ export async function renderArticleContent(
 export async function embedCoverImage(
   doc: PDFKit.PDFDocument,
   media: Post['coverImage'],
-  origin: string,
+  images: ArticleImages,
 ): Promise<boolean> {
-  const url = getMediaURL(media, 'hero') || getMediaURL(media, 'original')
-  return embedImageFromURL(doc, url, origin, { widthFactor: 1, maxHeight: 320 })
+  return embedMediaImage(doc, media, images, { widthFactor: 1, maxHeight: 320 }, 'hero')
 }

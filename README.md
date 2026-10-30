@@ -58,3 +58,53 @@ imprime en consola ni deben compartirse por chat. El panel de métricas está en
 información personal.
 
 La web pública vive en `/` y el panel editorial en `/admin`.
+
+## Seguridad y verificación de los PDF
+
+El endpoint público `/api/articulos/[slug]/pdf` resuelve las imágenes por su ID en
+la colección `media`, respetando sus permisos de lectura. Las referencias
+antiguas por nombre de archivo también requieren encontrar un registro de
+`media`; ese nombre nunca se utiliza directamente como ruta de lectura. Las URLs
+y prefijos incluidos en el JSON del artículo no se usan para descargar imágenes.
+Esto conserva las referencias que guarda el editor actual: portada, uploads de
+Lexical y bloques `mediaFeature`.
+
+El lector utiliza el mismo endpoint, bucket y prefijo `editorial` configurados
+para Payload mediante `S3_*`. Lee directamente con el SDK S3, sin seguir
+redirecciones. En desarrollo sin S3, lee únicamente archivos del `staticDir` de
+la colección, comprobando también su ruta real. No usa el origen ni las cabeceras
+de la solicitud pública. No requiere variables nuevas ni migraciones.
+
+Los límites están centralizados en
+`src/modules/content/infrastructure/pdf/pdf-resources.ts`: 20 MiB por imagen,
+100 MiB de imágenes leídas por documento, 40 megapíxeles por imagen de entrada,
+64 imágenes, 200 páginas, 32 MiB de salida y dos generaciones simultáneas por
+proceso. Las imágenes se validan y normalizan a un máximo de 2400 píxeles por
+lado; su presupuesto acumulado es de 80 megapíxeles normalizados. El plazo de
+generación es de 45 segundos, con 15 segundos por lectura y hasta 5 segundos
+para terminar una operación nativa de conversión en curso. La concurrencia es
+por proceso; varias réplicas requieren además límites en el proxy si se necesita
+un límite global.
+
+Una imagen inexistente o inválida se omite como antes, y el PDF resultante usa
+`Cache-Control: no-store`. Superar un límite de recursos devuelve `422`, agotar
+el plazo devuelve `504` y superar la concurrencia devuelve `503` con
+`Retry-After`. La lectura se cancela al superar el límite real de bytes, incluso
+sin `Content-Length` o si el tamaño declarado es incorrecto.
+
+Ejecuta la regresión aislada, sin acceso a base de datos ni servicios productivos:
+
+```powershell
+npm run test:pdf-security
+npm run lint
+npm run typecheck
+npm run build
+```
+
+Antes de desplegar una nueva imagen Docker, verificar en staging la publicación
+y edición de artículos con una cuenta `editor`, la carga de imágenes y la
+descarga de PDF con portadas y ambos tipos de imágenes del contenido. Incluir
+artículos existentes para detectar referencias antiguas sin ID ni nombre de
+archivo registrado en `media`, además de pruebas de imágenes faltantes, grandes y referencias
+manipuladas desde la API. Nunca se descarga desde una URL arbitraria.
+El despliegue no debe sobrescribir cambios locales de `docker-compose.yml`.

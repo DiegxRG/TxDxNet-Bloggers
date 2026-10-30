@@ -21,12 +21,14 @@
     "seed:team": "node ./scripts/seed-team-profiles.mjs",
     "setup:env": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/setup-local-env.ps1",
     "start": "next start",
+    "test:pdf-security": "node --import tsx --test tests/pdf-security.test.ts",
     "typecheck": "tsc --noEmit --incremental false"
   },
   "engines": {
     "node": ">=24.15.0"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1109.0",
     "@fontsource-variable/bricolage-grotesque": "5.3.0",
     "@fontsource-variable/manrope": "5.3.0",
     "@payloadcms/db-postgres": "3.88.0",
@@ -57,6 +59,7 @@
     "eslint-config-next": "16.3.0",
     "postcss": "8.5.26",
     "tailwindcss": "4.3.3",
+    "tsx": "4.22.4",
     "typescript": "6.0.3"
   }
 }
